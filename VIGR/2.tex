@@ -1,0 +1,162 @@
+\documentclass{article}
+\usepackage{amsmath}
+\author{Adam Hawley}
+\title{Lecture 2: Transformations}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\section{Conventions}
+\begin{itemize}
+	\item Matrices written in uppercase bold eg:
+{\bf A} =$ 
+\begin{bmatrix}
+1&2\\
+3&4
+\end{bmatrix}
+$
+\item Matrices are also indexed (row, column) from top left starting at 1.
+\item Individual elements are written as lowercase: 
+	\\  \centerline{ $ a_{11} = 1, a_{12} = 2, a_{21} = 3, a_{22} = 4 $ }
+\item Vectors are simply matrices with a single row or column represented by a lower-case bold symbol:
+
+	\centerline{ $ {\bf a} = 
+		\begin{bmatrix}
+			x\\y\\z
+		\end{bmatrix} OR \ \ {\bf a} = 
+		\begin{bmatrix}
+			x&y&z
+		\end{bmatrix}
+	$ }
+\end{itemize}
+
+\section{Transformations}
+\subsection{Translation}
+Translation involves {\textbf{\textit{component-wise addition}}}.
+
+For example: \\
+\centerline{$
+\begin{bmatrix}
+	x' \\ y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+	x \\ y
+\end{bmatrix}
++
+\begin{bmatrix}
+	d_x \\ d_y
+\end{bmatrix}
+$}
+\subsection{Scaling}
+Scaling involves {\textbf{\textit{multiplication by a scalar}}}.
+
+For example: \\~\\
+\centerline{$
+\begin{bmatrix}
+x' \\ y'
+\end{bmatrix}
+= s 
+\begin{bmatrix}
+x \\ y
+\end{bmatrix}$}
+
+Or to have a separate dimensional scalars:\\ \\
+\centerline{$
+\begin{bmatrix}
+x' \\ y'
+\end{bmatrix} = 
+\begin{bmatrix}
+	s_x&0\\
+	0&s_y
+\end{bmatrix} $}
+\subsection{Rotation}
+Rotation involves {\textbf{\textit{matrix multiplication}}}. Using the formula below to give a 2D rotation counter clockwise by angle $\theta$:
+\\~\\
+\centerline{$
+	\begin{bmatrix}
+		x' \\ y'
+	\end{bmatrix} = 
+	\begin{bmatrix}
+		\cos(\theta) & -\sin(\theta)\\
+		\sin(\theta) & \cos(\theta)
+	\end{bmatrix}
+	\begin{bmatrix}
+		x \\ y
+	\end{bmatrix}
+$}
+
+Rotation preserves distances: \\
+\centerline{$ ||{\bf x}|| = ||{\bf Rx}|| $}\\
+\centerline{$||{\bf x}||^2 = x^2_1 + x^2_2 + ... + x^2_n = {\bf x}{\it ^T}{\bf x} $}
+\centerline{${\bf x}{\it ^T}{\bf x} = ({\bf Rx}){\it ^T}({\bf Rx}) 
+$}
+\centerline{${\bf x}{\it ^T}{\bf Ix} = ({\bf x}){\it ^T}({\bf R}{\it ^T})({\bf Rx}) 	
+$}
+\centerline{$ = {\bf x}{\it ^T}({\bf R}{\it ^T}{\bf R}){\bf x}  
+$}
+And hence: \\ \centerline{$ {\bf R}{\it ^T}{\bf R} = {\bf I} $} 
+\centerline{$ {\bf R}{\it ^T} {\bf R} {\bf R}^{-1} = {\bf IR}^{-1} $}    
+\centerline{$ {\bf R}{\it ^T} = {\bf R}^{-1}  $}
+So to get the inverse of a rotation you only need to transpose it.
+\subsection{Affine Transformations}
+All of the previously mentioned transformations have been {\bf affine} transformations. These are transformations which can be expressed as matric multiplication and addition: 
+
+\centerline{$ \bf y = Ax + b $} 
+
+For 2D, {\bf A} is a 2x2 matrix and {\bf b} a 2x1 vector.
+
+For 3D, {\bf A} is a 3x3 matrix and {\bf b} a 3x1 vector.  
+
+\section{Homogeneous Coordinates}
+\subsection{Defining Homogenous Coordinates}
+Representing the affine transformations can be done by moving from Cartesian to homogeneous coordinates.
+
+All 2D affine transformations can be then represented by a 3x3 matrix (or 4x4 for 3D)
+
+\centerline{$
+	\begin{bmatrix}
+		x \\ y
+	\end{bmatrix}
+	becomes
+	\begin{bmatrix}
+		x \\ y \\ 1
+	\end{bmatrix}
+$}
+
+\subsection{Affine Transformations as Homogeneous Coordinates}
+The extra dimension allows uniform treatment of transformations:
+
+Translation: $\begin{bmatrix}x' \\ y' \\ 1 \end{bmatrix}
+= \begin{bmatrix}1&0&d_x\\0&1&d_y\\0&0&1\end{bmatrix}
+\begin{bmatrix} x\\y\\1\end{bmatrix}$ 
+
+Scaling: $\begin{bmatrix}x'\\y'\\1\end{bmatrix}
+= \begin{bmatrix}s_x&0&0\\0&0&s_y\\0&0&1\end{bmatrix}
+\begin{bmatrix}x\\y\\1\end{bmatrix}$
+
+Rotation: $\begin{bmatrix}x'\\y'\\1\end{bmatrix}
+=\begin{bmatrix}\cos\theta&-\sin\theta&0\\
+		\sin\theta&\cos\theta&0\\
+		0&0&1\end{bmatrix}
+\begin{bmatrix} x\\y\\1	\end{bmatrix}$\\
+\vspace{2.5mm}
+\vspace{2.5mm}
+\\
+In general, any affine transformation:
+
+\centerline{$\bf y = Ax + b$}
+
+Can be expressed as:
+
+\centerline{$ \begin{bmatrix}y\\1\end{bmatrix}=
+	 \left[ \begin{array}{ccc|c}
+	 &{\bf A}&& {\bf b} \\ 0&...&0&1
+	\end{array} \right] 
+	\begin{bmatrix}
+	{\bf x}\\1
+	\end{bmatrix}
+$}
+
+{\bf Note:} Two homogeneous points are equal if they differ only by a scale factor.
+\end{document}
