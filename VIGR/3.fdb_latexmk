@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1541726833 "3.tex" "3.pdf" "3" 1541726834
+["pdflatex"] 1541808184 "3.tex" "3.pdf" "3" 1541808185
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1536122179 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1536122179 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1536122179 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -19,10 +19,13 @@
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1536122179 32080 340ef9bf63678554ee606688e7b5339d ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb" 1536122179 36554 b67dc2cfa451409e100b3fcf5f506509 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1536122179 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1536122179 36281 c355509802a035cadc5f15869451dcee ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1536122179 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1536122179 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1536122179 32362 179c33bbf43f19adbb3825bb4e36e57a ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1536122179 32762 224316ccc9ad3ca0423a14971cfa7fc1 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1536122179 32569 5e5ddc8df908dea60932f3c484a54c0d ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1536122179 32716 08e384dc442464e7285e891af9f45947 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1536122179 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1536122179 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/share/texmf-dist/tex/generic/oberdiek/etexcmds.sty" 1536122179 7612 729a8cc22a1ee0029997c7f74717ae05 ""
@@ -50,12 +53,14 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1536122179 33301 a3134070eacafb10b1f371612ce2650d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1541516452 2826764 0be41b089280ae2a0af0a0b4225f4618 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1540844794 7908120 59076eac273c290148d7792a0d8809f4 ""
-  "3.aux" 1541726833 746 03a22bffdfe7c89f0ee82a72589c7c10 ""
-  "3.tex" 1541726831 2882 454fb72252fa0367ccc6a3d260b829d3 ""
+  "3.aux" 1541808184 1306 d5a37f86eb1b130202051a13aee8b74d ""
+  "3.tex" 1541808183 6826 6f88d0d605ad94a4f8cc0e49ab13a569 ""
+  "3.toc" 1541808184 688 64693394131d239c35a2f1033e0cccb3 ""
   "images/ccd.png" 1541711839 38995 181824766a6ee465b708919ef19a4285 ""
   "images/ccdResponse1.png" 1541715064 103290 a7955df1f88f9072f701323200509ddd ""
   "images/ccdResponse2.png" 1541724904 77205 9d65708130bb97675008861c106028bc ""
   (generated)
+  "3.log"
   "3.pdf"
   "3.aux"
-  "3.log"
+  "3.toc"
