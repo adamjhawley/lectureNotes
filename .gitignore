@@ -1,0 +1,9 @@
+#pdflatex files#
+###############
+
+*.synctex.gz
+*.toc
+*.aux
+*fdb_latexmk
+*.fls
+*.log
