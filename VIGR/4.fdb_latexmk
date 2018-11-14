@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1542207442 "4.tex" "4.pdf" "4" 1542207443
+["pdflatex"] 1542214536 "4.tex" "4.pdf" "4" 1542214537
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1536122179 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1536122179 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1536122179 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -58,10 +58,12 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1536122179 33301 a3134070eacafb10b1f371612ce2650d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1541516452 2826764 0be41b089280ae2a0af0a0b4225f4618 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1540844794 7908120 59076eac273c290148d7792a0d8809f4 ""
-  "4.aux" 1542207443 871 d189eaeecfe8d2ebf3dd3c807137ad51 ""
-  "4.tex" 1542207442 6745 d94e42b7a36d2eafd62fe17002bfa5c2 ""
+  "4.aux" 1542214537 1120 f33b28a3e6c4054d2b1dfd258435bdd0 ""
+  "4.tex" 1542214534 7528 1849daa197e7ad640c2d34337393d37d ""
+  "4.toc" 1542214537 733 c0b1393e79555584027794a23ca701b4 ""
   "images/hdrweights.png" 1542206175 32787 72906a7d3f0bb98067cb4ddb9110848d ""
   (generated)
-  "4.aux"
   "4.log"
   "4.pdf"
+  "4.toc"
+  "4.aux"

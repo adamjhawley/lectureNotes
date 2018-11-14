@@ -2,11 +2,15 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \graphicspath{{./images/}}
-\begin{document}
 
+\begin{document}
 \author{Hawley, Adam}
 \title{Lecture 3: Photometric Image Formation\\Part 2}
+
 \maketitle
+\tableofcontents
+\newpage
+
 \section{Brightness}
 Light reaches the camera from a scene. 
 The amount of light arriving from the scene depends on what is in the scene (strength of light sources, reflectance properties of objects in the scene etc). 
@@ -141,8 +145,22 @@ To estimate the true radiance at every pixel we then simply take a weighted aver
 	\log(E_i) &= \frac{\Sigma^K_{j=1}\omega(H_{ij})(\log(H_{ij})-\log(t_j))}
 	{\Sigma^K_{j=1}\omega(H_{ij})}
 \end{align*}
-Saturated pixels are completely exluded. Radiance estimates for a pixel come from images where the exposure is appropriate for the scene radiance.
+Saturated pixels are completely excluded. Radiance estimates for a pixel come from images where the exposure is appropriate for the scene radiance.
 For colour images, separate channels can be processed independently.
 
+\section{Tonemapping}
+\subsection{Gamma Compression}
+{\it Gamma compression} is an effective global (same function applied to all pixels) technique.
+\begin{align*}
+	I_{tonemapped} = cE^\gamma
+\end{align*}
+\begin{itemize}
+	\item $c$ is a constant scaling where $c>0$.
+	\item $\gamma$ is a constant that determines the contrast of the image where $0<\gamma<1$.
+\end{itemize}
+\subsection{Gradient-based Techniques}
+The best techniques are local (output colour only depends on the local region around the pixel).
+Gradient-based techniques try to preserve local gradient with less concern about overall brightness.
+This means that they solve for a set of brightness values that minimises error in gradient while remaining between max and min allowable values.
 \end{document}
 
