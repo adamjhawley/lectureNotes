@@ -8,6 +8,8 @@
 \author{Adam Hawley}
 
 \maketitle
+\tableofcontents
+\newpage
 
 \section{Scenes \& Images --- The Basics}
 \subsection{Intro}
@@ -52,4 +54,35 @@ Stepping back, one can see that image production has four important properties, 
 	\label{fig:pinhole}
 \end{figure}
 The pinhole camera model allows us to use a simplified model of a camera as in figure \ref{fig:pinhole}.
+Properties of a pinhole camera:
+\begin{itemize}
+	\item Continuous sharpness of depth.
+	\item Very wide angle range.
+	\item Exact perspective projection.
+\end{itemize}
+{\bf Note:} Pinhole cameras can produce dark images because not enough light enters the camera.
+
+Methods to improve pinhole images:
+\begin{itemize}
+	\item Increase exposure time (however movement will blur the image).
+	\item Increase the size of the pinhole (spread of light causes blurring).
+	\item Use lenses to concentrate the light.
+\end{itemize}
+
+\subsection{Thin Lens Camera}
+Real images have lenses which collect light over a finite aperture controlling the amount of light received.
+Lenses are charactised by the focal distance $f$ that depends on {\it lens curvature} and {\it lens material}.
+
+{\bf Note:} we discuss single lenses however real cameras use a sequence of lenses.
+
+\section{The View Plane}
+The {\it View Plane} represents where the image is formed.
+
+In practice the view plane could be any of the following:
+\begin{itemize}
+	\item Photo-reactive chemicals.
+	\item Charge-Coupled Device (CCDs) or CMOS sensors.
+	\item Retina in the human eye.
+\end{itemize}
+
 \end{document}
