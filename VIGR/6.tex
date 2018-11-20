@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{./images/}}
+
+\author{Adam Hawley}
+\title{Lecture 6: Projections}
+
+\begin{document}
+
+\maketitle
+
+\section{Viewing Systems}
+In real life we pick up objects, position them and then view them.
+In computer graphics objects are positioned in a fixed frame.
+The viewer moves to the appropriate position in order to achieve the desired view.
+
+\section{Perspective Projections}
+We assume that there exists a {\it Centre of Projection} (COP).
+Objects' distances from the {\bf COP} cause the objects to appear larger or smaller on the intersecting viewplane. %EXAMPLE 
+
+Lines that are not parallel to the viewplane converge to a vanishing point. 
+The {\it Principal Vanishing Point} exists for lines that are parallel to the principal axis.  
+This can be clearly seen in the perspective projection of a cube, edges which are parallel to one another appear to converge. %NEEDS EXAMPLE 
+
+\section{Parallel/Orthographic Projections}
+Here the COP is {\bf always} at infinity.
+This means that the viewplane is aligned with the axes and the {\it Direction of Projection} (DOP)
+\end{document}
