@@ -26,4 +26,43 @@ This can be clearly seen in the perspective projection of a cube, edges which ar
 \section{Parallel/Orthographic Projections}
 Here the COP is {\bf always} at infinity.
 This means that the viewplane is aligned with the axes and the {\it Direction of Projection} (DOP)
+
+\section{View Reference Coordinate System}
+\subsection{Viewing Parameters}
+\begin{itemize}
+	\item Location of viewplane
+	\item Window within viewplane
+	\item Projection type
+	\item Projection reference point ({\bf prp})
+\end{itemize} 
+\subsection{Viewplane Parameters}
+\begin{itemize}
+	\item View Reference Point ({\bf vrp})
+	\item Viewplane Normal ({\bf vpn})
+	\item View Up Vector ({\bf vup})
+\end{itemize}
+\subsection{Window Parameters}
+\begin{itemize}
+	\item Width --- $u_{min}$ and $u_{max}$
+	\item Height --- $v_{min}$ and $v_{max}$
+\end{itemize}
+\subsection{Coordinate System in Different Projections}
+For {\bf Perspective} {\bf Projections} there is only one property:
+\begin{itemize} 
+	\item {\bf prp} becomes {\bf cop}
+\end{itemize}
+In {\bf Parallel} {\bf Projections} there are three properties:
+\begin{itemize}
+	\item {\bf cw} --- The center of window
+	\item {\bf dop} --- Direction of projection ({\bf cw} -- {\bf prp})
+	\item The projection is {\it Orthographic} if {\bf dop} and {\bf vpn} are parallel
+\end{itemize}
+
+\section{View Volumes for Graphics}
+The view volume for perspective projections is a truncated pyramid (frustrum) while the view volume for parallel perspective projections is a cuboid.
+The view volumes define a specific region of the scene which is viewed in the current image. 
+The view volume is defined by the clipping planes, the projection rays used by the projection system and by the image rectangle.
+They are sometimes used in graphics for visualisation such as creating smoke or mist defined only in a specific region of the scene.
+
+
 \end{document}
