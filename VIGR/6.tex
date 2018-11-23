@@ -9,6 +9,12 @@
 \begin{document}
 
 \maketitle
+Recommended Reading: 
+\begin{itemize}
+	\item Prince, Chapter 14 
+	\item Nielsen 3.3
+	\item Forsyth \& Ponce Chapters 1 and 3
+\end{itemize}
 
 \section{Viewing Systems}
 In real life we pick up objects, position them and then view them.
@@ -58,11 +64,113 @@ In {\bf Parallel} {\bf Projections} there are three properties:
 	\item The projection is {\it Orthographic} if {\bf dop} and {\bf vpn} are parallel
 \end{itemize}
 
-\section{View Volumes for Graphics}
+\subsection{View Volumes for Graphics}
 The view volume for perspective projections is a truncated pyramid (frustrum) while the view volume for parallel perspective projections is a cuboid.
 The view volumes define a specific region of the scene which is viewed in the current image. 
 The view volume is defined by the clipping planes, the projection rays used by the projection system and by the image rectangle.
 They are sometimes used in graphics for visualisation such as creating smoke or mist defined only in a specific region of the scene.
 
+\subsection{Focal Length in Perspective Projection}
+Focal length ($\phi$) is used for two things:
+\begin{itemize}
+	\item Modelling the effect of the distance to the focal plane
+	\item Modelling the density of the receptors (e.g. CCD pixels)
+\end{itemize}
 
+\begin{align*}
+	x = \frac{\phi u}{\omega} \quad  y = \frac{\phi v}{\omega}
+\end{align*}
+
+In practice, the receptors may not be square.
+If this case just use different focal length parameters for $x$ and $y$ dimensions:
+\begin{align*}
+	x = \frac{\phi_x u}{\omega} \quad  y = \frac{\phi_y v}{\omega}
+\end{align*}
+
+\subsection{Offset}
+Currently we assume that (0,0) is where the principal ray strikes the image plane however if this is not the case (and a different coordinate system is used e.g (0,0) in the top left corner) then one can use an offset ($\delta$) or a skew parameter ($\gamma$):
+\begin{align*}
+	x = \frac{\phi_x u + \gamma v}{\omega}+\delta_x \quad  y = \frac{\phi_y v}{\omega}+\delta_y
+\end{align*}
+\subsection{Intrinsic Parameters}
+The aforementioned focal lengths, skew and offset form the set of {\bf intrinsic} {\bf paramters}:
+\begin{align*}
+	{\phi_x, \phi_y, \gamma, \delta_x, \delta_y}
+\end{align*}
+It is convenient to store these in an {\bf intrinsic} {\bf matrix}:
+$
+\begin{bmatrix}
+	\phi_x & \gamma & \gamma_x \\
+	0 & \phi_y & \delta_y \\
+	0 & 0 & 1
+\end{bmatrix}
+$
+
+\subsection{Extrinsic Parameters}
+If the camera itself is not centered at the origin of the world coordinate system which is often the case. 
+If more than one camera is going to be used then it is very common for an arbitrary coordinates system to be used.
+To deal with this we express world coordinate points in the local coordinate system of the camera before they are passed to the projection model.
+\begin{align*}
+	\begin{bmatrix}
+		u' \\ v' \\ \omega'
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\omega_{11} & \omega_{12} & \omega_{13} \\
+		\omega_{21} & \omega_{22} & \omega_{23} \\
+		\omega_{31} & \omega_{32} & \omega_{33}
+	\end{bmatrix}
+	\begin{bmatrix}
+		u \\ v \\ \omega
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+		\tau_x \\ \tau_y \\ \tau_z
+	\end{bmatrix}
+\end{align*}
+\centerline{or}
+\begin{align*}
+	P' &= \Omega P + T
+\end{align*}
+\subsection{3D Transformations}
+{\bf $\Omega$} above is the product of 3D transformations where:
+\begin{align*}
+	\Omega &= R_xR_yR_z
+\end{align*}
+The same principles apply but now to 4D-homogeneous space.
+Rotation is still defined with respect to a specific axis:
+
+\bigskip
+\begin{center}$
+\begin{array}{l l}
+	\mbox{{\bf Axis}} & \mbox{{\bf Positive Direction}} \\
+	x & y \rightarrow z \\
+	y & z \rightarrow x \\
+	z & x \rightarrow y \\
+\end{array}$
+\end{center}
+
+\begin{align*}
+	R_z(\theta) &= 
+	\begin{bmatrix}
+		\cos\theta & -\sin\theta & 0 & 0 \\
+		\sin\theta & \cos\theta & 0 & 0 \\
+		0 & 0 & 1 & 0 \\
+		0 & 0 & 0 & 1 \\
+	\end{bmatrix} \\
+	R_x(\theta) &= 
+	\begin{bmatrix}
+		1 & 0 & 0 & 0 \\
+		0 & \cos\theta & -\sin\theta & 0 \\
+		0 & \sin\theta & \cos\theta & 0 \\
+		0 & 0 & 0 & 1 \\
+	\end{bmatrix} \\
+	R_y(\theta) &=
+	\begin{bmatrix}
+		\cos\theta & 0 & \sin\theta & 0 \\
+		0 & 1 & 0 & 0 \\
+		-\sin\theta & 0 & \cos\theta & 0 \\
+		0 & 0 & 0 & 1
+	\end{bmatrix}
+\end{align*}
 \end{document}
