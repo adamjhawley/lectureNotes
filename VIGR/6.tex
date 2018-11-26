@@ -100,7 +100,7 @@ The aforementioned focal lengths, skew and offset form the set of {\bf intrinsic
 It is convenient to store these in an {\bf intrinsic} {\bf matrix}:
 $
 \begin{bmatrix}
-	\phi_x & \gamma & \gamma_x \\
+	\phi_x & \gamma & \delta_x \\
 	0 & \phi_y & \delta_y \\
 	0 & 0 & 1
 \end{bmatrix}
@@ -172,5 +172,25 @@ Rotation is still defined with respect to a specific axis:
 		-\sin\theta & 0 & \cos\theta & 0 \\
 		0 & 0 & 0 & 1
 	\end{bmatrix}
+\end{align*}
+\subsection{Camera Calibration}
+How does one point in the scene relate to the observed point in the image.
+A 3D point of coordinates ($X,Y,Z$) from the scene is related to a 2D point ($u,v$) from the image by the equation:
+
+\begin{align*}
+\lambda \begin{bmatrix}x \\ y \\ 1\end{bmatrix}
+=
+\begin{bmatrix}
+	\phi_x & \gamma & \delta_x & 0\\
+	0 & \phi_y & \delta_y & 0\\
+	0 & 0 & 1 & 0
+\end{bmatrix}
+	\begin{bmatrix}
+		\omega_{11} & \omega_{12} & \omega_{13} & \tau_x \\
+		\omega_{21} & \omega_{22} & \omega_{23} & \tau_y \\
+		\omega_{31} & \omega_{32} & \omega_{33} & \tau_z \\
+		0 & 0 & 0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}u \\ v \\ w \\ 1	\end{bmatrix}
 \end{align*}
 \end{document}
