@@ -1,0 +1,227 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\title{Lecture 10: Light \& Reflectance}
+\author{Adam Hawley}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Light and Reflectance}
+Images are produced by light falling on a camera sensor:
+\begin{itemize}
+	\item The light must come from somewhere
+	\item It may be reflected from surfaces before it reaches the camera
+\end{itemize}
+
+Hence we need models of:
+\begin{itemize}
+	\item Light sources
+	\item Reflectance of light from surfaces
+\end{itemize}
+
+Illuminating a surface gives rise to shading --- very important for realism and the perception of 3D shape.
+
+\section{Importance of Shading}
+
+We perceive curved surfaces through their shading patterns.
+Shading arises when we add a light source to our scene and employ a reflectance model.
+
+\section{Image Formation Process}
+Factors that affect the amount of light reflected towards us:
+\begin{itemize}
+	\item Object shape and in particular the angle of the surface; if the surface is perpendicular to the light from the source it is more likely to reflect light.
+	\item Different materials; some materials can give very different reflections of light such as a snooker ball which gives one small concentration of bright reflection compared with velvet which gives a much more even amount of light reflected in a bigger region.
+	\item Illumination conditions
+	\item Viewpoint/direction, camera parameters.
+\end{itemize}
+
+The surface ``reflectance properties'' of an object are described by a {\bf reflectance} {\bf model} (or illumination model). 
+
+\section{Distant Vs. Local Illumination}
+\subsection{Distant Illumination}
+Light sources which are very far away (e.g the sun) are often assumed to be at an infinite distance.
+This allows for two simplifications:
+\begin{itemize}
+	\item Direct constant within scene
+	\item No attenuation
+\end{itemize}
+\subsection{Local Illumination}
+Light sources situated within the scene (local) are more complex:
+\begin{itemize}
+	\item Direction varies within the scene
+	\item Objects closer to the source are illuminated more strongly than those futher away (there is greater {\textbf {\textit {light source attenuation}}})
+\end{itemize}
+
+\section{Light Source Attenuation}
+The physically correct model for attenuation of a light source follows the classical one over distance squared form:
+\begin{align*}
+	f_{att} = \frac{1}{d^2_L}
+\end{align*}
+Where $d_L$ is the distance to the light source.
+
+Even though this is physically correct, this sometimes gives too severe a fall off to be used in graphics.
+For this reason, alternative functions are sometimes used.
+For example:
+\begin{align*}
+	f_{att} = \frac{1}{d_L}
+\end{align*}
+
+\section{Point Sources and Spotlights}
+The simplest light source type is a {\bf point source}.
+Characterised by a 3D location (local) or 3D direction vector (distant) and an intensity or colour.
+Sometimes the intensity of a distant light source is encoded in the length of the direction vector.
+
+A {\bf spotlight} is a point source that only emits light in a constrained cone of angles.
+For example: studio ``barn door'' type spotlights.
+
+\section{Ambient \& Distributed Sources}
+{\bf Ambient light} is light that arrives equally from all directions.
+This makes it a good model for a cloudy day.
+It also leads to very {\it flat} images which lack shading.
+
+{\bf Distributed sources} emit light from an area.
+This means that regions may be illuminated by part of the source.
+It leads to soft shadows: penumbra around shadowed regions.
+
+\section{Environment Maps}
+In reality, light arrives at a point from all directions.
+One useful approximation iss a spherical {\bf environment map}.
+Each pixel is like a distant point source with its own direction and colour.
+
+%CHECK LECTURE TO SEE WHAT WE NEED TO KNOW ABOUT THE RENDERING EQUATION
+\section {The Reflectance Equation}
+See slides.
+
+\section{Local Vs. Global Reflectance}
+In practice, light bounces off surfaces onto other surfaces (perhaps many times) before reaching our eye.
+If it didn't, then any surface  not directly illuminated would be invisible.
+Light reflecting from one surface to another is called {\bf interreflection}.
+In this lecture, we consider only {\bf local models of reflectance}.
+In this case, we treat each point separately and only consider illumination coming directly from a light source.
+
+\section{Reflectance Models}
+Designing realistic reflectance models is a large part of current computer graphics research.
+Many materials have complex reflectance properties:
+\begin{itemize}
+	\item Human skin
+	\item Fur
+	\item Velvet
+	\item Hair
+	\item Brushed metals
+	\item The underside of a CD!
+\end{itemize}
+A reflectance model describes what happens when light from a certain direction strikes a surface.
+When this happens light may be:
+\begin{itemize}
+	\item Absorbed (As on a \textbf{Translucent Surface})
+	\item Scattered (As on a \textbf{Diffuse Surface})
+	\item Reflected (As on a \textbf{Specular Surface})
+	\item Transmitted into the surface
+\end{itemize}
+Or any combination of the above.
+
+Almost all surface reflectance models are of the form:
+\begin{align*}
+	I = f(n,s,v,P)
+\end{align*}
+Where $n,s,v$ are the three unit vectors describing direction: \textbf{n} - surface normal, \textbf{s} - light source \& \textbf{v} - viewer.
+$P$ generalises some other parmeters describing the material properties of the surface.
+
+\subsection{Ambient Reflection Model}
+The simplest reflectance model assumes completely ambient illumination:
+\begin{align*}
+I = L_ak_a
+\end{align*}
+Where $L_a$ is the strength of the light source and $k_a$ is the ambient coefficient ($0<k_a\leq1).$
+$k_a$ is our first example of a material property.
+In genereal, we will have a value for each of the RGB channels.
+
+This simple ambient model is not realistic.
+It is generally added to models because graphics programmers noticed their models looked too dark otherwise and the shading drop off at the edge of objects was too drastic.
+It ignores the fact that parts of an object may occlude others, reducing the amount of ambient light that reaches the surface.
+
+(We will see a better model for ambient reflectance later)
+
+\subsection{The Lambertian Reflection Model}
+The simples model which accounts for changes in intensity due to changes in surfaqce orientatin is the \textbf{Lambertian Model}.
+This is based on the idea of a \textbf{perfecttly diffuse reflector}.
+The assumption is that if the surface is macroscopically rough, light will be scattered equally in all directions.
+Similarly, it may be that the light which enters the surface is scattered internally and re-emerges completely diffused.
+This model is good for materials like paper and chalk.
+
+Where the angle between surface normal and light source, $\theta_i$, is the \textbf{angle of incidence}, the Lambertian intensity is simply:
+\begin{align*}
+	I = L_dk_d\cos(\theta_i)
+\end{align*}
+Or in terms of vectors:
+\begin{align*}
+	I = L_dk_d(\textbf{n}\cdot\textbf{s})
+\end{align*}
+Note: there is no \textbf{v} since diffuse reflection is independant of viewing direction.
+In general, we assume that the light source is distant and hence that $L$ is constant over the entire image.
+
+\subsection{Specular Reflection \romannumeral1: The Phong Model}
+The Lambertian model gives a dull, matte appearance.
+Many real surfaces are macroscopically smooth and appear shiny.
+Reflection from these sorts of surfaces is known as specular reflectance.
+A perfect specualor reflector only reflects light in the direction \textbf{r}.
+Imperfect specular reflectors reflect light into a range of directions around \textbf{r}.
+So strength of specular reflectance is determined by andle \textbf{r} and \textbf{v}.
+\textbf{r} is the reflection of \textbf{s} about \textbf{n}.
+So \textbf{r}, \textbf{s} and \textbf{n} lie in the same plane.
+\textbf{r} can be found from \textbf{s} and \textbf{n}: 
+\begin{align*}
+	\textbf{r} = 2(\textbf{n}\cdot\textbf{s})\textbf{n})-\textbf{s}
+\end{align*}
+The Phong specular model is a simple phenomenological model of specular reflectance for non-perfect reflectors.
+The maximum reflectance is observed when $\theta_{spec} = 0$ where $\theta_{spec}$ is the angle between \textbf{r} and \textbf{v}.
+Rapid fall-off is determined by the \textbf{shininess coefficient}, $\eta$.
+The specular term is therefore given by:
+\begin{align*}
+	I &= L_sk_s\cos^{\eta}\theta_{spec} \\
+	I &= L_sk_s(\textbf{r}\cdot\textbf{v})^\eta
+\end{align*}
+
+\subsection{Specular Reflection \romannumeral2: The Blinn-Phong Model}
+A problem with computing the perfect reflection direction, \textbf{r}, is that \textbf{n} is different for every point on the surface, so we must recompute \textbf{r} for every polygon --- very slow.
+There is a common simplification known as the \textbf{\textit{Blinn-Phong Model}}.
+Instead of \textbf{r}, use aa vector halfway between the viewer and the light source.
+Since we assume \textbf{s} is distant, it is fixed over the image so we only need to calculate \textbf{h} once per image:
+\begin{align*}
+	\textbf{h} = \frac{\textbf{s} + \textbf{v}}{\|\textbf{s} + \textbf{v}\|}
+\end{align*}
+If \textbf{n}=\textbf{h}, we have perfect specular direction.
+
+\subsection{The Complete Phong Model}
+The full Phong model is simply the sum of the ambient, diffuse and specular terms, summing over all lights:
+\begin{align*}
+	I = k_aL_a + \sum_{lights}(k_d(\textbf{n$\cdot$s})L_d + k_s(\textbf{n$\cdot$h)}^{\eta}L_s)
+\end{align*}
+
+\section{Colour in Reflectance Models}
+In all of the reflectance model equations given so far, material properties (ambient, diffuse, specular coefficients and shininess) are \textbf{wavelength dependent}.
+The strength of the light source is also wavelength dependent (i.e light source has a colour).
+Some of the latest reflectance models evaluate intensity over the whole visible spectrum.
+In practice, we provide RGB values for light sources and ambient, diffuse and specular coefficients.
+Often:
+\begin{itemize}
+	\item Ambient RGB = Diffuse RGB (Object Colour)
+	\item Specular RGB = White
+\end{itemize}
+
+\section{Summary}
+What you should know:
+\begin{itemize}
+	\item Types of light source
+	\item The rendering equation
+	\item Local reflectance models
+	\item The Phong model: Ambient, diffuse and specular reflectance
+\end{itemize}
+
+\end{document}

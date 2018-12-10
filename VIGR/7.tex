@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\author{Adam Hawley}
+\title{Lecture 7: Multiple View Vision}
+
+\begin{document}
+\maketitle
+
+\section{Epipolar Geometry}
+Considering two pinhole cameras with different projection centres, in order to relate the two images one can use {\it Epipolar Geometry}.
+
+\begin{itemize}
+	\item $p_l$ \& $p_r$ are the vectors from the centres of projections $O_l$ in the left and $O_r$ in the right image to the corresponding projections $P_l$ \& $P_r$ of the same 3D point $P$.
+	\item $h_l$ \& $h_r$ are called {\bf epipolar lines} --- they are located at the interection between the image plane and the plane formed by the points P, $O_l$ \& $O_r$.
+		Each point P will have an epipolar line in each image plane.
+	\item $e_i$ \& $e_r$ are epipoles representing the intersection points of $O_l O_r$ with the left and right image planes.
+		They may be located outside the actual images.
+\end{itemize}
+
+
+To estimate the epipolar geometry, determine the mapping between corresponding points in the two images.
+\begin{align*}
+	p_r &= Rp_l + t \\
+	O_lO_r &= t
+\end{align*}
+The left and right images are connected by means of a matrix representing rotation {\bf R} in the plane $PO_lO_r$ and translation {\bf t}.  
+
+\end{document}
+

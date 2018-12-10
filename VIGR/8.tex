@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\author{Adam Hawley}
+\title{Lecture 8: Colour Perception}
+
+\begin{document}
+
+\maketitle
+
+\section{The Light Spectrum}
+\subsection{Visible Light}
+Radiation in nature is characterised by wavelength and frequency.
+Visible light has a very narrow wavelength range of 350nm - 780nm (neighbouring to ultraviolet and infrared respectively).
+
+\subsection{Visualising Other Spectra}
+In order to visualise other spectra, we can use the appropriate sensors and lenses.
+For example, visualising infrared radiation has many uses including security and medicine.
+
+Most of the time, we use {\it true colour} to represent radiation as it is what we use in photographs.
+However, when visualising other spectra which are not within the reach of true colour, one can use {\it pseudocolour} or {\it greylevel mapping} to represent the radiation.
+\begin{itemize}
+	\item {\bf Pseudocolour} is when the image uses colours re-assigned according to an LUT or function.
+	\item Similarly, {\bf greylevel mapping} represents the radiation using a function however the product of this function represents a grey level value and no colours are involved.
+\end{itemize}
+
+\section{Hyperspectral Images}
+\subsection{What Are Hyperspectral Images?}
+A {\it hyperspectral image} associates a vecttor of various wavelengths to a pixel.
+This results in volumetric images where one of the dimensions is the wavelength (spectral dimension).
+The information in each pixel depends on the capacity of the corresponding object surface to absorb and reflect radiation of that specific wavelength.
+
+Hyperspectral imaging collects and processes information from a large range of wavelengths using specific sensors. %INCLUDE GRAPHIC
+
+\subsection{Appplications}
+Hyperspectral imaging can be used for a number of things:
+\begin{itemize}
+	\item Identification of materials by measuring their spectral absorption and reflectance.
+	\item Discovery of natural resources by using ground-penetrating images taken from aeroplanes and satellites.
+	\item Discovery of concealed objects
+	\item Assessing the quality of fruit and vegetables
+\end{itemize}
+
+\section{Illumination}
+Light sources are characterised by their own spectral range $[\lambda_1-\lambda_2]$.
+The spectral range interacts with scene colours which means that the output in the image depends on the light spectral range of the light source.
+For example, consider the difference between some photos with and without a flash or at different times of day.
+
+\section{CIE Colour Model}
+\subsection{Outlining the CIE}
+{\bf Commision Internatinal de l'Eclairage} (CIE).
+Three standard primaries $x,y,z$ for representing all colours perceived by humans.
+
+Where {\bf C} is a colour to be matched: 
+\begin{align*}
+	{\bf C} = X.{\bf X} + Y.{\bf Y} + Z.{\bf Z} 
+\end{align*}
+This can be thought of as a 3D space.
+Chromacity values depend on dominant wavelength and saturation (not the luminance) through normalising ($X,Y,Z$):
+\begin{align*}
+	x &= \frac{X}{X+Y+Z} & y &= \frac{Y}{X+Y+Z} & z &= \frac{Z}{X+Y+Z}
+\end{align*}
+Since $x + y + z = 1$ we only need ($x,y$) to specify the chromactiy value, if we want the luminance information then we just need ($x,y$) and $Y$ since:
+\begin{align*}
+	X &= \frac{x}{y}Y & Z &= \frac{1-x-y}{y}Y
+\end{align*}
+
+Aspects of the chromacity diagram:
+\begin{itemize}
+	\item Interior corresponds to visible colours
+	\item Pure colours appear along the curve
+	\item {\bf Illuminant C} is considered to be `standard daylight'  
+	\item Luminance dependent colours do not appear (e.g brown) 
+\end{itemize}
+
+\subsection{Selecting Colours Using the CIE}
+The diagram allows us to determine the dominant wavelength and {\it excitiation purity} of light:
+\begin{enumerate}
+	\item Match colour A using the 3 CIE primaries
+	\item Plot the position in the CIE chromacity diagram
+	\item The mix of two colours lie on a straight line between them
+\end{enumerate}
+
+Complementay are those that can be mixed to yield white light.
+Colours which have no dominant wave-length are referred to as non-spectral.
+
+\end{document}
