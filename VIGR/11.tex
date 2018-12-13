@@ -8,6 +8,8 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
+\newpage
 
 \section{Human Shape-from-Shading}
 Humans can perform shape-from-shading well.
@@ -161,4 +163,55 @@ S =
 		s^T_k
 	\end{bmatrix}
 \end{align*}
+We form a vector of the image intensities over the k images:
+\begin{align*}
+	I = 
+	\begin{bmatrix}
+		I_1 \\ 
+		\vdots \\
+		I_k
+	\end{bmatrix}
+\end{align*}
+
+Then we minimise the following quantity:
+\begin{align*}
+	\|\textbf{I}-\textbf{SN}\|^2
+\end{align*}
+The vecot of unknowns \textbf{N} contains the surface normal scaled by the diffuse coefficients.
+We can solve for \textbf{N} using the \textit{pseudoinverse} of \textbf{S}:
+\begin{align*}
+	\textbf{N} = \textbf{S}^+\textbf{I}=(\textbf{S}^T\textbf{S})^{-1}\textbf{S}^T\textbf{I}
+\end{align*}
+For both the k image and 3 image version, we can separate out the normal and diffuse coefficient:
+\begin{align*}
+	k_d &= \|\textbf{N}\| & \textbf{n}=\frac{\textbf{N}}{\|\textbf{N}\|}
+\end{align*}
+
+\subsection{Summary of Photometric Stereo}
+Weaknesses:
+\begin{itemize}
+	\item Strong assumptions:
+		\begin{itemize}
+			\item Lambertian Reflectance, specularities not modelled
+			\item Single point source lights (known directions)
+			\item No shadowing
+		\end{itemize}
+	\item Estimates normals, not full 3D surface
+	\item Photometric stereo requires multipple images with no motion
+\end{itemize}
+Strengths:
+\begin{itemize}
+	\item Simplicity (linear model of image formation, geometric cone interpretation)
+	\item Dense shape estimate (normal for every pixel in the image)
+	\item Photometric stereo estimates both albedo and shappe, allowing \textbf{relighting} (rendering with novel light source directions)
+\end{itemize}
+
+\section{Conclusions}
+What you should know:
+\begin{itemize}
+	\item What shape from shading is
+	\item Lambertian reflectance = cone constraint
+	\item Worthington and Hancock algorithm
+	\item Photometric stereo
+\end{itemize}
 \end{document}
