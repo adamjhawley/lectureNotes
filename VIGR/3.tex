@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{wrapfig}
 \graphicspath{{./images/}}
@@ -17,7 +18,7 @@ There are many different types of sensors used in computer vision:
 	\begin{itemize} \item CCD, Photodiodes, Photomultipliers \end{itemize}
 	\item Infra-red (thermal imaging cameras)
 	\begin{itemize} \item CCD (Cooled), Photodiodes \end{itemize}
-	\item Synthetic Aperture Radaaar (SAR)
+	\item Synthetic Aperture Radar (SAR)
 	\begin{itemize} \item Radar, Antenna \end{itemize}
 	\item Range Sensors
 	\begin{itemize} \item Laser \& Photodiode \end{itemize}
@@ -33,7 +34,7 @@ There are many different types of sensors used in computer vision:
 	\item {\textit{\textbf {Radiance}}}: power travelling from a source (power per unit solid angle per unit projected source area).
 \end{itemize}
 \subsection{Charge-Coupled Devices}
-The most common devixe for digitising image information is a charge-coupled device (CCD). 
+The most common device for digitising image information is a charge-coupled device (CCD). 
 They are made up of a square array of solid-state capacitors: \\
 \begin{figure}[htbp]
 	\centering
@@ -42,7 +43,7 @@ They are made up of a square array of solid-state capacitors: \\
 	\label{fig:CCD}
 \end{figure} \\
 From the photo-electric effect photons of light knock out electrons from the upper plate and hence charge accumulates in the electron capture ``{\it wells}".
-Using a shift register, capacitors tranfer their contents to the appropriate neighbour.
+Using a shift register, capacitors transfer their contents to the appropriate neighbour.
 The final capacitor dumps the charge for each capacitor into the analogue-digital converter (ADC).
 The dump happens once for each capacitor until the contents of each one has been read. \\
 \begin{figure}
@@ -59,11 +60,11 @@ The ideal reading from a CCD would be as simple as ``$output = gain\cdot input$"
 	\caption{Typical response of a CCD}
 	\label{fig:ccdResponse2}
 \end{figure}
-However, a typical reading from a CCD also includes bias and noise (as can be seen in \ref{fig:ccdResponse2}.
+However, a typical reading from a CCD also includes bias and noise (as can be seen in figure \ref{fig:ccdResponse2}).
 (``$output = gain \cdot input + bias + noise$'')
 The noise mostly comes from the following sources:
 \begin{itemize}
-	\item Dark Cuttent - Thermal noise.
+	\item Dark Current - Thermal noise.
 	\item Photon Noise - Quantum noise.
 	\item Quantisation of pixels.
 	\item Amplifier
@@ -71,15 +72,16 @@ The noise mostly comes from the following sources:
 \newpage
 \section{Saturation}
 The electron capture wells inside the CCD have a finite capacity $\approx 700 \epsilon ^-/\mu m^2$.
-That means that there is roughly a maximum of 100,000 $e^-$ per well in a typicall CCD.
+That means that there is roughly a maximum of 100,000 $e^-$ per well in a typical CCD.
 When a well is full, the pixel is said to be saturated.
 CCDs have a small illumination range (this is what {\it HDR imaging} attempts to overcome).
 In an 8-bit image, a pixel brightness of 255 indicates saturation.
 \section{Noise}
 \subsection{Signal to Noise Ratio}
 The level of noise relative to the signal strength is measured by the {\it signal to noise ratio}. This is often expressed in Decibels (10 times the logarithm of the ratio):
-
-\centerline{$SNR (dB) = 10\log _{10}\frac{signal power}{noise power}$}
+\begin{align*}
+SNR (dB) = 10\log _{10}\frac{signal power}{noise power}
+\end{align*}
 
 10dB is a tenfold increase in power, 3dB is a doubling of signal power.
 
@@ -97,18 +99,20 @@ The level of noise relative to the signal strength is measured by the {\it signa
 		\end{itemize}
 \end{itemize}
 Note: At mid-brightness levels the {\it Signal to Noise Ratio}(SNR) for photon noise is around 23dB.
+
 \subsection{Dark Current}
 {\it Dark Current} is a product of thermal energy from within the CCD.
-Electrons are displaced over time that are independant of light actually falling on the sensor (therefore this effect builds up with exposure).
+Electrons are displaced over time that are independent of light actually falling on the sensor (therefore this effect builds up with exposure).
 The effect also obviously increases at higher environmental temperatures.
 The manufacturing process means certain electron wells may have higher than average dark current ({\it hot pixels}).
-{\it Dark fram subtraction} can be used to remove an estimate of the mean pattern of dark current.
+{\it Dark frame subtraction} can be used to remove an estimate of the mean pattern of dark current.
 However, dark current is also random and hence why it still affects CCD readings.
 The randomness of the dark current follows the Poisson distribution just as the photon noise did.
 
 Dark current can be easily shown by taking a picture in complete darkness and inspecting the images to see that it is unlikely that all the pixels will be of absolute darkness.
 
 The SNR for dark current in mid-light levels is approximately 38dB.
+
 \subsection{Quantisation noise}
 Pixels in photos are digitised to $2^B$ levels. There is a uniformly distributed error on values of $\pm\frac{1}{2}$. This distribution leads to the following properties:
 \begin{itemize}
@@ -131,4 +135,22 @@ To get colour when using a CCD, there are three options:
 		The colours must be interpolated (the process of {\it demosaicing}).
 		This method also reduces the effective resolution of the CCD.
 \end{enumerate}
+
+\section{Conclusions}
+\begin{itemize}
+	\item Measuring a colour image digitally is difficult
+	\item CCDs are generally the best choice
+	\item There are many sources of noise, namely:
+		\begin{itemize}
+			\item Photon noise
+			\item Dark current
+			\item Quantisation noise
+		\end{itemize}
+	\item No easy way to capture colour with a CCD
+	\item Most common option is a Bayer mosaic
+		\begin{itemize}
+			\item But this definitely introduces artefacts
+			\item (in fact --- these can be used to detect forgeries)
+		\end{itemize}
+\end{itemize}
 \end{document}
