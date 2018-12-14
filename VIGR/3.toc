@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Types of Sensor}{2}
+\contentsline {section}{\numberline {2}From Light to Images}{2}
+\contentsline {subsection}{\numberline {2.1}Definitions}{2}
+\contentsline {subsection}{\numberline {2.2}Charge-Coupled Devices}{2}
+\contentsline {section}{\numberline {3}Saturation}{5}
+\contentsline {section}{\numberline {4}Noise}{5}
+\contentsline {subsection}{\numberline {4.1}Signal to Noise Ratio}{5}
+\contentsline {subsection}{\numberline {4.2}Photon Noise (Shot noise)}{5}
+\contentsline {subsection}{\numberline {4.3}Dark Current}{5}
+\contentsline {subsection}{\numberline {4.4}Quantisation noise}{6}
+\contentsline {section}{\numberline {5}CCDs and Colour}{6}
+\contentsline {section}{\numberline {6}Conclusions}{6}

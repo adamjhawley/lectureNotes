@@ -1,0 +1,42 @@
+\documentclass{article}
+
+\author{Adam Hawley}
+\title{Lecture 12: Image Filtering}
+
+\begin{document}
+\maketitle
+Recommended reading:
+\begin{itemize}
+	\item Forsyth \& Ponce Chapter 7
+\end{itemize}
+
+\section{Intoduction: Images as Functions}
+An image can be seen as a function which is discretised and quantised to [0-255] levels.
+%INSERT EXAMPLE
+The function depends on the scene represented, light properties, image acquisition and so on.
+
+\section{Image Subsampling}
+Image subsampling consists of removing rows and columns from the image.
+
+Noise is often lost through subsampling because noise is pixel values that are vastly different to their neighbours which do not represent small details.
+These pixels are removed through subsampling.
+This method is used commonly in deep learning and neural networks because large images require high levels of processing power and time.
+
+When you zoom in on subsampled images, blurring is created, features related to noise and small details are lost.
+This is because when you zoom in, pixels are duplicated to fill the new pixels which come from the increase in size.
+
+\section{Image Interpolation}
+\subsection{What is Image Interpolation?}
+A better method for restoring the original image after subsampling is to use \textbf{image interpolation}.
+\textbf{Image interpolation} uses neighbouring pixels to estimate the original pixel value between the neighbours.
+
+\subsection{How is it done?}
+The simples example would be to replicate a neighbouring pixel.
+However, this is the same as zooming in on the image.
+Instead it can be better to take an average of the neighbouring pixels.
+\begin{itemize}
+	\item \textbf{Bilinear interpolation} considers a weighted average of a 4x4 pixel neighbourhood.
+	\item \textbf{Bicubic interpolation} considers a weighted average of an 8x8 pixel neighbourhood.
+\end{itemize}
+
+\end{document}
