@@ -1,0 +1,22 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\author{Adam Hawley}
+\title{Lecture 13: Drawing Lines \& Detecting Edges}
+
+\begin{document}
+\maketitle
+
+\section{Pixels}
+The pixel space is a rectangle on the $x,y$ plane, bounded by $0\le x\le x_{max}$ and $0\le y\le y_{max}$
+Each axis is divided into an integer number of pixels, $N_x$ and $N_y$. The pixels therefore have width and height:
+\begin{align*}
+	W &= \frac{x_{max}}{N_x} \\
+	H &= \frac{y_{max}}{N_y}
+\end{align*}
+
+Pixels are reffered to using integer coordinates, that either refer to the locatin of their left hand corners or their centres.
+Knowing the $W$ and $H$ values allows the pixel to be defined.
+Assuming that $W$ and $H$ are equal, the pixels are square.
+\end{document}
