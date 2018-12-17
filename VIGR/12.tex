@@ -1,5 +1,9 @@
 \documentclass{article}
 
+\usepackage{amsmath}
+
+\newcommand{\ninth}{\frac{1}{9}}
+
 \author{Adam Hawley}
 \title{Lecture 12: Image Filtering}
 
@@ -36,7 +40,112 @@ However, this is the same as zooming in on the image.
 Instead it can be better to take an average of the neighbouring pixels.
 \begin{itemize}
 	\item \textbf{Bilinear interpolation} considers a weighted average of a 4x4 pixel neighbourhood.
-	\item \textbf{Bicubic interpolation} considers a weighted average of an 8x8 pixel neighbourhood.
+	\item \textbf{Bicubic interpolation} considers a weighted average of an 8x8 pixel neighbourhood. 
+	\item \textbf{Adaptive interpolation} depends on image context.
 \end{itemize}
+
+\section{Image Convolution}
+\textbf{Image convulation} uses a window of a neighbourhood.
+Kernel $w(x,y)$ with values for each window element.
+Calculates the output using the following formula:
+\begin{align*}
+	g(x,y) = \sum^K_{s=-K}\sum^K_{t=-K}w(s,t)f(x+s,y+t)
+\end{align*}
+Applying this formula assigns the output to the central element of the $2K+1 \times 2K+1$ window.
+Afterwards, the centre moves to the next neighbourhood according to the following:
+\begin{align*}
+	s &= 1,..., image\_width-1 \\
+	t &= 1,..., image\_height-1
+\end{align*}
+
+\section{Applications of Image Convolution}
+\begin{itemize}
+	\item Filtering for removing noise
+	\item Sharpening images and image features such as object edges and texture
+	\item Producing graphical artistic effects in images for \textit{softening} and \textit{sharpening} images, ``fire'' effects and embossing images.
+	\item Colouring images as vectors.
+\end{itemize}
+
+\section{Image Filtering}
+Image filtering can be usually applied simply by convolution with a filter mask.
+
+\subsection{The Mean (Averaging) Filter}
+Consider the convolution of an image with the follwing kernal for a $3 \times 3$ window:
+\smallskip
+\centerline{$
+\begin{bmatrix}
+	\ninth & \ninth & \ninth \\
+	\ninth & \ninth & \ninth \\
+	\ninth & \ninth & \ninth
+\end{bmatrix}
+$}
+The output is the average of the 9 pixels.
+This results in the removal of noise but also blurring of the image.
+
+\subsection{Gaussian Filter}
+The Gaussian filter represents a weighted averaging filter, where the weights are higher in the central region of the window according to the Gaussian equation:
+\begin{align*}
+G(x,y) = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
+\end{align*}
+Note: in graphics, $G$ is discretly approximated. 
+
+\section{Image Noise}
+Noise occurs naturally in images due to the camera sensors --- increase camera sensitivity (ISO) --- increase noise.
+Noise can be removed by filtering.
+
+\medskip
+\begin{align*}
+	\hat{f}(x,y) = f(x,y) + n(x,y)
+\end{align*}
+Where $\hat{f}$ is the noisy image, $f$ is the original image and $n$ is the noise itselve.
+We can test various filters by artificially adding noise to the image and filtering it afterwards.
+\subsection{The Mean  Filter}
+Images are invariably noisy --- for example when increasing ISO we achieve better detail and better night images --- but also it adds noise to images.
+
+Averaging corresponds to a low pass filter and removes some of the noise by smoothing.
+On the other hand averaging filters lead to blurring and can remove small details.
+It is also very effective in temporal image sequences.
+
+Problems with the mean filter:
+\begin{itemize}
+	\item Blurs edges and details in the image
+	\item Not effective for impule noise (\textit{Salt-and-Pepper})
+\end{itemize}
+
+\textbf{\textit{Salt-and-Pepper Noise}}:\\
+Add extreme values to the image of black (0) and white (255) according to a certain percentage.
+
+\subsection{Median Filter}
+The \textbf{median filter} ranks the data inside the window and picks the middle value.
+
+Note: since the median filter simply takes the middle value of the window, it does not need to be a square image.
+
+\section{Rank Order Statistics Filters}
+Rank order statistics filters rank the values from the window and pick the value of a certain rank.
+The most common rank order statistics filters used are minimum and maximum filters --- these can be used for segmenting the image. 
+(See section \ref{maxmin})
+
+\section{Maximum \& Minimum Filters} \label{maxmin}
+\subsection{Maximum Filter}
+The max filter takes the maximum value in the neighbourhood.
+This has the effect of enhancing bright areas.
+
+\subsection{Minimum Filter}
+The min filter takes the minimum value in the neighbourhood.
+This has the effect of introducing darkness in the image.
+
+\section{Conclusions}
+What you need to know:
+\begin{itemize}
+	\item Image interpolation
+	\item Image convolution
+	\item Image neighbourhoods
+	\item Mean filter
+	\item Median filter
+	\item Gaussian and salt-and-pepper noise
+	\item Min and max filters
+\end{itemize}
+
+
 
 \end{document}
