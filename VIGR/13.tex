@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{amsmath}
+\usepackage{gensymb}
 
 \author{Adam Hawley}
 \title{Lecture 13: Drawing Lines \& Detecting Edges}
@@ -19,4 +20,76 @@ Each axis is divided into an integer number of pixels, $N_x$ and $N_y$. The pixe
 Pixels are reffered to using integer coordinates, that either refer to the locatin of their left hand corners or their centres.
 Knowing the $W$ and $H$ values allows the pixel to be defined.
 Assuming that $W$ and $H$ are equal, the pixels are square.
+
+\section{Line Rastersation}
+Straight lines are described by the equation:
+\begin{align*}
+y = mx + c
+\end{align*}
+
+To draw a line we have to vary $x$ between a given range of values and compute a point $y$ at each location according to the line equation.
+{\bf Rasterisation} is the process of converting the drawing to pixels in images (also called scan conversion).
+
+\section{The Digital Differential Analyser Algorithm}
+The Digital Differential Analyser Algorithm (DDA) is an algorithm used to do line rasterisation.
+Assuming that we have two endpoints:
+\begin{align*}
+ p_0 &= (x_0,y_0) 
+     &p_1 = (x_1,y_1)
+\end{align*}
+The point of intersection is given by the line rule where:
+\begin{align*}
+	m = \frac{y_1-y_0}{x_1-x_0}
+\end{align*}
+We can consider a point ($x,y$) on the line and then the next point is ($x+1,y+m$) when the line is drawn to the right.
+
+The drawback of the DDA is that it uses folat and rounding operations for each point which require increased computational power.
+
+\section{Bresenham's Algorithm}
+The DDA algorithm needs to carry out a floating point addition and a rounding operaiton for every iteration.
+Bresenham's algorithm operates only on integers requiriing only that the start ad end points of a line segment are rounded.
+
+Firstly assuming that $0\le m \le 1$ and pixel ($i,j$) is the current pixel.
+The value of $y$ on the line $x=i+1$ must lie between $j$ and $j+1$.
+Because the gradient is in the range 0-$45\degree$ the next pixel must be either East ($i+1,j$) or North East ($i+1,j+1$).
+We should also assume that pixels are identified by their centres.
+
+At this point, we have a decision problem, and so must find a decision variable that can be tested to determine which pixel to colour.
+First rewrite the equation of a straight line:
+\begin{align*}
+	y = mx + &c \\
+	mx - y + c &= 0 \\
+	\frac{\Delta y}{\Delta x} x - y + c &= 0 \\
+	F(x,y) = x \Delta y - y\Delta x &+ B = 0
+\end{align*}
+The useful properties of this function are as follows:
+\begin{itemize}
+	\item $F(x,y)>0 \implies$ point is above the line
+	\item $F(x,y)<0 \implies$ point is below the line
+\end{itemize}
+
+The function $F(x,y)$ clearly has the properties required of a decision variable.
+Now all we have to do is apply it.
+This will involve using rational numbers in the derivation even though we were supposed to be working with integers.
+
+Consider an arbitrary pixel ($x_p,y_p$) that is on a line segment.
+We need to test a point to determine which of the possible next 2 pixels to colour.
+A suitable point is ($x_p+1,y_p+\frac{1}{2}$) this will be on the vertical boundary between pixels E and NE and at the horizontal midpoint.
+
+\smallskip
+If a $F(x_p+1,y_p + \frac{1}{2}) \le 0$ the next pixel is E.
+Else, the next pixel is NE.
+This is still under the same assumption that that $0\le m\le1$.
+
+Examining the next step we see it is not independent of the decision we have just made.
+\begin{itemize}
+	\item If E was chosen then the next test will be $F(x_p+2,y_p+\frac{1}{2})$
+	\item Else is NE was chosen then the next test will be $F(x_p + 2, y_p + \frac{3}{2})$.
+\end{itemize}
+Now let $d_n = F(x_p + 1, y + \frac{1}{2})$ and substitute the values $x+2, y+\frac{1}{2}$ and $y+\frac{3}{2}$ back into the definition of $F$ and we have:
+\begin{itemize}
+	\item If E was chosen then the next test will be $d_{n+1} = d_n+\Delta y$
+	\item Else if NE was chosen the next test will be $d_{n+1} = d_n + (\Delta y - \Delta x)$
+\end{itemize}
+
 \end{document}
