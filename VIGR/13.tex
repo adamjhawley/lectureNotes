@@ -92,4 +92,31 @@ Now let $d_n = F(x_p + 1, y + \frac{1}{2})$ and substitute the values $x+2, y+\f
 	\item Else if NE was chosen the next test will be $d_{n+1} = d_n + (\Delta y - \Delta x)$
 \end{itemize}
 
+\section{Edge Detection}
+Edges can be caused by:
+\begin{itemize}
+	\item Boundaries of objects
+	\item Depth discontinuity
+	\item Illuminating discontinuity
+	\item Shading discontinuity
+	\item Margins of shadows
+	\item Textures (regions of medium or high variation)
+	\item Noise 
+\end{itemize} 
+
+\subsection{Image Gradient}
+The gradient of an image:
+\begin{align*}
+	\Delta f &= [\frac{\delta f}{\delta x},\frac{\delta f}{\delta y}]
+\end{align*}
+Edge orientation:
+\begin{align*}
+	\theta = tan^{-1}(\frac{\delta f}{\delta x}/\frac{\delta f}{\delta y})
+\end{align*}
+Edge strength:
+\begin{align*}
+	\|\Delta f\| = \sqrt{(\frac{\delta f}{\delta x})^2+(\frac{\delta f}{\delta y})^2}
+\end{align*}
+%Need to watch lecture to make further notes
+
 \end{document}
