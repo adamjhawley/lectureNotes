@@ -1,10 +1,173 @@
 \documentclass{article}
 
+\usepackage{amsmath}
+\usepackage{gensymb}
+
 \title{Lecture 9: Colour Image Representation}
 \author{Adam Hawley}
 
 \begin{document}
 
 \maketitle
+\section{Colour Image Pipeline}
+\begin{itemize}
+	\item Bayer colour filter arrays --- mosaics of colour
+	\item Coordinated colour temperature transform (CCT) --- colours are adjusted based on light source illiminating the scene --- based on tables of chromacity for standard illumination
+	\item Colour gamut -- depends on a specific device
+	\item White balance adjustment
+	\item Demosaicing --- interpolates the R,G,B components producing the full colour image
+\end{itemize}
+
+\subsection{Bayer Mosaics}
+Bayer pattern sensors are composed of colour filtered sensors in a specific layout, using two green sensors for each red and blue sensor.
+
+\subsection{Demosaicing}
+Demosaicing is the process of turning the sensor output with 3 separate colour channels into one pixel per three colour values.
+I.e going from 2 greens, 1 red and 1 blue to one pixel which represents them all.
+
+\subsection{Colour Matching}
+Colour matching functions work by combining red, green and blue to define the colour accuracy.
+A particular colour (spectral wavelength) can be matched to filtered measurements of sensor values.
+The matching is performed as relative values of colour primaries.
+A different sensor could provide different colour values.
+
+\subsection{Colour Gamut}
+The colour gamut represents the colours which are reproduced by a specific media (the rest of the colours are clipped).
+The gamut restrics which colours can be visualised.
+Graphics artists should consider the display media gamut for the colours of his graphics.
+
+\subsection{CIE}
+The CIE chromacity diagram is obtained based on their perception.
+Hue is defined on the  border.
+Colour saturation decreases as you go towards the centre (location of white).
+
+\section{Colour Systems}
+\subsection{RGB}
+The 3 types of cone in the human eyes are sensitive to 3 wavelengths: 630nm (red), 530nm (green) and 450nm (blue).
+\begin{align*}
+	C_\lambda = R\textbf{R} + G\textbf{G} + B\textbf{B}
+\end{align*}
+The values for \textbf{R,G,B} are defined by:
+\begin{itemize}
+	\item Standard NTSC phosphor
+	\item Monitor/phosphur manufacturers
+\end{itemize}
+For two monitors 1 and 2 with different gamuts we can compute:
+\begin{align*}
+	\begin{bmatrix}
+		Y \\ Y \\ Z
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		X_r & X_g & X_b \\
+		Y_r & Y_g & Y_b \\
+		Y_r & Y_g & Y_b \\
+	\end{bmatrix}
+	\begin{bmatrix}
+		R \\ G \\ B
+	\end{bmatrix}
+\end{align*}
+
+\subsection{YIQ and CMY}
+\subsubsection{YIQ}
+Composite signal for TV defined by NTSC.
+This colour system is based on CIE.
+The Y parameter carries luminance (similar to the CIE).
+I and Q contribute to hue and purity.
+\begin{align*}
+	\begin{bmatrix}
+		Y \\ I \\ Q
+	\end{bmatrix}
+	= 
+	\begin{bmatrix}
+	0.299 & 0.587 & 0.144 \\
+	0.596 & -0.275 & -0.321 \\
+	0.212 & -0.528 & 0.311
+	\end{bmatrix}
+	\cdot
+	\begin{bmatrix}
+		R \\ G \\ B
+	\end{bmatrix}
+\end{align*}
+
+\subsubsection{CMY}
+Subtractive colour model used in printing.
+Cyan ink subtracts red component of light, magenta subtracts green component and yellow subtracts the blue component of light.
+The printing process uses 3 or 4 dots. (CMYK)
+\begin{align*}
+	\begin{bmatrix}
+		C \\ M \\ Y
+	\end{bmatrix}
+	= 
+	\begin{bmatrix}
+		1 \\ 1 \\ 1
+	\end{bmatrix}
+	-
+	\begin{bmatrix}
+		R \\ G \\ B
+	\end{bmatrix}
+\end{align*}
+
+\subsection{3D Polar Coordinates}
+These spaces use a cylindrical (3D polar) coordinate system to encode the following three psycho-visual coordinates:
+\begin{itemize}
+	\item Hue (Dominant Colour Seen)
+		\begin{itemize}
+			\item Wavelength of the pure colour observed in the signal.
+			\item Distinguishes red, yellow, green etc.
+			\item More than 400 hues can be seen by the human eye.
+		\end{itemize}
+	\item Saturation (Degree of Dilution)
+		\begin{itemize}
+			\item Inverse of the quantity of ``white'' present in the signal.
+			A pure colour has 100\% saturation, the white and grey have 0\% saturation.
+			\item Distinguishes red from pink.
+			\item About 20 saturation levels are visible per hue.
+		\end{itemize}
+	\item Brightness
+		\begin{itemize}
+			\item Amount of light emitted.
+			\item Distinguishes the greylevels.
+			\item The human eye perceives about 100 levels.
+		\end{itemize}
+\end{itemize}
+
+\subsection{Munsel}
+The Munsel colour system is a cylindrically mapped colour system.
+\begin{itemize}
+	\item Hue: 100 Equally spaced hues around circle
+	\item Saturation: Starts at 0 on the centre line and increases to 10-18 depending on the hue
+	\item Brightness: 0 for black up to 10 for white
+\end{itemize}
+
+\subsection{HSV}
+The HSV colour system is the most intuitive model for users.
+\begin{itemize}
+	\item H = Hue (0.0\degree-360.0\degree)
+	\item S = Saturation (Ratio from 0.0-1.0)
+	\item V = Value (Intensity)(0.0-1.0)
+\end{itemize}
+The colour system is based on a hexcone shape.
+When S=1 and V=1 ``akin to artists pure pigment'':
+\begin{itemize}
+	\item Hue: Change H
+	\item Tints (Adding white): Decrease S
+	\item Tone (Adding black): Decrease S and V
+	\item Shade: S=1, decrease V
+\end{itemize}
+
+\subsection{HSL}
+\begin{itemize}
+	\item Hue
+	\item Saturation
+	\item Luminance
+\end{itemize}
+The HSL colour system uses a double cone representation.
+Hue is represented 0\degree-360\degree.
+Saturation is the value 0-1 out horizontally from the centre.
+Luminance has a 0-1 value out vertically from the bottom.
+
+\section{Colour Image Histograms}
+
 
 \end{document}
