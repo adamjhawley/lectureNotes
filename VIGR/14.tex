@@ -10,6 +10,8 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
+\newpage
 
 \section{Shadowing}
 There are two ways a point can be in a shadow:
@@ -98,5 +100,68 @@ Often a weighted average is used --- weights are areas of facets.
 Normals of larger facets contribute more to the vertex normal.
 If we use the unnormalised cross products of facet edges, we get this weighting for free.
 This method is fine for most purposes but there are more complex methods justified by differential geometry.
+
+\section{Interpolation Shading}
+There are two main approaches to use vertex normals for interpolation shading:
+\begin{itemize}
+	\item {\bf Gouraud}: calculate a colour for each vertex, {\bf interpolate colours} along the polygon edge, then interpolate along scanlines within polygons.
+	\item \textbf{Phong}: interpolate the vertex normals along the polygon edge, then {\bf interpolate normals}
+\end{itemize}
+
+\subsection{Drawbacks of Interpolation Shading}
+There are two main drawbacks of interpolation shading:
+\begin{itemize}
+	\item The polygonss are still flat and so the silhouette of curved objects can visibly consist of straight lines.
+	\item Shading is carried out after the projection transformation is applied. So if a perspective transformation is used the non-linear transformation of the Z axis may produce odd effects.
+\end{itemize}
+Both of these effects are reduced by using smaller polygons (i.e a higher resolution mesh).
+
+Other possible problems include strange effects if the normals are set up wrongly.
+Mach banding may still be visible --- although colours along polygon edge now match, the rate of change of colour may change drastically giving the appearance of an edge.
+
+\subsection{Gouraud Shading}
+Summary:
+\begin{enumerate}
+	\item Each vertex has a surface normal and material properties, pass the reflectance model to compute a colour.
+	\item The colouring along the edge of each polygon is interpolated along the edge.
+	\item When the polygon is scan converted, interpolate between colours at edge along scanline.
+\end{enumerate}
+
+\subsubsection{Drawbacks of Gouraud Shading}
+The weakness of Gouraud shading is that it assumes the intensity changes smoothly within a polygon.
+Specular reflections cause large changes in intensity over a small distance.
+If the size of the specularity is small compared to the size of the polygon, Gouraud shading will miss it --- this results in strange behaviour.
+
+\subsection{Phong Shading}
+In Phong shading we \textbf{interpolate surface normals}.
+The reflectance model will be evaluated independently for each pixel.
+\begin{enumerate}
+	\item Interpolate normals along the polygon edges
+	\item Interpolate normals along scanlines, giving a normal for each pixel.
+	\item Calculate the colour intensity for each pixel.
+\end{enumerate}
+
+\subsubsection{Advantages \& Disadvantages of Phong Shading}
+Advantages:
+\begin{itemize}
+	\item Correct specular highlight
+	\item Reduced Mach banding problems
+\end{itemize}
+
+Disadvantages:
+\begin{itemize}
+	\item Expensive to compute
+\end{itemize}
+
+In modern GPUs something very similar to this happens in pixel or fragment shaders.
+
+\section{Conclusions}
+What you should know:
+\begin{itemize}
+	\item Shadows: Cast vs. Self
+	\item Face/Vertex normals and how to calculate them
+	\item Purpose of interpolation shading
+	\item Gouraud vs. Phong Shading
+\end{itemize}
 
 \end{document}
