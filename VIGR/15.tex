@@ -1,0 +1,158 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\author{Adam Hawley}
+\title{Lecture 15: Global Illumination \& Image-Based Lighting}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Up until this lecture, we have only been modelling illumination in purely local terms.
+Reflected intensity is a function solely of light arriving at a point directly from light sources.
+\textbf{Global illumination} aims to model all illumination which has arrived at a point including light which has been reflected or refracted by other objects.
+
+\section{Global Interactions}
+The general approach to considering global interactions:
+\begin{itemize}
+	\item Start with the light source and follow every ray of light as it travels through the environment.
+\end{itemize}
+Stopping under any of the following conditions:
+\begin{itemize}
+	\item Light hits the eye point
+	\item Light travels out of the environment
+	\item Light has its energy reduced under an admissable limit due to absorption in objects.
+\end{itemize}
+This process is known as \textbf{\textit{photon mapping}}.
+This is computationally very expensive
+Certainly not practical for real time graphics but is used offline.
+
+\section{Types of Interactions}
+Diffusely radiated light reflected off another diffuse surface is called \textbf{Radiosity}.
+Specular radiated light reflected off another specular surface is called \textbf{Ray Tracing}.
+
+\section{Ray Tracing}
+\subsection{Whitted Ray Tracing}
+The following outlines Whitted ray tracing:
+\begin{itemize}
+	\item Traces light rays in the reverse direction of propogation from the eye back into the scene towards the light source.
+	\item Spawn reflection rays and refraction rays for every hit point (recursive calculation).
+\end{itemize}
+Global illumination model (specular) and a local model.
+Considers diffuse-reflection interactions but not diffuse-diffuse interactions.
+
+Whitted's illumination equation:
+\begin{align*}
+	I = k_aL_a + \sum^m_{i=1}f_{att_i}L_i[(k_d(\textbf{n}\cdot\textbf{s}_i)+k_s(\textbf{n}\cdot\textbf{h}_i)^{\eta})] + k_rI_r + k_tI_t
+\end{align*}
+This equation consists of the standard Blinn-Phong model combined with two extra terms; describing reflected light and transmitted light.
+These two additional terms contain the recursive elements.
+
+%CHECK LECTURE SLIDES FOR RAY TRACING PSEUDOCODE 
+
+\subsection{Problems with Ray Tracing}
+Ray tracing, in its current state has several disadvantages:
+\begin{itemize}
+	\item Shadow rays usually not refracted
+	\item Numerical precision --- false shadows
+	\item Simplistic model of ambient light
+	\item Expensive to compute --- lots of ray-surface intersection computations
+\end{itemize}
+Note: issues with numerical precision can be alleviated using multiple rays per pixel or sub-pixel jitter --- gives soft shadows.
+
+\section{Image-Based Illumination}
+Ray tracing allows us to more realistically model how light is transferred around a scene.
+This gives a big improvement in realism.
+But modelling of the scene (objects+illumination) is a very laborious process.
+Humans perceive material properties and shape better under \textbf{natural illumination}.
+The easiest way to measure natural illumination is to take a photograph using a mirrored ball (light probe).
+The mirrored ball measures incident illuminatin from every direction.
+The next step is to resample the picture to ``equirectangular mapping''.
+This is called an \textbf{environment map}.
+The mapping has two dimensions: elevation ($y$) and azimuth ($\sim x$)
+
+To convert ($x,y$) coordinates to angles:
+\begin{align*}
+\theta(x) &= \pi\left ( \frac{2x}{x_{max}}-1\right ) \\
+	\phi(y) &= \frac{y\pi}{y_{max}}
+\end{align*}
+To convert angles to a direction (unit vector):
+\begin{align*}
+	\textbf{s}(x,y) = 
+	\begin{bmatrix}
+		\sin(\phi(y))\sin(\phi(x)) \\
+		\cos(\phi(y)) \\
+		\sin(\phi(y)) \cos(\phi(x))
+	\end{bmatrix}
+\end{align*}
+Each pixel (x,y) in an environment map $I(x,y)$ corresponds to a light source with direction \textbf{s}(x,y) and colour $I(x,y)$
+To render with an environment map, we just sum over light sources (every pixel in environment map image!) as in Lecture 10.
+
+\section{Environment/Reflection Mapping}
+Very cheap approximation to appearance of mirror specular object under environment illumination.
+Reflect viewing direction about surface normal giving specular lighting direction:
+\begin{align*}
+	\textbf{s} = 2(\textbf{n}\cdot \textbf{v})\textbf{n}-\textbf{v}
+\end{align*}
+
+Use this to look up colour in environment map and copy to pixel.
+Environment map stored as texture on reference object such as sphere or cube.
+Possible in real time at very low computational cost.
+
+\section{Occlusions}
+A point on a surface will not necessarily be able to see all of the environment.
+i.e Point may be shadowed from certain sources.
+Half will be excluded because of self shadowing.
+Only those in ``upper hemisphere'' considered.
+
+To handle occlusions exactly, every direction from every surface point needs checking --- like ray tracing with thousands of light sources.
+
+Alternatively: \textbf{precompute} proportion of hemisphere that is occluded and use with environent lighting.
+This is \textbf{ambient occlusion}.
+
+\subsection{Ambient Occlusion}
+\begin{itemize}
+	\item Ambient occlusion = 1: Completely unoccluded --- use all sources in upper hemishphere.
+	\item Ambient occlusion = 0: Completely occluded --- no light reaches point
+\end{itemize}
+The \textbf{bent normal} is the average unoccluded direction.
+
+Ambientt occlusion is exact for an environment of perfectly ambient light.
+It gives rise to a different kind of shading that is important in human perception.
+
+To use ambient occlusion with general environment lighting:
+\begin{enumerate}
+	\item Render surface while ignoring occlusions
+	\item Downweight resulting intensities by ambient occlusion amount
+	\item Use bent normal instead of surface normal
+\end{enumerate}
+The bent normal is used to describe the dominant direction from which light arrives.
+It can be unrepresentative when there are ``\textit{blockers}'' in the scene.
+
+\section{Photon Mapping}
+Photon mapping approximates the full rendering equation.
+Considers all types of interaction and can support image-based lighting.
+Based on the \textit{Monte Carlo} simulation:
+\begin{enumerate}
+	\item Fire photon from light source.
+	\item When photon strikes a surface, randomly select a behaviour according to a probabilistic model (e.g. may be absorbed, may be reflected).
+	\item Count number of photons that strike each pixel.
+\end{enumerate}
+The more photons we fire, the better the approximation.
+Can include arbitrarily complex models of photon behaviour when striking a surface (e.g. subsurface scattering through multiple layers of a surface).
+Can incluse wavelength-dependent effects.
+
+\section{Conclusions}
+What you should know:
+\begin{itemize}
+	\item What is global illumination
+	\item Recursive ray tracing
+	\item Image-based lighting
+	\item Ambient occlusion
+\end{itemize}
+
+\end{document}
