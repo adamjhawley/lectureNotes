@@ -5,7 +5,10 @@
 \title{Lecture 7: Multiple View Vision}
 
 \begin{document}
+
 \maketitle
+\tableofcontents
+\newpage
 
 \section{Epipolar Geometry}
 Considering two pinhole cameras with different projection centres, in order to relate the two images one can use {\it Epipolar Geometry}.
@@ -25,6 +28,99 @@ To estimate the epipolar geometry, determine the mapping between corresponding p
 	O_lO_r &= t
 \end{align*}
 The left and right images are connected by means of a matrix representing rotation {\bf R} in the plane $PO_lO_r$ and translation {\bf t}.  
+
+Epipolar geometry depends only on the cameras' internal parameters and relative pose.
+\begin{align*}
+	\text{If } O_lO_r,P_rP,P_lP \text{ are coplanar} \implies \textbf{p}_l\cdot
+	\left [\textbf{t} \times (\textbf{Rp}_r) \right ]
+	= 0
+\end{align*}
+
+This results in the Fundamental matrix.
+\begin{align*}
+	\textbf{p}^T_r\textbf{Ep}_l \text{ where: }\\
+	E = 
+	\begin{bmatrix}
+		0 & -t_z & t_y \\
+		t_z & 0 & -t_x \\
+		-t_y & t_x & 0
+	\end{bmatrix}
+	\textbf{R} \\
+	rank(\textbf{E}) = 2
+\end{align*}
+We have a well defined geometry linking the epipolar vectors of right and left images by means of matrix \textbf{E}.
+
+\section{Image Rectification}
+Image rectification is implemented by multiplying the image matrices with a geometric transformation matrix.
+Epipolar lines become parallel following image rectification.
+
+\section{Depth Maps}
+Depth maps represent the distance from the image plane to the actual 3D scene.
+In computer vision depth maps are estimated from the disparity between pairs of images.
+If images are aligned, the disparity represents a displacement along the epipolar lines.
+
+In computer graphics, the depth map (also called \textit{Z-Buffer}) is calculated as the distance from the 3D scene to the image plane.
+
+\subsection{Depth Maps for Photorealistic Effects}
+Depth maps can be used to apply effects to specific objects/regions of the image.
+For example, portrait modes can use depth to apply a blurring effect to everything in an image except for a face.
+
+\subsection{Estimating Depth Maps}
+Depth maps can be estimated from stereo images based on fields of disparities.
+Each disparity represents the correspondence of a block of pixels from one image into the other.
+Objects which are far away will be in identical places in both images (disparity is 0).
+Objects which are near the camera will have a displacement according to their depth.
+
+\subsection{Block Matching}
+Comparing the two images and finding the disparities is done using a method called Block matching.
+Block matching is done using the following procedure:
+\begin{enumerate}
+	\item Calculate differences between the block of pixels, pixel-by-pixel, from left image and all blocks from a search region in the right image.
+	\item The search region is centred at the location of the original block of pixels.
+	\item Choose the block of pixels from the second image which is the most similar with the orignial block and define a vector as the difference of their locations.
+\end{enumerate}
+
+The size of the block of pixels $B_x \times B_y$ should not be too small (which may lead to confusion) or too large (requiring large computational complexity and low disparity resolution).
+Block matching works well when we have well defined features or non-regular textures.
+Block matching does not work well where we have regions of constant colour or regular textures.
+
+\subsection{Estimating Depth Maps \romannumeral2}
+When estimating the depth maps from real images, local errors emerge due to:
+\begin{itemize}
+	\item Left and right images are affected by the noise of the image sensors and changes in light.
+	\item Results in wrong matches and consequently in errrs in the depth map.
+\end{itemize}
+
+\subsection{3D from Multiple Views}
+Several images are provided from various angles and the 3D scene is reconstructed as made up of voxels.
+Surfaces are visible only from some cameras.
+For this process, the cameras have to be calibrated.
+Usually, this calibration is done using chessboard patterns.
+
+\section{Space Carving}
+The 3D scene is formed using space carving.
+Space carving starts with a cube in the scene.
+If there is no projection onto any of the images for that voxel, then it is carved away.Otherwise --- get all pixels where it projects.
+Use all of the images to estimate the colour of the voxel from the pixels' colour.
+
+When a voxel is seen from several images a statistical estimation takes place (averaging or median statistics).
+
+
+\textit{Floating voxels} and uneven surfaces emerge due to wrong correspondences and are caused by:
+\begin{itemize}
+	\item Confusions in colours due to the illumination and noise
+	\item Errors in cameras' geometry due to wrong camera calibration.
+\end{itemize}
+
+\section{Conclusions}
+\begin{itemize}
+	\item Stereo vision
+	\item Epipolar geometry
+	\item Image rectification
+	\item Depth maps
+	\item Multi-view vision for 3D scene estimation
+	\item Space carving method
+\end{itemize}
 
 \end{document}
 
