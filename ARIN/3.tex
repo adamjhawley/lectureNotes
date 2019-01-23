@@ -1,0 +1,118 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\title{Lecture 3: Uninformed Search}
+\author{Adam Hawley}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Implementation of Search}
+
+\subsection{State vs. Node}
+\begin{itemize}
+	\item A \textbf{state} is a representation of a physical configuration
+	\item A \textbf{node} is a data structure which constitutes part of a search tree including state, parent node, action, path cost and depth.
+\end{itemize}
+
+\subsection{Uninformed vs. Informed}
+\begin{itemize}
+	\item Uninformed (Blind) Search Algorithms: In making this decision, these look only at the structure of the search tree and not at the states inside the nodes.
+	\item Informed (Heuristic) Search Algorithms: In making this decision these look at the states inside the nodes.
+\end{itemize}
+
+\section{Evaluating Search Strategies}
+Strategies are evaluated along the following dimensions:
+\begin{itemize}
+	\item Completeness: does it always find a solution if one exists
+	\item Time complexity: number of nodes generated (not expanded)
+	\item Space complexity: maximum number of nodes in memory
+	\item Optimality: does it always find a least-cost solution?
+\end{itemize}
+Time and space complexity will use the following parameters:
+\begin{itemize}
+	\item \textbf{b}: maximum branching factor of the search tree
+	\item \textbf{d}: depth of the least-cost solution (root is of depth 0)
+	\item \textbf{m}: maximum depth of the search tree (may be $\infty$)
+\end{itemize}
+
+\section{Breadth-First Search}
+Expand the shallowest unexpanded node.
+
+Implementation: \textit{fringe} is a FIFO queue, so new nodes go at the end and nodes are selected from the front.
+
+Properties:
+\begin{itemize}
+	\item Complete: Yes (if b is finite)
+	\item Time Complexity: $1+b+b^2+b^3+...+b^d = O(b^{d+1}) = O(b.b^d) = \text{(If b is constant)} O({b^d})$
+	\item Space Complexity: $O(b^{d+1})$ or $O(b^d)$ if only fringe is in memory
+	\item Optimal: Yes, if all operators have the same cost
+\end{itemize}
+Space is a bigger problem than time.
+What if we want to find the optimal solution and operators have different costs?
+
+\section{Uniform-Cost Search}
+Expand the least-cost unexpended node.
+Implementation: finge is queue ordered by increasing path cost.
+Nodes are selected from the front.
+
+Properties:
+\begin{itemize}
+	\item Complete: Yes, if step cost $\le \epsilon$
+	\item Time Complexity: \# of nodes with $g \le C^*$, where $C^*$ is the cost of the optimal solution, so $O(b^{\lceil\frac{C^*}{\epsilon}\rceil})$. Or $O(b^d)$.
+	\item Space Complexity: \# of nodes with g $\le$ cost of optimal solution, $O(b^{\lceil\frac{C^*}{\epsilon}\rceil})$. Or $O(b^d)$.
+	\item Optimal: Yes, since nodes are expanded in increasing order of $g(n)$.
+\end{itemize}
+
+\section{Depth-First Search}
+Expand the deepest unexpanded node.
+Implementation: Fringe is a LIFO queue (or stack), so new nodes are put at front and nodes removed from the front.
+
+Properties:
+\begin{itemize}
+	\item Complete: No, could run forever if a tree has infinite depth. Complete in finite spaces though.
+	\item Time Complexity: $O(b^m)$ (Size of the tree)
+	\item Space Complexity: $O(bm)$ (Linear space)
+	\item Optimal: No.
+\end{itemize}
+
+\section{Depth-Limited Search}
+Depth-first search with depth limit $l$.
+That is, nodes whose depth is greater than $l$ are ignored.
+
+Implementation: same as depth-first search but if a node has depth $l$ then it is not expanded.
+
+Properties:
+\begin{itemize}
+	\item Complete: No, solution not found if $d>l$
+	\item Time complexity: $O(b^l)$
+	\item Space complexity: $O(bl)$ 
+	\item Optimal: No.
+\end{itemize}
+
+\section{Iterative Deepening Search}
+To overcome the incompleteness of depth-limited search, if no solution is found, redo the search with an increased depth limit.
+
+Properties:
+\begin{itemize}
+	\item Complete: Yes
+	\item Time complexity: $(d+1)b^0 + db^1 + (d-1)b^2 + ... + b^d = O(b^d)$
+	\item Space complexity: $O(bd)$
+	\item Optimal: Yes, if step cost = 1
+\end{itemize}
+
+See slide 54 for a table containing all of the properties.
+
+\section{Summary}
+\begin{itemize}
+	\item Problem represenation is important.
+		Some representations can have much smaller search trees.
+	\item Variety of uninformed search strategies.
+	\item Iterative deepening search uses only linear space and not much more time than other uninformed algorithms.
+	\item It is often important to eliminate repeated states.
+\end{itemize}
+\end{document}

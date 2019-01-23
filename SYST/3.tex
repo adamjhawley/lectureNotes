@@ -1,0 +1,113 @@
+\documentclass{article}
+
+\title{Lecture 3: Processes}
+\author{Adam Hawley}
+
+\begin{document}
+
+\maketitle
+
+\section{Processes and Programs}
+
+\begin{itemize}
+	\item A \textbf{program} is an ordered set of specific operations for a computer to perform.
+	\item A \textbf{process} is an abstraction of a running program.
+\end{itemize}
+A program is a passive entity stored on the disk including an executable file while a process is active and loaded into memory.
+
+\section{Process Management}
+Process management is one of the key functions of the OS, it includes:
+\begin{itemize}
+	\item Creating and deleting both user and system processes
+	\item Suspending and resuming processes
+	\item Deciding which process should run
+	\item Providing mechanisms for process synchronisation
+	\item Providing mechanisms for process communication
+	\item Provising mechanisms for deadlock handling
+\end{itemize}
+
+\section{Process Structure}
+A process is more than the program code, which is sometimes known as the text section.
+It also includes the current activity such as the calue of the program counter and contents of the processor's registers.
+It also includes the process stack, which contains temporary data (such as function parameters, return addresses and local variables) and a data section which contains global variables.
+It may also include a heap, which is memory that is dynamically allocated during process run time.
+
+See lecture slides for the process layout in memory.
+In particular, slide 9 on the \textbf{Process Control Block}
+
+\section{Process States}
+One thing stored in the PCB is the process state.
+Most OSs contain states which are similar or equivilent to the following:
+\begin{itemize}
+	\item \textbf{Ready (or Runnable)} --- scheduled to run but not currently using the processor
+	\item \textbf{Running} --- currently using the processor
+	\item \textbf{Waiting (or Blocked)} --- suspended waiting for some event to occur (such as a periodic clock tick or printer device to complete printing)
+	\item \textbf{Terminated} --- the process has finished execution (and will be removed from the system ASAP
+\end{itemize}
+
+See slide 11 for a useful flow diagram of states.
+
+\section{Process Lifecycle}
+\begin{itemize}
+	\item Processes are created
+		\begin{itemize}
+			\item at system initialisation
+			\item by another process
+			\item by a user (e.g double clicking an icon)
+			\item batch job
+		\end{itemize}
+	\item On creation, OS will:
+		\begin{itemize}
+			\item allocate memory
+			\item create PCB
+			\item load program from disk to memory
+			\item copy arguments to program's stack and itialise registers
+		\end{itemize}
+\end{itemize}
+
+There are resource sharing options such as:
+\begin{itemize}
+	\item Parent and children process share all resources
+	\item Children share subset of parent's resources
+	\item Parent and child share no resources
+\end{itemize}
+
+And execution options:
+\begin{itemize}
+	\item Parent and children execute concurrently
+	\item Parent waits until children terminate
+\end{itemize}
+
+\subsection{Ready and Running}
+When a process is created it is places into a ready queue.
+The scheduler decides which process to put into running state.
+The \textbf{policy} makes the decision itself and the \textbf{mechanism} uses the information in the PCB to return to the selected process.
+
+\subsection{Waiting/Blocked}
+Processes issuing I/O requests are placed in a waiting state.
+When the I/O completes, the process returns to the ready state.
+If all processes are waiting, then the processor is idle until one of the processes becomes unblocked and ready.
+This should be avoided at all costs.
+
+\subsection{Terminated}
+There are several different reasons a process can be moved into a terminated state:
+\begin{itemize}
+	\item Normal exit (voluntary)
+	\item Error exit (voluntary)
+	\item Fatal error (involuntary)
+	\item Killed by another process (involuntary)
+\end{itemize}
+
+\subsection{Context Switch}
+When CPU switches to another process, the system must save the state of the old process and load the saved state for the new process via a context switch.
+Context of a process is represented in the PCB.
+
+Context-switch time is pure overhead.
+The system does no useful work while switching.
+The more complex the OS and the PCB, the longer the context switch.
+
+Switching is also dependent on hardware support.
+Some hardware proved multiple sets of registers per CPU which means that there can be multiple contexts loaded at once.
+
+See slide 18 for a context switch diagram
+\end{document}
