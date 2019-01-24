@@ -1,0 +1,151 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\title{Lecture 4: Threads \& Concurrency}
+\author{Adam Hawley}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Concurrency}
+\subsection{Multiple Processes}
+Applications are often constructed from multiple co-operating programs.
+
+For example, web browsers used to run as a single process, therefore if oone site causes trouble, the entire browser can hang or crash.
+Google Chrome is multi-process with 3 different types of processes:
+\begin{itemize}
+	\item Browser process manages user interface, disk and network I/O
+	\item Renderer process renders web pages, deals with HTML and js (with a new renderer created for each open website)
+	\item Each type of plugin has a separate process
+\end{itemize}
+
+\subsection{Motivation}
+\begin{itemize}
+	\item \textbf{Responsiveness} --- program may continue execution even if a process if blocked, especially important for user interfaces.
+	\item \textbf{Modularity} --- it may be easier to create a program as a set of interacting processes. 
+	\item \textbf{Scalability} --- process can take advantage of multiprocesssor architectures.
+\end{itemize}
+
+\subsection{Multiprocessor Systems}
+\textbf{Multi-CPU Systems} --- Multiple CPUs are placed in the computer to provide more computing performance.
+
+\textbf{Multicore Systems} --- Multiple computing cores are places on a single processing chip where each core appears as a separate CPU to the operating system.
+
+Concurrent programming provides a mechanism for more efficient use of these multiple computing cores and improved concurrency.
+On a system with a sigle computing core, concurrency means that the execution of the processes will be interleaved over time.
+But on a system with multiplr cores, concurrency means that some processes can run in parallel, because the system can assign a separate process to each core.
+
+\subsection{Concurrency vs. Parallelism}
+There is a fine but clear distinction between concurrency and parallelism.
+A \textbf{concurrent} system supports more than one task by allowing all the tasks to make progress.
+In contrast, a system is \textbf{parallel} if it can perform more than one task simultaneously.
+Thus, it is possible to have concurrency without parallelism.
+Concurrency within a program is an opportunity for parallelism if there is parallel hardware to exploit.
+
+Types of parallelism:
+\begin{itemize}
+	\item Data parallelism --- distributes subsets of the same data across multiple cores, same operation on each.
+	\item Task parallellism --- distributing threads across cores, each thread performing unique operation.
+\end{itemize}
+
+\subsection{Amdahl's Law}
+Amdahl's law indentifies performance gains from adding additional cores to an application that has both serial and parallel components:
+
+\medskip
+Where $N$ is the number of processing cores and $S$ is the serial portion:
+\begin{align*}
+	speedup \le \frac{1}{S+\frac{1-S}{N}}
+\end{align*}
+
+That is, if an application is 75\% parallel and 25\% serial, moving from 1 to 2 cores results in speedup of 1.6 times.
+As $N$ approaches infinity, speedup approaches $\frac{1}{S}$.
+As $S$ approaches 0, speedup approaches $N$.
+Serial portion of an application has disproportionate effect on performance gained by adding additional cores.
+
+\section{Threads}
+\subsection{Intro}
+Multiple concurrent processes are conceptually equivalent to multiple independent programs (each has a separate address space and requires inter-process communications).
+\textbf{Threads} are concurrent units within a process.
+All threads of a process share the same address space, low overhead in thread creation.
+Benefits from shared-memory processors, low-inter thread communication overhead.
+
+\subsection{User \& Kernel Threads}
+Support for threads may be provided at two different levels:
+\begin{itemize}
+	\item \textbf{User threads} --- are supported above the kernel and are managed without kernel support, primarily by user-level threads library.
+	\item \textbf{Kernel threads} --- are supported and managed directly by the operating system.
+\end{itemize}
+Virtually all contempory systems support kernel threads.
+
+\subsubsection{Many-to-One Relationship}
+\label{sec:manytoone}
+
+Many user-level threads mapped to single kernel thread.
+One thread blocking causes all to block.
+Multiple threads may not run in parallel on multicore system because only one may be in kernel at a time.
+Few systems still use this model.
+
+\subsubsection{One-to-One Relationship}
+Each user-level thread maps to a single kernel thread.
+Creating a user-level thread creates a kernel thread.
+More concurrency than \hyperref[sec:manytoone]{many-to-one}.
+Number of threads per process sometimes restricted due to overhead.
+Examples:
+\begin{itemize}
+	\item Windows 95-XP
+	\item Linux
+\end{itemize}
+
+\subsubsection{Many-to-Many Relationship}
+Allows many user level threads to be mapped to many kernel threads.
+Allows the operating system to create a sufficient number of kernel threads.
+Examples:
+\begin{itemize}
+	\item Solaris prior to version 9
+	\item Windows with the \textit{ThreadFiber} package
+\end{itemize}
+
+\subsection{Thread Libraries}
+Thread library provides programmer with an API for creating and managing threads.
+Two primary ways of implementing:
+\begin{itemize}
+	\item Library entirely in user space
+	\item Kernel-level library supported by the OS
+\end{itemize}
+Widely used thread libraries:
+\begin{itemize}
+	\item POSIX Pthreads
+	\item Windows threads
+	\item Java threads
+\end{itemize}
+
+\section{Threading Issues}
+\subsection{Thread Cancellation}
+Thread cancellation means terminating a thread before it has finished working.
+There can be two approaches to this:
+\begin{itemize}
+	\item \textbf{Asynchronous cancellation} --- terminates the target thread immediately. (Immediate and responsive but more dangerous)
+	\item \textbf{Deferred cancellation} --- allows the target thread to periodically check if it should be cancelled.
+\end{itemize}
+
+\subsection{Signal Handling}
+Signals are used in UNIX systms to notify a process that a particular event has occured.
+When a multithreaded process receives a signal, OS can be set to deliver it to all or to specific thread(s).
+
+\subsection{fork() System Call}
+If one thread of a process calls {\tt fork()}, will the entire process be duplicated, or only the calling thread?
+
+Some versions of UNIX have two versions of {\tt fork()} and the choice between them often depends on whether {\tt exec()} will be called afterwards.
+
+{\tt exec()} usually works as normal --- replace the running process including all threads.
+
+\subsection{Security and Integrity Issues}
+There are many security and integrity isuues because of the sharing of resources between multiple threads.
+This will be covered in greater detail later in the module.
+
+\end{document}
