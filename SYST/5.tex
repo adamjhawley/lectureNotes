@@ -1,0 +1,120 @@
+\documentclass{article}
+
+\usepackage{array}
+
+\title{Lecture 5: CPU Scheduling}
+\author{Adam Hawley}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Most processes exhibit the following behaviour:
+\begin{itemize}
+	\item CPU burst followed by I/O burst.
+	\item Process execution consists of a cycle of CPU execution and I/O wait.
+\end{itemize}
+Maximum CPU utilisation obtained with multiprogramming.
+This is where one process uses the CPU while the other waits for I/O.
+The CPU burst usually takes less than 8ms.
+
+Whenever the CPU becomes idle, OS selects one of the processes in the ready queue to be executed.
+The selection process is carried out by the CPU scheduler.
+The ready queue may be ordered in various ways.
+CPU scheduling decisions may take place when a process:
+\begin{itemize}
+	\item switches from running state to waiting state
+	\item switches from running state to ready state
+	\item switches from waiting state to ready state
+	\item terminates
+\end{itemize}
+
+\section{Dispatcher}
+The dispatcher switches context, switches to user mode, jumps to the proper location in the user program to restart that progmram.
+This brings \textbf{dispatch latency} (overhead) --- the time it takes for the dispatcher to stop one process and start another running.
+This latency needs to be minimised as occurs frequently.
+
+\section{Scheduling Algorithms}
+Existing algorithms aim to satisfy the following criteria:
+\begin{itemize}
+	\item \textbf{Max CPU utilisation} --- keep the CPU as busy as possible.
+	\item \textbf{Max throughput} --- number of processesthat complete their execution per time unit.
+	\item \textbf{Min turnaround time} --- amount of time to execute a particular process.
+	\item \textbf{Min waiting time} --- total amount of time a process has been waiting in the ready queue.
+	\item \textbf{Min response time} --- amount of time it takes from when a requestwas submitted until the first response is produced (for time-sharing environment).
+	\item \textbf{Fairness} --- each process should get its fair share of the CPU.
+\end{itemize}
+
+There are three main families of scheduling algorithms:
+\begin{itemize}
+	\item \textbf{Non-preemptive} --- Process runs to completion, OS schedules next process upon termination.
+	\item \textbf{Preemptive} --- Process runs until suspended by OS. Preemption can be time or event triggered.
+	\item \textbf{Cooperative} --- Process explicitly relinquishes control and allows OS to make a scheduling decision.
+\end{itemize}
+
+\section{Classic Scheduling Algorithms}
+The three classic sheduling algorithms are:
+\begin{itemize}
+	\item FCFS (or FIFO) --- first come, first served. \textbf{Non-Preemptive}
+	\item Round-Robin (RR) --- aims for fairness. \textbf{Preemptive}
+	\item Priority Scheduling --- \textbf{Preemptive or Non-Preemptive}
+\end{itemize}
+Or it is possible to have combinations of the above.
+
+\subsection{FCFS}
+Easy to implement and maintain but can give a wide variety of average wait times.
+
+\subsection{RR}
+Each process is assigned a \textit{quantum} when it enters the CPU (a quantum is a time slot using the CPU).
+If the process is still running at the end of the quantum then preempt it:
+\begin{itemize}
+	\item Start a context switch
+	\item The process is put at the back of the ``runnable queue''
+\end{itemize}
+Process may become no longer runnable \textbf{before} the end of the quantum e.g I/O operation.
+In which case, do as though it was the end of the quantum.
+
+Overall Round-Robin ensures fairness, but does not reflect relative importance of processes.
+
+\subsection{Priority Scheduling}
+Not all processes are equally important, so priority scheduling assigns a priority for each of them.
+
+\medskip
+\textbf{Note:} Priority values vary between books, courses etc.
+In this course, higher priority processes have lower priority numbers (e.g 1 or 0 = highest priority).
+
+\medskip
+In the preemptive version, the runnable process with the highest priority is allowed to run immediately.
+Otherwise, the highest priority process may have to wait for an ongoing process to finish.
+This algorithm has one large problem and that is that the highest priority process may run indefinitely or to completion and hence, may lead to starvation for other processes.
+Therefore the OS should have a way of identifying and recovering from such scenarios (e.g aging --- increase the priority of the process as time progresses).
+
+\subsection{Comparison of Classic Algorithms}
+\begin{center}
+	\begin{tabular}{|m{5em}|m{12em}|m{12em}|}
+\hline
+& Pros & Cons \\
+\hline
+\textbf{FCFS} & Simple \& Low overheads & Bad turnaround for short processes \\
+\hline
+\textbf{Round-Robin} &
+Good turnaround for short processes & High Overhead \\
+\hline
+\textbf{Priorities} & Predictability for high priority tasks & May delay lower priority tasks for long periods \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Bonus Algorithm SJF}
+Shortest-Job-First associates the length of each process' next CPU burst with the process itself.
+Then we use these lengths to schedule the process with the shortest time.
+This is non-preemptive.
+SJF is optimal in that it gives the minimum average waiting time for a given set of processes (assuming that the estimation of the next CPU burst time is correct.
+
+Why don't we always use SJF?
+The burst sizes can be unpredictable, they may be dependent on input sizes.
+
+\end{document}
