@@ -1,0 +1,11 @@
+\BOOKMARK [1][-]{section.1}{Informed vs. Uninformed Search}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Uninformed Search Algorithms}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Informed Search Algorithms}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Informed Search Algorithms in Detail}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{Algorithm i: Best-First Search}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.2}{A* Search}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Admissable Heuristics}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{Dominance of Heuristics}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.2}{How to Obtain Admissable Heuristics?}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.3}{Consistent Heuristics}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Tree Search vs. Graph Search}{}% 11
