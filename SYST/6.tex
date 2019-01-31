@@ -1,0 +1,90 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\author{Adam Hawley}
+\title{Lecture 6: CPU Scheduling Continued}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{More algorithms...}
+\subsection{Shortest-Remaining-Time-First}
+Preemptive version of SJF.
+
+\subsection{Earliest Deadline First (EDF)}
+Each process must declare a deadline, the algorithm then runs the most urgent process first.
+Implemented as a variable priority scheduling algorithm.
+
+\section{Multilevel Queue}
+In most operating systems, more than one algorithm is used at one time.
+To enable this, \textbf{multilevel queues} are used.
+Often they are separated into \textbf{foreground}(interactive) and \textbf{background} (batch).
+For example:
+\begin{itemize}
+	\item Foreground: RR
+	\item Background: FCFS
+\end{itemize}
+This example means that the user will see the snappiest responses to the foreground services.
+
+Scheduling has to be done between the queues.
+Fixed priority scheduling could be used (i.e serve all from the foreground then from the background).
+Or \textit{time slice}, where each queue gets a certain amount of CPU time, e.g. 80\% to forground and 20\% to background.
+
+\section{Multilevel Feedback Queue}
+A more complicated version of the multilevel queue.
+In a \textbf{multilevel feedback queue} a process can move between the various queues.
+This can be used to control the \textit{aging} of processes.
+Multilevel feedback queue schedulers are defined by the following parameters:
+\begin{itemize}
+	\item Number of queues
+	\item Scheduling algorithms for each queue
+	\item Method used to determine when to upgrade a process
+	\item Method used to determine when to demote a process
+	\item Method used to determine which queue a process will enter when that process needs service
+\end{itemize}
+
+\section{Thread Scheduling}
+\subsection{Kernel Threads}
+OS knows about all processes and threads, so makes scheduling decision across all processes and threads.
+
+\subsection{User Threads}
+OS decides which process to run.
+OS doesn't know whether a process contains threads (if that process contains a user threads implementatin, decisions regarding scheduling of the user threads are taken there).
+Essentially hierarchical scheduling: when a process is run, the thread scheduler within the process (managing the user threads) willl decide which thread to run.
+
+\section{Multiprocessor Scheduling}
+CPU scheduling is more complex when there are multiple processors (cores) available).
+\subsection{Homogenous processors}
+\begin{itemize}
+	\item \textbf{Asymmetric multiprocessing}: only one processor accesses the system data structures, alleviating the need for data sharing.
+	\item \textbf{Symmetric multiprocessing (SMP)}: each processor is self-scheduling, all processes in common ready queue, or each has its own private queue of ready processes.
+\end{itemize}
+Given a set of runnable processes, now it has to be decided which process to dispatch and which CPU should run it.
+Some processes may have a \textbf{processor affinity} meaning they have an affinity for the processor on which it will run.
+\begin{itemize}
+	\item Soft affinity $\implies$ preference
+	\item Hard affinity $\implies$ requirement
+	\item Variations including processor sets (e.g with affinity masks where a process will use a bitmask  to show which sets of processes it will run on).
+\end{itemize}
+
+\subsection{Non-Uniform Memory Access (NUMA)}
+NUMA is one of the reasons for implementing processor affinity.
+Sometimes certain processors will have faster access to certain memory blocks than other processors. 
+Naturally if a process uses data within one of the processor-specific blocks, it would have a greate affinity for the respective processor.
+
+\subsection{Load Balancing in Multiprocessors}
+If SMP, need to keep all CPUs loaded for efficiency.
+
+\begin{itemize}
+	\item \textbf{Load balancing} attempts to keep workload evenly distributed.
+	\item \textbf{Push migration} is a periodic task which checks the load on each processor and if it finds the processor is overloaded, it pushes tasks from the overloaded CPU to other CPUs.
+	\item \textbf{Pull migration} is when idle processors pull waiting tasks from busy processors.
+\end{itemize}
+
+
+
+\end{document}

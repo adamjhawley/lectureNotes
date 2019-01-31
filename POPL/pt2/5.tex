@@ -1,0 +1,48 @@
+\documentclass{article}
+
+\title{Lecture 5: Coordination 1}
+\author{Adam Hawley}
+
+\begin{document}
+
+\maketitle
+
+\section{Interacting Processes}
+Tasks need to share data.
+They do this by coordinating, here are some examples of tasks which require coordination:
+\begin{itemize}
+	\item One at a time through a critical section
+	\item A starts X after B finishes Y
+	\item Replicated tasks need to combine/compare results
+	\item Work needs to be allocated to a manager
+\end{itemize}
+There are two approaches to interacting processes: \textbf{shared variables} and \textbf{message passing}.
+
+\subsection{Mutual Exlusion --- Mutex}
+\textbf{Critical sections} are code that must not be executed by more than one task at a time.
+Unfortunately implementations of mutual exclusion are often complex and error prone.
+They also do not easily generalise to $n$ tasks nor do they easilly generalise to more complex problems.
+
+\subsection{Levels of Support}
+\textbf{Simple primitive}:
+\begin{itemize}
+	\item Semaphores --- simple processes for guaranteeing mutual exclusion.
+	\item Mutexes (normally provided by the runtime environment/OS so not discussed in detail).
+\end{itemize}
+\textbf{Control structures}:
+\begin{itemize}
+	\item Monitors which are normally provided by the language.
+\end{itemize}
+
+\subsubsection{Semaphores}
+A semaphore is a non-negative integer together with two primitives: {\tt wait} and {\tt signal}.
+On creation, a semaphore is initialised to 1 (in the simplest case).
+\begin{itemize}
+	\item {\tt signal} --- Atomically incrememnts a semaphore.
+	\item {\tt wait} --- If the semaphore has a value greater than zero, decrements the value by 1.
+If the semaphore is equal to 0 then the executing task \textbf{blocks}
+\end{itemize}
+Blocking is when a task is not runnable.
+Tasks are unblocked when its semaphore becomes $>0$.
+If multiple tasks are blocked on a semaphore, {\tt signal(sem)} will unblock one task chosen non-deterministically.
+\end{document}
