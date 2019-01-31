@@ -1,0 +1,58 @@
+\documentclass{article}
+
+\author{Adam Hawley}
+\title{Lecture 8: Local Search}
+
+\begin{document}
+
+\maketitle
+
+\section{Intro}
+Local search uses the single current state to move to neighbouring states.
+Advantages of local search:
+\begin{itemize}
+	\item Very little memory usage
+	\item Find often reasonable solutions in large or infinite state spaces
+\end{itemize}
+It is also often useful for pure optimisation problems by finding the best state according to some \textit{objective function}.
+
+\section{Hill-Climbing Search}
+Keep changing current state in the direction of a better one.
+It then terminates when a peak is reached.
+Hill climbing does not look ahead of the immediate neighbours of the current state.
+It also chooses randomly among the set of best successors if there is more than one.
+Hill climbing is also known as \textit{greedy local search}.
+
+\subsection{Drawbacks of Hill-Climbing Search}
+There are a few scenarios which often result in a hill-climbing search algorithm getting stuck  not on a global maximum:
+\begin{itemize}
+	\item \textbf{Ridge}: a sequence of local maxima difficult for greedy algorithms to navigate
+	\item \textbf{Plateaux}: an area of the state space where the evaluation of a function is flat
+\end{itemize}
+
+\subsection{Stochastic Hill-Climbing}
+There are a number of variations of hill-climbing search, one of which is called Stochastic hill-climbing.
+It involves a random selection among the uphill moves.
+The selection probability can vary with the steepness of the uphill move.
+
+\subsection{First-Choice Hill-Climbing}
+Cf. stochastic hill-climbing by generating successors randomly until a better one is found.
+
+\subsection{Random-Restart Hill-Climbing}
+Tries to avoid getting stuck in local maxima.
+
+\subsection{Simluted Annealing}
+To explore a greater area of the search space, the program can try to escape local maxima by allowing \textit{bad} moves but gradually decreasing their size and frequency.
+
+\subsection{Local Beam Search}
+Keep track of $k$ states instead of one.
+\begin{enumerate}
+	\item $k$ random states
+	\item Determine all successors of $k$ states
+	\item If any successors are goal states then finished. \\
+	Otherwise select $k$ best from successors and repeat
+\end{enumerate}
+The major difference between this and random-restart search is that informatino is shared among $k$ search threads.
+However, this method can suffer from lack of diversity.
+
+\end{document}
