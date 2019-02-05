@@ -1,0 +1,167 @@
+% Created 2019-02-05 Tue 12:13
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 7: Synchronisation}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 7: Synchronisation},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Coordination}
+\label{sec:org991f479}
+The OS must support multiple applications/processes (threads working together).
+This is formally known as \textbf{Inter-Process Communication} (IPC).
+It is achieved through two main concepts: shared memory and message passing.
+
+Shared memory requires synchronisation to ensure data is consistent.
+For example, if a data structure is being updated then a reader will read a consistent view of that data (i.e. doesn't read partial updates).
+
+Some programming lanuages make synchronisation primitives available to programmers.
+Languages rely on atomic operations when accessing shared data.
+However, atomic operations at the language level are often implemented at multiple instruction at the CPU level and interrupts can occur between instructions.
+
+\subsection{Concurrent Access to Shared Data}
+\label{sec:org4ec3ec6}
+Race conditions are when many processes access and manipulate shared data concurrently.
+The final value of the shared data depends upon which process finishes last.
+This can mean that data may become inconsistent.
+Therefore, the ability to execute an instruction, or a number of instructions atomically is crucial for the correct operation of synchronisation primitives provided by programming languages.
+
+\subsection{Critical Section Problem}
+\label{sec:orgcff50db}
+Every process which could have a race condition has a \textbf{critical section}.
+To overcome the problem, one general approach is to only allow one process into the critical section at a time.
+
+One general protocol for solving the problem is outlined as follows:
+\begin{itemize}
+\item Each process must ask permission to enter the critical section in what is known as \textbf{entry section} code.
+\item It then executes in the critical section.
+\item Once it finishes executing in the critical section it enters the \textbf{exit section} code.
+\item The process then enters the \textbf{remainder section} code.
+\end{itemize}
+\begin{verbatim}
+do {
+    entrySection
+        criticalSection
+    exitSection
+        remainderSection
+};
+\end{verbatim}
+
+\subsection{Solutions to the Critical Section Problem}
+\label{sec:orgd7d86a1}
+\subsubsection{Requirements to Fulfill}
+\label{sec:orgc6815db}
+Solutions to the critical section problem must satisfy the following three requirements:
+\begin{description}
+\item[{\textbf{Mutual Exclusion}}] If process \textbf{P\textsubscript{i}} is executing in its critical section, then no other processes can be executing in their critical sectinos.
+\item[{\textbf{Progress}}] Processes waiting to enter a critical section cannot block processes inside; only those processes that are not executing in their remainder sections can participate in making the decision as to which process will enter its critical section next.
+\item[{\textbf{Bounded Waiting}}] A bound must exist on the number of times that other processes are allowed to enter their critical sections after a process has made a request to enter its critical section and before that request is granted.
+\end{description}
+
+\subsubsection{Disabling Interrupts}
+\label{sec:orgb5b55c8}
+One way to satisfy these requirements is to disable interrupts when a process is in the entry section and reenable them when it is in the exit secton.
+However this is very impractical if the critical section code takes a long time to execute as it becomes impossible to preempt.
+This means that any part of a preemptive scheduling algorithm becomes redundant. 
+
+\subsubsection{Peterson's Algorithm}
+\label{sec:orge47fe28}
+\begin{verbatim}
+int turn; // indicates whose turn it is to enter the critical section if both are ready
+bool flag[2]; // indicates if a process is ready to enter the critical section
+do {
+    flag[i] = true;
+    turn = j;
+    while (flag[j] && turn == j);
+        criticalSection
+    flag[i] = false;
+        remainderSection
+};
+\end{verbatim}
+This algorithm assumes read and store operations are atomic (in checking the conditions of the while loop).
+It also loops while waiting to enter the critical section (also called \textbf{spin lock}) - busy waiting, wastes CPU.
+This implementation works for two processes only, even though it is extendable.
+
+\subsubsection{Mutual Exclusion - Hardware Support}
+\label{sec:org3cf128a}
+Modern CPUs provide special instructions to support exclusive access to shared variables.
+e.g test-and-set instruction:
+\begin{verbatim}
+bool test_and_set (bool *target)
+    {
+        bool rv = *target;
+        *target = TRUE;
+        return rv;
+    }
+\end{verbatim}
+
+With this we can use the instruction to enforce mutual exclusion.
+We have a shared boolean variable \texttt{lock}, initialised to FALSE.
+Then each process wishing to execute critical section code does the following:
+\begin{verbatim}
+do {
+    while (test_and_set(&lock)); //do nothing
+        criticalSection;
+    lock = false;
+        remainderSection;
+}
+\end{verbatim}
+The process keeps looping unless \texttt{lock == false}.
+This still uses a spin lock which is still wasteful.
+Actual implementations put the process in a waiting queue.
+
+\section{Semaphores}
+\label{sec:org8d48254}
+A semaphore is a programming mechanism used to achieve synchronisation and mutual exclusion.
+They are based on mutual exclusion services provided by the OS.
+They ensure atomic execution and rely on hardware support (e.g the \texttt{test\_and\_set} instruction).
+Semaphores are accessed through system calls.
+They are integer variables used as a \emph{flag} and the atomic code that increments or decrements it.
+There are two types of semaphore:
+\begin{description}
+\item[{\textbf{Binary Semaphores} (mutex)}] Integer values can range only between 0 and 1.
+\item \textbf{Counting Semaphores}:: Integer value can range over an unrestriceted domain.
+\end{description}
+
+\subsection{Semaphore Operations}
+\label{sec:org347484f}
+Semaphores have two indivisible operations: \textbf{wait} (\textbf{P}) and \textbf{signal} (\textbf{V}).
+\subsubsection{\texttt{wait}}
+\label{sec:org4cdc875}
+\begin{enumerate}
+\item Decrement semaphore
+\item If semaphore value is (or became) negative, block the process and add it to a waiting queue.
+\end{enumerate}
+
+\subsubsection{\texttt{signal}}
+\label{sec:orgf3aea07}
+\begin{enumerate}
+\item Increment semaphore
+\item If semaphore is less than or equal to zero, process waiting at the head of the queue is awakened.
+\item If semaphore is greater than zero, it means that no process is waiting, no immediate action needed.
+\end{enumerate}
+\end{document}
