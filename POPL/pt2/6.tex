@@ -1,0 +1,79 @@
+% Created 2019-02-05 Tue 15:37
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 6: Coordination Pt.2}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 6: Coordination Pt.2},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Shared Variable Coordination}
+\label{sec:org76b0c1a}
+\subsection{Monitors}
+\label{sec:orgc6b39f7}
+A monitor is a control structure that provides \textbf{mutual exclusion}.
+It can also be considered to be "An extension of the conditional critical sections".
+
+\subsection{Pascal-FC Implementation of Monitors}
+\label{sec:orgc133918}
+See lecture for live coding.
+
+Pascal-FC uses a low-level condition variable mechanism with three operators:
+\begin{description}
+\item[{delay}] immediately blocks caller task, and releases the monitor
+\item[{resume}] makes at most one blocked task runnable again
+\item[{empty}] return true if no blocked tasks exist
+\end{description}
+
+\subsection{Ada Implementation of Monitors}
+\label{sec:orgae60d96}
+In Ada, monitors are called \textbf{protected types}.
+There are no condition variables like there are in Pascal-FC.
+Instead, synchronisation comes from the use of barriers (guards).
+
+Specifications of protected types can contain:
+\begin{itemize}
+\item Procedures executed under \textbf{mutual exclusion}
+\item Pure functions that are \textbf{read only} can execute concurrently with other functions.
+\item Entries specify \textbf{barriers} (or guards).
+\item Private data of any type.
+\end{itemize}
+
+\subsubsection{Barriers}
+\label{sec:org2303eb6}
+Barriers are boolean expressions that must evaluate to \texttt{true} for the entry to execute.
+If \texttt{false}, the task is blocked.
+Barriers are re-evaluated on task entry and exit from the \textbf{protected object} (\textbf{PO}).
+At most one task can proceed through the barrier.
+
+\subsubsection{Attributes}
+\label{sec:orgea96a9c}
+Attributes in Ada give information about the behaviour of the program, e.g:
+\begin{verbatim}
+entry await when await `count = 4 is ...
+\end{verbatim}
+This releases one task (non-deterministically) when there are 4 waiting, otherwise blocks.
+\end{document}
