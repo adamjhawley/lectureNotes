@@ -1,0 +1,50 @@
+% Created 2019-02-05 Tue 14:00
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 9: Covering Missed Content in L8 and Summarising ARIN Part 1}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 9: Covering Missed Content in L8 and Summarising ARIN Part 1},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Lecture 8 Missed Slides}
+\label{sec:orgcdf1e47}
+\subsection{(Simplified) Memory-Bounded A* Search}
+\label{sec:org9f7aeaa}
+  Use all available memory: expand best nodes until available memory is full.
+When the available memory is full, SMA* drops the worst node (i.e node with the highest \emph{f-value}). 
+If all of the nodes in the fringe have the same \emph{f-value} then SMA* solves this by expanding the \emph{newest} best node and deleting the \emph{oldest} worst node.
+SMA* is complete if the solution is reachable and optimal if the solution is reachable.
+\subsection{Memory-Bounded Heuristic Search}
+\label{sec:orgdbd7164}
+Iterative-Deepening A* (IDA*) search is a hybrid between iterative deepening search and A*.
+Here the cut-off information is the \emph{f-cost} (g+h) instead of depth.
+With this we keep the linear space complexity of iterative deepening search while increasing its optimality thanks to A*.
+
+\section{Summing Up Problem Representation \& Search}
+\label{sec:org8505422}
+Search in machine learning: machine learning can be seen as search in the space of possible hypotheses/theories/models that \emph{fit best} the available data.
+\end{document}

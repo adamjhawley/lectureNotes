@@ -1,0 +1,17 @@
+#+TITLE: Lecture 9: Covering Missed Content in L8 and Summarising ARIN Part 1
+#+AUTHOR: Adam Hawley
+
+* Lecture 8 Missed Slides
+** (Simplified) Memory-Bounded A* Search
+  Use all available memory: expand best nodes until available memory is full.
+When the available memory is full, SMA* drops the worst node (i.e node with the highest /f-value/). 
+If all of the nodes in the fringe have the same /f-value/ then SMA* solves this by expanding the /newest/ best node and deleting the /oldest/ worst node.
+SMA* is complete if the solution is reachable and optimal if the solution is reachable.
+** Memory-Bounded Heuristic Search
+Iterative-Deepening A* (IDA*) search is a hybrid between iterative deepening search and A*.
+Here the cut-off information is the /f-cost/ (g+h) instead of depth.
+With this we keep the linear space complexity of iterative deepening search while increasing its optimality thanks to A*.
+
+* Summing Up Problem Representation & Search
+Search in machine learning: machine learning can be seen as search in the space of possible hypotheses/theories/models that /fit best/ the available data.
+  
