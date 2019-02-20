@@ -1,0 +1,15 @@
+#+TITLE: Lecture 7: Coordination 3
+#+AUTHOR: Adam Hawley
+
+* Recapping Java
+In Java, there are two approaches to coordination:
+- Extend Thread and override run()
+- Declare a class that implements Runnable
+
+** Shared Variable Coordination
+In Java, every object has a *lock* which enforces mutual exclusion.
+The lock can be used in two different ways:
+- The ~synchronized~ method modifier -- Produces a monitor
+- The ~synchronized~ statement -- Defines a critical region
+
+Continue @16:41
