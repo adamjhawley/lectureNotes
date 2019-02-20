@@ -1,0 +1,150 @@
+% Created 2019-02-06 Wed 15:15
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 9: Deadlock Pt.2}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 9: Deadlock Pt.2},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Resource-Request Algorithm for Process P\textsubscript{i}}
+\label{sec:org81dc827}
+Let \texttt{Request\_i[...]} be the request vector for process \textbf{P\textsubscript{i}}.
+\begin{description}
+\item[{\texttt{Request\_i[j] = k}}] Process \textbf{P\textsubscript{i}} wants \textbf{k} instances of resource type \textbf{R\textsubscript{j}}.
+\end{description}
+
+
+\begin{enumerate}
+\item If \texttt{Request\_i} \(\le\) \texttt{Need\_i} go to step 2, otherwise raise error condition since process has exceeded its maximum claim.
+\item If \texttt{Request\_i} \(\le\) \texttt{Available}, go to step 3, otherwise \textbf{P\textsubscript{i}} must wait since resources are not available.
+\item Pretend to allocate requested resources to \textbf{P\textsubscript{i}} by modifying the state as follows:
+\end{enumerate}
+
+\begin{verbatim}
+Available = Available - Request;
+Allocation_i = Allocation_i + Request_i;
+Need_i = Need_i - Request_i;
+\end{verbatim}
+
+\begin{itemize}
+\item \texttt{If safe} \(\Rightarrow\) the resources are allocated to \textbf{P\textsubscript{i}}
+\item \texttt{If unsafe} \(\Rightarrow\) \textbf{P\textsubscript{i}} must wait, and the old resource-allocation state is restored.
+\end{itemize}
+
+\section{Deadlock Detection}
+\label{sec:org0a58a4c}
+\begin{itemize}
+\item Allow system to enter deadlock state
+\item Detection algorithm
+\begin{itemize}
+\item Single Instance of a Resource Type
+\item Multiple Instances of a Resource Type
+\end{itemize}
+\item Recovery Scheme
+\end{itemize}
+\subsection{Detection Algorithm for Single Instances of a Resource Type}
+\label{sec:org7c77c54}
+Maintain a \textbf{wait-for} graph.
+In a \textbf{wait-for} graph, nodes are only processes, there are no resources.
+
+\begin{itemize}
+\item \textbf{P\textsubscript{i}} \(\rightarrow\) \textbf{P\textsubscript{j}} if \textbf{P\textsubscript{i}} is waiting for \textbf{P\textsubscript{j}}
+\end{itemize}
+
+To convert between a resource-allocation graph and a wait-for graph, just join processes where one is holding a resource that the other needs.
+Cycles in a wait-for diagram show deadlock.
+
+Periodically invoke an algorithm that searches for a cycle in the graph.
+An algorithm to detect a cycle in a graph requires an order of \textbf{n\textsuperscript{2}} operations, where \textbf{n} is the number of vertices in a graph, this is why this algorithm is only invoked periodically.
+
+\subsection{Detection Algorithm for Multiple Instances of a Resource Type}
+\label{sec:orgf38b62c}
+Where \emph{n} = number of processes and \emph{m} = number of resource types:
+
+\begin{description}
+\item[{Available}] Vector of length \emph{m}. If \texttt{Available[j] == k}, then there are \emph{k} instances of resource type \textbf{R\textsubscript{j}} available.
+\item[{Allocation}] \emph{n} x \emph{m} matrix. If \texttt{Allocation[i,j] == k}, then \textbf{P\textsubscript{i}} is currently allocated \emph{k} instances of \textbf{R\textsubscript{j}}.
+\item[{Request}] \emph{n} x \emph{m} matrix that indicates the current request of each process. If \texttt{Request[i,j] == k}, then process \textbf{P\textsubscript{i}} is requesting \emph{k} additional instances of resource type \textbf{R\textsubscript{j}}.
+\end{description}
+
+See lecture 8 for details of algorithm. 
+
+\subsection{Outlining the Detection Algorithm Stage}
+\label{sec:org2b2a75d}
+If a deadlock is  detected, we must abort (rollback) some of the processes involved in the deadlock.
+Need to decide when and how often to invoke the deadlock detection algorthm which depends on the following:
+\begin{itemize}
+\item How often a deadlock is likely to occur?
+\item How many processes will need to be rolled back?
+\begin{itemize}
+\item (One for each disjoint cycle)
+\end{itemize}
+\end{itemize}
+
+If a detection algorithm is invoked arbitrarily, there may be many cycles in the resource graph and so we would not be able to tell which of the many deadlocked processes \emph{caused} the deadlock.
+
+\section{Deadlock Recovery}
+\label{sec:org39ec003}
+\subsection{Process Termination}
+\label{sec:orge38a333}
+\begin{itemize}
+\item Abort all deadlocked processes
+\item Abort one process at at time until the deadlock cycle is eliminated.
+\end{itemize}
+
+In which order should we choose to abort?
+\begin{itemize}
+\item Priority of the process
+\item How long process has computed, and how much longer to completion
+\item Resources the process has used
+\item Resources process needs to complete
+\item How many processes will need to be terminated
+\item Is the process interactive or batch?
+\end{itemize}
+
+\subsection{Resource Preemption}
+\label{sec:orgee2757c}
+\begin{description}
+\item[{Selecting a victim}] Minimise cost
+\item[{Rollback}] Return to some safe state, restart process for that state
+\item[{Starvation}] If the same process is always picked as a victim then it could suffer from starvation. To avoid this, we can include the number of rollbacks in cost factor.
+\end{description}
+
+
+
+\section{Process Management - Conclusion}
+\label{sec:org8fdf03f}
+What we have covered:
+\begin{itemize}
+\item Processes, threads and their life cycle
+\item Scheduling
+\item Synchronising
+\item Deadlock
+\item Hardware Support
+\end{itemize}
+In the next section: memory management.
+\end{document}

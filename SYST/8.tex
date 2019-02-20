@@ -1,0 +1,202 @@
+% Created 2019-02-05 Tue 18:23
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 8: Deadlock}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 8: Deadlock},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:org56b1e3d}
+Systems consist of resources:
+\begin{itemize}
+\item Resource types R\textsubscript{1}, R\textsubscript{2}, \ldots{}, R\textsubscript{m}
+\item CPU cycles, memory space, I/O devices
+\end{itemize}
+Each resource type R\textsubscript{i} has W\textsubscript{i} instances.
+Each process utilises a resource using the following actions:
+\begin{itemize}
+\item Request
+\item Use
+\item Release
+\end{itemize}
+A set of processes is deadlocked if each process in the set is waiting for an action that only another process in the set can cause.
+
+\textbf{Note}: A resource is considered \textbf{preemptable} if it can be taken away from the process owning it (at any time) with no ill effects.
+
+\section{Conditions for Deadlock}
+\label{sec:org1b9ae0b}
+Deadlock can arise if the following four conditions hold simultaneously:
+\begin{enumerate}
+\item \textbf{Mutual Exclusion}: Only one process at a time can use a resource.
+\item \textbf{Hold and Wait}: A process holding at least one resource is waiting to acquire additional resources held by other processes.
+\item \textbf{No Preemption}: A resource can be released only voluntarily by the process holding it, after that process has completed its task.
+\item \textbf{Circular Wait}: Circular chain of two or more processes, each of which is waiting for a resource held by the next member of the chain.
+\end{enumerate}
+
+If one of these conditions is absent, no deadlock is possible.
+
+\section{Resource Allocation Graphs}
+\label{sec:orge126f67}
+In resource allocation graphs we have nodes to represent processes as well as nodes to represent resources.
+See lecture slides for examples.
+
+\section{Methods for Handling Deadlocks}
+\label{sec:orgeb5a494}
+Ensuring that the system will never enter a deadlock state is usually done using one of two methods:
+\begin{itemize}
+\item \textbf{Deadlock Prevention} (\ref{sec:org7b91dfe})
+\item \textbf{Deadlock Avoidance} (\ref{sec:org90395a0})
+\end{itemize}
+Or we can allow the system to enter a deadlock state and then recover afterwards using \textbf{Deadlock Recovery}.
+The final method is to ignore the problem and pretend that deadlocks never occur in the system (used by most OSs, including UNIX, Linux \& Windows).
+
+\subsection{Deadlock Prevention}
+\label{sec:org7b91dfe}
+Ensure that at least one of the necessary conditions for deadlocks does not hold.
+This can be accomplished by restraining the ways a request can be made:
+\begin{description}
+\item[{\textbf{Mutual Exclusion}}] Avoid mutually-exclusive access to resources. This is impractical as most systems have inherently non-sharable resources that cannot be accessed simultaneously by various processes.
+\item[{\textbf{Hold and Wait}}] Must guarantee that whenever a process requests a resource, it does not hold any other resources. This requires processes to request and be allocated all its resources only when the process has none allocated to it. This may result in low resource utilisation and possibly starvation.
+\end{description}
+Therefore, both of these are impractical to try and prevent. 
+\begin{description}
+\item[{\textbf{No Preemption}}] While also impractical, resource preemption may be imposed as follows:
+\begin{itemize}
+\item If a process that is holding some resources requests another resource than cannot be immediately allocated to it, then all resources currently being held are released.
+\item Preempted resources are added to the list of resources for which the process is waiting.
+\item Process will be restarted only when it can regain its old resources, as well as the new ones that it is requesting.
+\end{itemize}
+\item[{\textbf{Circular Wait}}] Impose a total ordering of all types.
+\begin{itemize}
+\item Require that each process requests resources in an increasing order of enumeration.
+\end{itemize}
+\end{description}
+
+\subsection{Deadlock Avoidance}
+\label{sec:org90395a0}
+   Deadlock avoidance is when you ensure that the system will never enter a deadlock state. 
+This requires that the system has some additional \textbf{a priori} information available on possible requests.
+
+The simplest and most useful model requires that each process declare the \textbf{maximum number} of resources of each type that it may need.
+Deadlock-aoidance algorithms dynamixally examie the resource-allocation state to ensure that there cam never be a circular-wait condition.
+Resource-allocation state is defined by the number of available and allocated resources, and the maximum demands of the processes.
+
+\subsubsection{Safe States}
+\label{sec:orgba7a8cb}
+Safe states are the foundation of every deadlock-avoidance algorithm.
+The system is said to be in a \textbf{safe state} if there exists a sequence <P\textsubscript{1}, P\textsubscript{2}, \ldots{}, P\textsubscript{n}> of all of the processes in the systems such that for each P\textsubscript{i} the resources that P\textsubscript{i} can still request can be satisfied by currently available resources and resources held by all the P\textsubscript{j}, with j<i.
+
+That is:
+\begin{enumerate}
+\item If a P\textsubscript{i} resource needs are not immediately available, then P\textsubscript{i} can wait until all processes P\textsubscript{j} (j<i) have finished executing.
+\item When they have finished executing they release all their resources and then P\textsubscript{i} can obtain the needed resources, execute, return allocated resources and terminate.
+\item When P\textsubscript{i} terminates, P\textsubscript{(i+1)} can obtain its needed resources and so on.
+\end{enumerate}
+
+
+\begin{itemize}
+\item If a system is in a \textbf{safe} state \(\Rightarrow\) no deadlocks
+\item If a system is in an \textbf{unsafe} state \(\Rightarrow\) possibility of deadlocks
+\end{itemize}
+
+\subsubsection{Deadlock Avoidance Algorithms}
+\label{sec:org2e58b47}
+If we have a single instance of a resource type; we can use a variant of the resource-allocation graph. (\ref{sec:org17d9637})
+Or if we have multiple instances of a resource type: we can use the \emph{banker's algorithm} (\ref{sec:org895e8a5})
+
+\begin{enumerate}
+\item Resource-Allocation Graph Algorithm
+\label{sec:org17d9637}
+Single instance of a resource type.
+Each process must a priori claim maximum resource use.
+Use a variant of the resource-allocation graph with claim edges.
+\textbf{Claim edge} P\textsubscript{i} \(\rightarrow\) R\textsubscript{j} indicated that process P\textsubscript{i} \textbf{may} request resource R\textsubscript{j}, represented by a dashed line.
+Claim edge converts to request edge when a process requests a resource.
+Request edge converted to an assignment edge when tthe resource is allocated the process.
+When a resource is released by a process, assignment edge reconverts to a claim edge.
+Resources must be a claimed a priori in the system.
+A cycle in the graph implies that the system is in an unsafe state.
+
+\item Banker's Algorithm
+\label{sec:org895e8a5}
+Multiple instances of a resource type.
+(Created by Edsger Dijkstra)
+Each process must a priori claim maximum use.
+When a process requests a resource it may have to wait.
+When a process gets all of its resources it must return them in a finite amount of time.
+The algorithm uses the analogy of an interest-free bank where:
+\begin{itemize}
+\item A customer establishes a line of credit.
+\item Borrows money in chunks that together never exceed the total line of credit.
+\item Once it reaches the maximum, the customer must pay back in a finite amount of time.
+\end{itemize}
+
+To implement the Banker's Algorithm, we use the following data structures where n = number of processes and m = number of resource types:
+\begin{description}
+\item[{Available}] Vector of length m
+\begin{itemize}
+\item If \texttt{Available[j] = k}, then there are k instances of resource type R\textsubscript{j} available.
+\end{itemize}
+\item[{Max}] nm matrix
+\begin{itemize}
+\item If \texttt{Max[i,j] = k}, then process P\textsubscript{i} may request at most k instances of resource type R\textsubscript{j}.
+\end{itemize}
+\item[{Allocation}] nm matrix:
+\begin{itemize}
+\item If \texttt{Allocation[i,j] = k}, then P\textsubscript{i} is currently allocated k instances of R\textsubscript{j}.
+\end{itemize}
+\item[{Need}] nm matrix:
+\begin{itemize}
+\item If \texttt{Need[i,j] = k}, then P\textsubscript{i} may need at most k more instances of R\textsubscript{j} to complete its task
+\end{itemize}
+\end{description}
+
+\textbf{Therefore}: \texttt{Need[i,j] = Max[i,j] - Allocation[i,j]}
+
+The \textbf{safety algorithm} is part of the Banker's Algorithm.
+It involves the following:
+\begin{enumerate}
+\item Let \textbf{Work} and \textbf{Finish} be vectors of length m and n, respectively.
+Initialise:
+\begin{itemize}
+\item \texttt{Work = Available}
+\item \texttt{Finish[i] = false for i = 0, 1, ..., n-1}
+\end{itemize}
+\item Find an \textbf{i} such that both:
+\begin{itemize}
+\item \texttt{Finish[i] = false}
+\item \texttt{Need\_i <= Work}
+\end{itemize}
+If no such \textbf{i} exists, go to step 4.
+\item \texttt{Work = Work + Allocation\_i}
+\texttt{Finish[i] = true}
+Go to step 2.
+\item If \texttt{Finish[i] == true} for all \textbf{i}, then the system is in a safe state. Otherwise it is in an unsafe state.
+\end{enumerate}
+\end{enumerate}
+\end{document}

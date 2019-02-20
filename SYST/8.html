@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2019-02-05 Tue 16:54 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lecture 8: Deadlock</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Adam Hawley" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Lecture 8: Deadlock</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org8773e30">1. Introduction</a></li>
+<li><a href="#org646e0f3">2. Conditions for Deadlock</a></li>
+<li><a href="#org1987ee0">3. Resource Allocation Graphs</a></li>
+<li><a href="#org8a97783">4. Methods for Handling Deadlocks</a>
+<ul>
+<li><a href="#org9a19862">4.1. Deadlock Prevention</a></li>
+<li><a href="#org0e48376">4.2. Deadlock Avoidance</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8773e30" class="outline-2">
+<h2 id="org8773e30"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Systems consist of resources:
+</p>
+<ul class="org-ul">
+<li>Resource types R<sub>1</sub>, R<sub>2</sub>, &#x2026;, R<sub>m</sub></li>
+<li>CPU cycles, memory space, I/O devices</li>
+</ul>
+<p>
+Each resource type R<sub>i</sub> has W<sub>i</sub> instances.
+Each process utilises a resource using the following actions:
+</p>
+<ul class="org-ul">
+<li>Request</li>
+<li>Use</li>
+<li>Release</li>
+</ul>
+<p>
+A set of processes is deadlocked if each process in the set is waiting for an action that only another process in the set can cause.
+</p>
+
+<p>
+<b>Note</b>: A resource is considered <b>preemptable</b> if it can be taken away from the process owning it (at any time) with no ill effects.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org646e0f3" class="outline-2">
+<h2 id="org646e0f3"><span class="section-number-2">2</span> Conditions for Deadlock</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Deadlock can arise if the following four conditions hold simultaneously:
+</p>
+<ol class="org-ol">
+<li><b>Mutual Exclusion</b>: Only one process at a time can use a resource.</li>
+<li><b>Hold and Wait</b>: A process holding at least one resource is waiting to acquire additional resources held by other processes.</li>
+<li><b>No Preemption</b>: A resource can be released only voluntarily by the process holding it, after that process has completed its task.</li>
+<li><b>Circular Wait</b>: Circular chain of two or more processes, each of which is waiting for a resource held by the next member of the chain.</li>
+</ol>
+
+<p>
+If one of these conditions is absent, no deadlock is possible.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1987ee0" class="outline-2">
+<h2 id="org1987ee0"><span class="section-number-2">3</span> Resource Allocation Graphs</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+In resource allocation graphs we have nodes to represent processes as well as nodes to represent resources.
+See lecture slides for examples.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8a97783" class="outline-2">
+<h2 id="org8a97783"><span class="section-number-2">4</span> Methods for Handling Deadlocks</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Ensuring that the system will never enter a deadlock state is usually done using one of two methods:
+</p>
+<ul class="org-ul">
+<li><b>Deadlock Prevention</b> (<a href="#org9a19862">4.1</a>)</li>
+<li><b>Deadlock Avoidance</b> (<a href="#org0e48376">4.2</a>)</li>
+</ul>
+<p>
+Or we can allow the system to enter a deadlock state and then recover afterwards using <b>Deadlock Recovery</b>.
+The final method is to ignore the problem and pretend that deadlocks never occur in the system (used by most OSs, including UNIX, Linux &amp; Windows).
+</p>
+</div>
+
+<div id="outline-container-org9a19862" class="outline-3">
+<h3 id="org9a19862"><span class="section-number-3">4.1</span> Deadlock Prevention</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Ensure that at least one of the necessary conditions for deadlocks does not hold.
+This can be accomplished by restraining the ways a request can be made:
+</p>
+<dl class="org-dl">
+<dt><b>Mutual Exclusion</b></dt><dd>Avoid mutually-exclusive access to resources. This is impractical as most systems have inherently non-sharable resources that cannot be accessed simultaneously by various processes.</dd>
+<dt><b>Hold and Wait</b></dt><dd>Must guarantee that whenever a process requests a resource, it does not hold any other resources. This requires processes to request and be allocated all its resources only when the process has none allocated to it. This may result in low resource utilisation and possibly starvation.</dd>
+</dl>
+<p>
+Therefore, both of these are impractical to try and prevent. 
+</p>
+<dl class="org-dl">
+<dt><b>No Preemption</b></dt><dd>While also impractical, resource preemption may be imposed as follows:
+<ul class="org-ul">
+<li>If a process that is holding some resources requests another resource than cannot be immediately allocated to it, then all resources currently being held are released.</li>
+<li>Preempted resources are added to the list of resources for which the process is waiting.</li>
+<li>Process will be restarted only when it can regain its old resources, as well as the new ones that it is requesting.</li>
+</ul></dd>
+<dt><b>Circular Wait</b></dt><dd>Impose a total ordering of all types.
+<ul class="org-ul">
+<li>Require that each process requests resources in an increasing order of enumeration.</li>
+</ul></dd>
+</dl>
+</div>
+</div>
+
+<div id="outline-container-org0e48376" class="outline-3">
+<h3 id="org0e48376"><span class="section-number-3">4.2</span> Deadlock Avoidance</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+Deadlock avoidance is when you ensure that the system will never enter a deadlock state. 
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Adam Hawley</p>
+<p class="date">Created: 2019-02-05 Tue 16:54</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
