@@ -1,0 +1,73 @@
+% Created 2019-02-20 Wed 17:20
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 7: Coordination 3}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 7: Coordination 3},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Recapping Java}
+\label{sec:org20921fc}
+In Java, there are two approaches to coordination:
+\begin{itemize}
+\item Extend Thread and override run()
+\item Declare a class that implements Runnable
+\end{itemize}
+
+\subsection{Shared Variable Coordination}
+\label{sec:org78ecc99}
+In Java, every object has a \textbf{lock} which enforces mutual exclusion.
+The lock can be used in two different ways:
+\begin{itemize}
+\item The \texttt{synchronized} method modifier -- Produces a monitor
+\item The \texttt{synchronized} statement -- Defines a critical region
+\end{itemize}
+
+Conditional Synchronisation uses methods from the top-level \texttt{Object} class:
+\begin{description}
+\item[{\texttt{wait()}}] Always blocks when executed, but releases the lock.
+\item[{\texttt{notify()}}] Wakes up another thread waiting on the currently held lock:
+\begin{itemize}
+\item At most one thread is woken
+\item Thread selection is non-deterministic
+\item Woken thread \textbf{waits} to obtain the lock
+\end{itemize}
+\item[{\texttt{notifyAll()}}] Wakes up all waiting threads (which access under normal mutual exclusion)
+\end{description}
+
+\textbf{LIVE CODE SECTION MISSED AS NOT ON RECORDING} 
+
+\texttt{Join()} is a method called by a main thread to \emph{join} its subthread and wait for it to complete to ensure consistency throughout both threads.
+
+\section{Readers/Writers Problem}
+\label{sec:org4df4cdb}
+Different implementation strategies exist:
+\begin{itemize}
+\item We choose to give priority to waiting writers
+\item All (new) readers are blocked if any writer is available.
+\end{itemize}
+\end{document}
