@@ -61,7 +61,8 @@ The user program deals with logical addresses and never sees the real physical a
 Execution-time binding occurs when reference is made to location in memory.
 Logical addresses bound to physical addresses.
 
-* Single-User Contiguous Memory
+* Contiguous Memory
+** Single-User Contiguous Memory
 First computers: all memory assigned to a single job.
 Key points: contiguous + entirely assigned.
 Advantages:
@@ -71,7 +72,7 @@ Disadvantages:
 - Only one job can run at a time so this cannot support multi-programming.
 - Processor unused during I/O operations.
 
-* Fixed Contiguous Partitions
+** Fixed Contiguous Partitions
 OS assigns one partition per process, size of partitions defined at boot time and never changes.
 Key point is that it has protection against memory intrusion.
 The OS must be assigned its own partition.
@@ -83,7 +84,7 @@ The problem with this approach is that it is often difficult to choose the right
 *Internal fragmentation* is when a process may require less space than the available partition.
 Or process creation may fail even though there may be enough free memory due to wasted memory by small jobs.
 
-* Dynamic Contiguous Partitions
+** Dynamic Contiguous Partitions
 Partition size is selected when the job is loaded.
 Address resolution becomes: 
 
@@ -92,7 +93,7 @@ Address resolution becomes:
 This approach alleviated the problems of fixed contiguous partitioning but does not solve it completely.
 It is still possible to get *External Fragmentation* where the OS has to keep track of free partitions.
 
-* Partition Allocation Problem
+*** Partition Allocation Problem
 How to satisfy a request of size /n/ from a list of free partitions?
 - First-fit :: Allocate the first partition that is big enough
 - Best-fit :: Allocate the smallest partition that is big enough
@@ -101,8 +102,18 @@ How to satisfy a request of size /n/ from a list of free partitions?
 - Worst-fit :: Allocate the largest partition
   + Must also search entire list, unless the list is ordered by size
   + Produces the largest leftover partition
+- Random :: As it sounds, take a random partition.
 There is no clear winner as performance of each depends on the request patterns
 
-Continue @ 28:50
+*** Mitigation of External Fragmentation
+External fragmentation can be mitigated by a *compaction* (or defragmentation) procedure.
+This requires *relocatable partitions* where the base register needs to be changed.
+The compaction algorithm needs spare memory space to operate efficiently (i.e to move small partitions out of the way before large partitions can be relocated).
+Compaction cannot be performed while I/O is in progress involving memory that is being compacted.
+Alternatively, the CPU can latch the process in memory while it is involved in I/O, or do I/O only into OS buffers (i.e double buffering).
+** Swapping
+A process can be *swapped* temporarily out of memory to a *backing store*, and then brought back into memory for continued exectution.
+This means that the total physical memory space of the processes can exceed physical memory.
 
- 
+The *Backing Store* is a fast disk large enough to accomodate binaries of all processes.
+A major part of swap time is transfer time and the total time is directly proportional to the amount of memory swapped.

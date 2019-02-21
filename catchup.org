@@ -1,17 +1,23 @@
 Keybind reminder:
 C-c C-c : Toggle Checkbox
 * SYST
-** TODO Lectures [3/4]
+** TODO Lectures [4/10]
   - [X] 7
   - [X] 8 Deadlock pt 1
   - [X] 9 Deadlock pt 2
-  - [ ] 10
+  - [X] 10
+  - [ ] 11
+  - [ ] 12
+  - [ ] 13
+  - [ ] 14
+  - [ ] 15
+  - [ ] 16
 * POPL
 ** Pt1. 
 *** TODO Lectures [1/2]
    - [ ] 1
    - [X] 2
-** Pt2.
+** Pt2. 
 *** TODO Lectures [2/7]
    - [X] 6
    - [X] 7
@@ -21,16 +27,25 @@ C-c C-c : Toggle Checkbox
    - [ ] 11
    - [ ] 12
 
-*** TODO Practicals [0/0]
+*** TODO Practicals [0/4]
+    - [ ] 2 & 3
+    - [ ] 4
+    - [ ] 5
+    - [ ] 6
 * ARIN
-** TODO Lectures [1/1]
+** Pt1
+*** TODO Lectures [1/1]
   - [X] 9 
-** TODO Practicals [1/4]
+*** TODO Practicals [1/4]
   - [X] Past Paper
   DEADLINE: <2019-02-06 Wed>
   - [ ] Prac1
   - [ ] Prac2
   - [ ] Prac3
+** Pt2
+*** TODO Lectures [0/2]
+   - [ ] 1 
+   - [ ] 2
 * SEPR
 ** TODO Lectures [0/1]
    - [ ] Guest lecture: Safety Critical Software
