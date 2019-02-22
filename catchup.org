@@ -18,11 +18,11 @@ C-c C-c : Toggle Checkbox
    - [ ] 1
    - [X] 2
 ** Pt2. 
-*** TODO Lectures [3/7]
+*** TODO Lectures [4/7]
    - [X] 6
    - [X] 7
    - [X] 8
-   - [ ] 9
+   - [X] 9
    - [ ] 10
    - [ ] 11
    - [ ] 12

@@ -1,0 +1,124 @@
+% Created 2019-02-22 Fri 16:13
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 9: Message Passing 1}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 9: Message Passing 1},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Message-Based Coordination}
+\label{sec:orge60e68a}
+Shared-variable coordination is based on \emph{normal} variable access by multiple processes.
+Message-passing coordination requires new primitives.
+Abstractly, these are seen as:
+\begin{itemize}
+\item \texttt{send(message)}
+\item \texttt{receive(message)}
+\end{itemize}
+A message can never be received (read) before it has been sent (written).
+This means that \texttt{receive(message)} is potentially \textbf{blocking}.
+
+\section{Evaluating Message-Based Coordination}
+\label{sec:orgbb77c1f}
+There are a number of ways to describe different approaches:
+\begin{itemize}
+\item Models for send and receive
+\item How tasks are identified
+\item The relationship between tasks
+\item Types of messaages that can be sent
+\end{itemize}
+
+\section{Possible Models for Sending}
+\label{sec:org6ff690c}
+\subsection{Aynchronous}
+\label{sec:org2340f1c}
+Sender does not wait, \texttt{send()} returns \emph{immediately} but sent messages must be buffered.
+\subsection{Synchronous}
+\label{sec:org6c4db6f}
+Sender blocks until receiver can receive, vice-versa.
+Message can pass directly from sender to receiver, this means no buffer is necessary.
+Sometimes this approach is called \emph{rendezvous}.
+\subsection{Remote Invocation}
+\label{sec:org71f589c}
+Sender blocks until receiver is ready (Synchronous).
+This time, when the message is received, the receiver will flag an acknowledgement or reply from the reviver.
+This is also known as an \emph{extended rendezvous}.
+
+\section{Task Naming}
+\label{sec:org6515bf2}
+How do senders and receivers refer to each other?
+\begin{itemize}
+\item Direct
+\item Indirect
+\item Symmetric
+\item Asymmetric
+\end{itemize}
+\subsection{Direct}
+\label{sec:orgdb9523f}
+Tasks have names.
+This is used to identify end points, e.g send(message) to Joe.
+\subsection{Indirect}
+\label{sec:org8516f61}
+An intermediate is used (e.g. a \emph{mailbox} or a \emph{channel}).
+These names can be statically named.
+\subsection{Symmetric}
+\label{sec:org48df0a6}
+Sender specifies receiver and vice versa.
+For example:
+\begin{itemize}
+\item \texttt{send(message) to task}
+\item \texttt{receive(message) from task}
+\end{itemize}
+\subsection{Asymmetric}
+\label{sec:orgbd3a5d0}
+Send to named receiver, receive from any sender:
+\begin{itemize}
+\item \texttt{send(message) to task}
+\item \texttt{receive(message)}
+\end{itemize}
+
+\section{Task Relationships}
+\label{sec:org38d6cf7}
+What is the relationship between senders and receivers?
+\begin{itemize}
+\item One-to-one (can be synchronous or buffered)
+\item One-to-many
+\begin{itemize}
+\item A \textbf{multi-cast} communication
+\item Sometimes inaccurately called a \emph{broadcast} which is one-to-everybody
+\item Requires indirect naming
+\end{itemize}
+\item Many-to-many (multiple multi-casts)
+\end{itemize}
+
+\section{Message Types}
+\label{sec:org3c20629}
+These can be limited to a set of predefined types or unlimited (all types/classes can be communicated).
+Low-level languages are more likely to limit message type.
+
+\textbf{SEE LECTURE FOR OCCAM}
+\end{document}
