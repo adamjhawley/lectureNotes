@@ -1,0 +1,40 @@
+#+TITLE: Lecture 8: Coordination Recap
+#+AUTHOR: Adam Hawley
+
+* Shared Variables
+** Communication
+Using variables to share information between multiple processes.
+
+** Synchronisation
+   - Semaphores
+   - Condition Variables
+   - Monitors
+   - Barriers
+ 
+* Issues with Concurrency
+- Race Condition :: Two forks not letting go. Coordination is required and has failed, process not waiting.
+- Starvation :: Never getting two forks. Where resources are never accessed/available to a process.
+- Deadlock :: All have one fork. All are waiting for a resource that is held by another process.
+- Livelock :: Left fork put down pick up right fork. While process state is changing, no progress is being made.
+
+* Semaphores 
+** Pascal-FC
+Non-negative integer and two commands:
+- ~wait()~
+- ~signal()~
+They are used to make a critical section *atomic*.
+Block when 0 (non-runnable).
+** Bounded Buffers
+Bounded buffers which have producers and consumers.
+To control a bounded buffer, you need the following three semaphores:
+- Space available
+- Items available
+- Gate
+
+* Monitors
+Higher level structures which guarantee *mutual exclusion*.
+They have three condition variables:
+- ~delay()~
+- ~resume()~
+- ~empty()~
+
