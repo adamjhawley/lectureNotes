@@ -18,17 +18,17 @@ C-c C-c : Toggle Checkbox
    - [ ] 1
    - [X] 2
 ** Pt2. 
-*** TODO Lectures [2/7]
+*** TODO Lectures [3/7]
    - [X] 6
    - [X] 7
-   - [ ] 8
+   - [X] 8
    - [ ] 9
    - [ ] 10
    - [ ] 11
    - [ ] 12
 
-*** TODO Practicals [0/4]
-    - [ ] 2 & 3
+*** TODO Practicals [1/4]
+    - [X] 2 & 3 //KIND OF DONE
     - [ ] 4
     - [ ] 5
     - [ ] 6
@@ -43,8 +43,8 @@ C-c C-c : Toggle Checkbox
   - [ ] Prac2
   - [ ] Prac3
 ** Pt2
-*** TODO Lectures [0/2]
-   - [ ] 1 
+*** TODO Lectures [1/2]
+   - [X] 1 
    - [ ] 2
 * SEPR
 ** TODO Lectures [0/1]

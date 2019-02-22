@@ -1,0 +1,27 @@
+#+TITLE: ML Section 1.2: Decision Tree Learning
+#+AUTHOR: Adam Hawley
+
+* Intro
+- Training examples are represented as feature-value vectors.
+- Each feature denotes some property of an example.
+- Feature values can be continuous, but will be discretised beforehand.
+
+* Decision Tree Learning Algorithm
+1. If training examples at the root node are perfectly classified, then stop.
+2. Choose feature to test at root node.
+3. A child of the root node is created for each value of the root feature.
+4. Training examples are sorted to the children according to feature test.
+5. Repeat steps 1-5 for each child (viewing it as the root of the new subtree).
+
+** Feature Choice
+Choose the feature which is most useful for classifying examples.
+The quality measure for choosing a feature is the /information gain/ --- measuring how well a given feature separates the training examples to their categories.
+
+When deciding which feature is best we do the following:
+
++ Let S be the set of training examples, p^+ be the proportion of examples of class C1 and p^- be the proportion of examples of class C2.
++ *Entropy* measures the /impurity/ of S:
+  - ~E(S) = (-p^+*log(p^+)) + (-p^-*log(p^-))~
++ Let F be a feature, and let S_v be the elements in S with F = v.
++ Gain(S,F) is expected reduction in entropy due to sorting on F:
+  - ~Gain(S,F) = E(S) - \Sigma_V

@@ -1,0 +1,55 @@
+% Created 2019-02-22 Fri 00:03
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{ML Section 1.2: Decision Tree Learning}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={ML Section 1.2: Decision Tree Learning},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:orgd5e139f}
+\begin{itemize}
+\item Training examples are represented as feature-value vectors.
+\item Each feature denotes some property of an example.
+\item Feature values can be continuous, but will be discretised beforehand.
+\end{itemize}
+
+\section{Decision Tree Learning Algorithm}
+\label{sec:orgbc003dd}
+\begin{enumerate}
+\item If training examples at the root node are perfectly classified, then stop.
+\item Choose feature to test at root node.
+\item A child of the root node is created for each value of the root feature.
+\item Training examples are sorted to the children according to feature test.
+\item Repeat steps 1-5 for each child (viewing it as the root of the new subtree).
+\end{enumerate}
+
+\subsection{Feature Choice}
+\label{sec:org3ff67e5}
+Choose the feature which is most useful for classifying examples.
+The quality measure for choosing a feature is the \emph{information gain} --- measuring how well a given feature separates the training examples to their categories.
+\end{document}

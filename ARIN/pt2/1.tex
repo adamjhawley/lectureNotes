@@ -1,0 +1,90 @@
+% Created 2019-02-21 Thu 23:48
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 1: Introduction to Supervised Learning}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 1: Introduction to Supervised Learning},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Organisation of this Section of ARIN}
+\label{sec:org4ef6da0}
+\begin{itemize}
+\item 6 Lectures of this section
+\item 2 exercise problem sheets (formative):
+\begin{itemize}
+\item Hand in solutions in groups of 3-4 to receive feedback
+\item Solutions will be posted on the VLE
+\end{itemize}
+\item Two Q\&A sessions attendance voluntary.
+\item Recommended text: Tom Mitchell, "Machine Learning"
+\end{itemize}
+
+\section{What is Machine Learning?}
+\label{sec:orga9bb5aa}
+   \emph{A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.}
+[Mitchell 97]
+
+\section{Types of Machine Learning}
+\label{sec:orgfdd196b}
+\subsection{Supervised Learning}
+\label{sec:org94f2cc5}
+This is where the learning agent receives training examples and corresponding labels provided by a supervisor.
+The goal is summarised as "Given a new example, what is its label?".
+
+\subsection{Reinforcement Learning}
+\label{sec:org66fde40}
+Training experience are state-action paris with the correspondingn numerical reward.
+The goal is summarised here as "Learn a behaviour that maximises cumulative reward.
+
+\subsection{Unsupervised Learning}
+\label{sec:orgffb7ffe}
+Unstructured set of examples.
+Goal: discover patterns/structures in the data.
+Focus: clustering.
+
+\section{Supervised Learning}
+\label{sec:org82fc0d5}
+\subsection{Issues}
+\label{sec:orgb728122}
+\begin{itemize}
+\item Where to get training examples from? (e.g medical data can be difficult to acquire because of data privacy)
+\item How to represent examples?
+\item How to represent classification procedure (hypothesis)?
+\item Which learning method to use?
+\item How to evaluate the result?
+\end{itemize}
+
+\subsection{Learning (Generalisation) Bias}
+\label{sec:orgd389894}
+\emph{Definition}: Preference relation between legal hypotheses.
+
+Hypothesis with zero error on training data is not necessarily the best (noise!).
+\textbf{Occam's razor}: the simpler hypothesis is the better one.
+No supervised learning without some generalisation (can be caused by language or learning bias).
+\textbf{Language bias} is bias that comes from your hypothesis representation.
+\textbf{Learning bias} comes from the machine learning algorithm.
+\end{document}
