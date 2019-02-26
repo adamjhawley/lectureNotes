@@ -1,0 +1,24 @@
+#+TITLE: Lecture 10: Message Passing 2
+#+AUTHOR: Adam Hawley
+
+* Pascal-FC
+- Synchronous communication
+- Unlimited message types
+- Indirect naming via channels
+- Guarded select statements
+- Has an extended rendezvous mechanism
+
+* Ada 
+- *Remote invocation* communication model
+  + Can be used to provide *sychronous communication*
+- Unlimited message types
+- *Direct symmetric* naming via task names, and an entry defined for that task
+- Guarded select statements
+- Has extended rendezvous
+
+** Ada Communication Model
+Based on a *client/server* coordination model.
+A *service* is a *public* ~entry~ in the server's task specification.
+An ~entry~ declaration specifies the name, parameters and result types for the service.
+
+CONTINUE @ 20:53
