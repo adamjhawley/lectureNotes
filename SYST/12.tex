@@ -1,0 +1,141 @@
+% Created 2019-02-26 Tue 17:35
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 12: Virtual Memory}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 12: Virtual Memory},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Demand Paging}
+\label{sec:orge98cd7e}
+\subsection{Introduction}
+\label{sec:orgd11b047}
+Program is permanently stored in a backing store and is swapped in as needed.
+The backing store is also split into storage units (called \textbf{blocks}), which are the same size as the frame and pages.
+The prgram ends up with a small set of pages loaded in main memory --- a \emph{working set}.
+Programs are executed (more or less) sequentially and coverage of the program is generally small (many functions are seldom used e.g. error handling routines, mutually exclusive modules, maintenance etc.).
+\subsection{Advantages of Demand Paging}
+\label{sec:orgf47bba3}
+Demand paging allows to run programs which require much more memory than physically available (limited by secondary storage or addressing space).
+
+\subsection{Requirements of Demand Paging}
+\label{sec:orge156f17}
+\begin{itemize}
+\item Fast secondary storage device: DMA
+\item More decisions to be taken by the OS:
+\begin{itemize}
+\item What to do when all memory is full and a new page is needed? - Which page is replaced?
+\end{itemize}
+\end{itemize}
+\section{Virtual Memory}
+\label{sec:orgf5b4dae}
+\subsection{Introduction}
+\label{sec:orgd127f1a}
+Separation of user logical memory from physical memory.
+Logical address space can be much larger than physical address space since only part of the program eeds to be in memory for execution.
+More performance and resource efficiency since less I/O needed to load or swap processes and allows for more efficient process creation.
+\subsection{Virtual Address Space}
+\label{sec:orgbc62ddf}
+Usually design logical address space for stack to start at Max logical address and grow \emph{down} while heap grows \emph{up}.
+This maximises space use by leaving unused address space between the two, this means that no physical memory is needed until the heap or stack grows to a given new page.
+It also enables sparse address spaces with holes left for growth, dynamically linked libraries etc.
+System libraries shared via mapping into virtual address space.
+Shared memory by mapping pages read-write into virtual address space.
+Pages can be shared during \texttt{fork()}, speeding process creation.
+\section{Demand Paging Mechanism}
+\label{sec:org9041607}
+Similar to paging system with swapping.
+Pager is a swapper that deals with pages that only loads the needed pages.
+A page is said to be needed when there is a reference to it (read/write to its address range).
+\begin{itemize}
+\item Invalid reference \(\rightarrow\) Abort
+\item Not-in-memory \(\rightarrow\) Bring to memory
+\end{itemize}
+When a process is to be swapped in, the pager predicts which pages will be used before the process is swapped out again.
+So instead of swapping in a whole process, the pager brings into memory only its estimate of the working set.
+The OS must distinguish between the pages that are in memory and the pages that are on the disk (to do this, usually a valid-invalid scheme is used).
+If pages needed are already \textbf{memory resident} then there is no difference from regular paging.
+If the page needed is not \textbf{memory resident} then there is a \textbf{page fault} and the OS needs to detect it and load the page into memory from storage without changing the program behaviour and without the programmer needing to change code.
+\subsection{Handling Page Faults}
+\label{sec:orgadd5f8d}
+A page faut is an interrupt so a context switch ensues.
+This means that the process state is saved and the OS is enabled to restart the instruction that caused the page fault, as the CPU will be in exactly the same state as prior to the memory reference.
+The OS will do the following upon page fault:
+\begin{enumerate}
+\item Find a free frame
+\item Swap page into frame via scheduled I/O operation
+\item Reset tables to indicate page now in memory (set validation bit equal to valid)
+\item Restart the instruction that caused the page fault
+\end{enumerate}
+In the extreme case, a process may be started with none of its pages in memory.
+The solution is \emph{pure demand paging}.
+\begin{enumerate}
+\item OS sets instruction-pointer to the first instruction of the process, non-memory-resident.
+\item Page fault signalled and recovered
+\item Same for every other process pages on first access.
+\end{enumerate}
+A single instruction can access multiple pages and cause multiple page faults.
+For example, fetch and decode of an instruction which adds 2 numbers from memory and stores the result back to memory.
+The two numbers may reside in two different pages.
+\subsection{Demand Paging Mechanism Performance}
+\label{sec:org7e209f6}
+There are three major activities:
+\begin{enumerate}
+\item Service the interrupt --- few hundred instructions
+\item Read in the page --- lots of time
+\item Restart the process --- few hundred instructions
+\end{enumerate}
+
+
+\begin{description}
+\item[{Page Fault Rate}] The liklihood of a memory access to be a page fault:
+\end{description}
+
+
+\begin{itemize}
+\item If \emph{p} = 0 \(\rightarrow\) no page faults
+\item If \emph{p} = 1 \(\rightarrow\) every reference is a fault
+\end{itemize}
+
+
+\begin{description}
+\item[{Effective Access Time (EAT)}] \texttt{EAT = (1 - p) * memory access time + p(page fault overhead + swap page out + swap page in )}
+\end{description}
+\subsection{Demand Paging Mechanism Optimisation}
+\label{sec:org7cae0dd}
+\begin{itemize}
+\item Swap space I/O faster than file system I/O even if on the same device. (The swap is allocated in larger chunks so there is less management needed than file system)
+\item Copy entire process image to swap space at process load time and then page in and out of swap space. (Need to remember the big initial copy cost)
+\item Demand page from program binary on disk, but discard rather than paging out when freeing frame.
+\begin{itemize}
+\item Used in Solaris and current BSD
+\item Still need to write to swap space
+\end{itemize}
+\item Copy-On-Write (COW) allows both parent and child processes to initially share the same pages in memory (if either process modifies a shared page, only then will a page be copied). This allows for more efficient process creation.
+\item Variation on \texttt{fork()} system call has parent suspended and child using address space of parent (\texttt{vfork()} on Linux and designed to have the child make an \texttt{exec()} call). This is very efficient.
+\end{itemize}
+\end{document}

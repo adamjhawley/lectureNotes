@@ -1,13 +1,13 @@
 Keybind reminder:
 C-c C-c : Toggle Checkbox
 * SYST
-** TODO Lectures [5/12]
+** TODO Lectures [6/12]
   - [X] 7
   - [X] 8 Deadlock pt 1
   - [X] 9 Deadlock pt 2
   - [X] 10
   - [X] 11
-  - [ ] 12
+  - [X] 12
   - [ ] 13
   - [ ] 14
   - [ ] 15
