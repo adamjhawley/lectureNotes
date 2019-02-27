@@ -21,4 +21,32 @@ Based on a *client/server* coordination model.
 A *service* is a *public* ~entry~ in the server's task specification.
 An ~entry~ declaration specifies the name, parameters and result types for the service.
 
-CONTINUE @ 20:53
+** Other Facilities
+   - ~`count~ gives the number of tasks queued on an entry.
+   - Entry families declare groups of entries
+   - Nested accept statements allow multiple task coordination
+   - A task executing in an ~accept~ can also execute an ~entry~ call
+
+** ~select~
+The select statement comes in four forms:
+#+BEGIN_src ada
+select_statement ::= selective_accept
+                     conditional_entry_call
+                     timed_entry_call
+                     asynchronous_select
+#+END_src
+*** ~selective_accept~
+This allows the server to:
+- wait (for more than one more rendezvous at a time)
+- time-out (if no rendezvous occurs within a specified time)
+- terminate (if no client can ever call an entry)
+
+* Synchronisation
+- Both tasks must /agree/ to communicate
+- *Ready* task *waits* for the other task (blocked)
+- When both tasks are ready, client's arguments are passed to the server.
+- Server executed code inside the ~accept~ statement
+- Results returned to client at completion of ~accept~
+- Tasks continue concurrently
+
+I can't tell if there was actually more content or not...

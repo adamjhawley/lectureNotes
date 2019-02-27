@@ -1,4 +1,4 @@
-% Created 2019-02-23 Sat 08:54
+% Created 2019-02-27 Wed 21:07
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 
 
 \section{Pascal-FC}
-\label{sec:orgc2b5001}
+\label{sec:org4d6c208}
 \begin{itemize}
 \item Synchronous communication
 \item Unlimited message types
@@ -39,4 +39,63 @@
 \item Guarded select statements
 \item Has an extended rendezvous mechanism
 \end{itemize}
+
+\section{Ada}
+\label{sec:orgc95c3c3}
+\begin{itemize}
+\item \textbf{Remote invocation} communication model
+\begin{itemize}
+\item Can be used to provide \textbf{sychronous communication}
+\end{itemize}
+\item Unlimited message types
+\item \textbf{Direct symmetric} naming via task names, and an entry defined for that task
+\item Guarded select statements
+\item Has extended rendezvous
+\end{itemize}
+
+\subsection{Ada Communication Model}
+\label{sec:org9cc16bd}
+Based on a \textbf{client/server} coordination model.
+A \textbf{service} is a \textbf{public} \texttt{entry} in the server's task specification.
+An \texttt{entry} declaration specifies the name, parameters and result types for the service.
+
+\subsection{Other Facilities}
+\label{sec:org2a9da9f}
+\begin{itemize}
+\item \texttt{`count} gives the number of tasks queued on an entry.
+\item Entry families declare groups of entries
+\item Nested accept statements allow multiple task coordination
+\item A task executing in an \texttt{accept} can also execute an \texttt{entry} call
+\end{itemize}
+
+\subsection{\texttt{select}}
+\label{sec:orge9b63ab}
+The select statement comes in four forms:
+\begin{verbatim}
+select_statement ::= selective_accept
+                     conditional_entry_call
+                     timed_entry_call
+                     asynchronous_select
+\end{verbatim}
+\subsubsection{\texttt{selective\_accept}}
+\label{sec:org00b1dcc}
+This allows the server to:
+\begin{itemize}
+\item wait (for more than one more rendezvous at a time)
+\item time-out (if no rendezvous occurs within a specified time)
+\item terminate (if no client can ever call an entry)
+\end{itemize}
+
+\section{Synchronisation}
+\label{sec:org980b5bc}
+\begin{itemize}
+\item Both tasks must \emph{agree} to communicate
+\item \textbf{Ready} task \textbf{waits} for the other task (blocked)
+\item When both tasks are ready, client's arguments are passed to the server.
+\item Server executed code inside the \texttt{accept} statement
+\item Results returned to client at completion of \texttt{accept}
+\item Tasks continue concurrently
+\end{itemize}
+
+I can't tell if there was actually more content or not\ldots{}
 \end{document}
