@@ -1,0 +1,87 @@
+#+TITLE: ML Section 1.3: Neural Networks & Backpropogation
+#+AUTHOR: Adam Hawley
+
+* Intro to Neural Networks (NN)
+The creation of NNs was inspired by neuroscience.
+There are multiple effective algorithms to train NNs from examples but on this course we will focus on one called *backpropogation*.
+
+* Preceptron
+Perceptrons are the basic unit of NNs.
+They compute a linear function of R^n \rarr R using the sum of the weighted inputs.
+
+** Thresholding
+Maybe we want a discrete output instead of a numerical output.
+To do this we use thresholding to instead compute a linear function: 
+\begin{equation}
+R^n \implies \{-1,1\}
+\end{equation}
+
+** Training Perceptrons
+*** Smallest Neural Network
+Changing the perceptron function means changing the weights (apart from w_0).
+Online learning means that we update the weights whenever a new training example (x,t) is presented.
+\begin{equation}
+w_i \leftarrow w_i +{\Delta}w_i
+\end{equation}
+The basis of weight update is the *error* : Difference between perceptron output /o/ on /x/ and training example target value /t/.
+
+*** A Simple Update Rule 
+Perceptron training rule:
+\begin{equation}
+{\Delta}w_i = \eta(t - o)x_i
+\end{equation}
+Where:
+- \eta : Learning Rate (0-1)
+- $t - o$ : Error
+- $x_i$ : The /ith/ input.
+This training rule is guaranteed to converge within a finite number of steps to a correct weight vector if:
+- Training examples are linearly separable.
+- A sufficiently small \eta is used.
+If the examples are not linearly separable then see below.
+*** Gradient Descent
+Consider an unthresholded perceptron.
+The goal is to minimise the squared prediction error on training data (i.e. best-fit approximation).
+\begin{equation}
+E[\overrightarrow{w}] \equiv \frac{1}{2} \sum\limits_{d\in D} (t_d - o_d)^2
+\end{equation}
+Direction of error reduction: gradient of $E$:
+\begin{equation}
+\nabla E[\overrightarrow{w}] \equiv \left\{ \frac{{\delta}E}{{\delta}w_0},\frac{{\delta}E}{{\delta}w_1}, \ldots, \frac{{\delta}E}{{\delta}w_n} \right \}
+\end{equation}
+So the weight update follows:
+\begin{equation}
+{\Delta}\overrightarrow{w} = -\eta \nabla E[\overrightarrow{w}]
+\end{equation}
+\begin{equation}
+{\Delta}w_i = -\eta\frac{{\delta}E}{{\delta}w_i} 
+\end{equation}
+Where:
+\begin{equation}
+\frac{{\delta}E}{{\delta}w_i} = \sum\limits_d(t_d - o_d)(-x_i, d)
+\end{equation}
+**** Properties of Gradient Descent
+- Gradient Descent can be applied whenever:
+  + The hypothesis space is defined by continous parameters (weights).
+  + The error term can be differentiated with respect to these hypothesis parameters.
+- Problems:
+  + Converging to a local minimum can be slow.
+  + There is no guarantee that the procedure will find the global minimum if there are multiple local minima.
+**** Online Versino of Gradient Descent
+Previously the error term was computed using the sum of all the training samples:
+\begin{equation}
+\frac{{\delta}E}{{\delta}w_i} = \sum\limits_d(t_d - o_d)(-x_i, d)
+\end{equation}
+The online version of gradient descent updates the weight based on a single training example d.
+**** Online vs. Offline
+- Updating weights is quicker.
+- But /regular/ gradient descent uses the true gradient, so a larger step size can be used.
+- Stochastic gradient descent can avoid falling into a local minimum.
+- This also works for thresholded perceptrons, but does not necesssarily minimise the number of misclassified training examples.
+** Perceptron Representational Power
+A perceptron can only compute a linear function.
+That is, a perceptron can not compute the XOR function.
+A network of linear perceptrons also is restricted to linear functions.
+To overcome this we use a *Sigmoid Perceptron*.
+* Sigmoid Perceptrons
+Sigmoid perceptrons enable NNs to compute non-linear functions.
+
