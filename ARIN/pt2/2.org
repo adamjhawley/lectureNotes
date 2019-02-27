@@ -56,3 +56,20 @@ What if features are numerical, e.g. number of As in sequence?
 * Missing Feature Values
 - Solution 1 :: When a feature F is evaluated, assign missing values of F the most common value in the training examples of the respective category.
 - Soultion 2 :: Compute probabilities of feature values based on occurences in training data, and distribute examples with unknown feature values to the children nodes according to these probabilities.
+
+* Constructive Induction (Think automated feature transformation or selection)
+** Types
+- Feature Selection :: Select a (minimal) subset of features according to some criteria so that the learning performance (speed and quality) can be improved.
+- Feature Transformation :: 
+  + Extracting a set of new features from the original features through some functional mapping.
+  + Discovering missing information about the relationships between features and augmenting the space of features by inferring or creating additional features.
+
+** Feature Selection
+*** Filter Methods
+- Filter features according to specific criteria
+- /Examples/: Select top /n/ features according to information gain, frequency, entropy etc.
+- Run a DTL on training data and remove all features that are not mentioned in the resulting decision tree.
+*** Wrapper Methods
+- Evaluate the performance of the learner on a given feature subset.
+- *Backward Elimination*: start with full set of features and greedily remove features one by one maximising accuracy increase at each step.
+- *Forward Selection*: start with empty feature set and greedily add features.
