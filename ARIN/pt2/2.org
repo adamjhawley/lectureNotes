@@ -24,4 +24,35 @@ When deciding which feature is best we do the following:
   - ~E(S) = (-p^+*log(p^+)) + (-p^-*log(p^-))~
 + Let F be a feature, and let S_v be the elements in S with F = v.
 + Gain(S,F) is expected reduction in entropy due to sorting on F:
-  - ~Gain(S,F) = E(S) - \Sigma_V
+  - ~Gain(S,F) = E(S) - \Sigma_(V\subset Values(F) ((|S_v|/|S|)E(S_v)~
+  - /Best/ feature is the feature F with the highest Gain(S,F)
+ 
+*SEE LECTURE FOR (HELPFUL EXAMPLE)*
+
+** Furter Remarks
+- Numerical features are discretised, i.e.feature values are denoted by intervals.
+- After a decision tree is generated, it is simplified (/pruned/) to avoid *overfitting* of the training data.
+- Bias of decision tree learner: the simpler tree that fits the training data is the better one.
+
+** Properties of Decision Tree Learning
+Decision tree learning (DTL) searches a complete hypothesis space (all finite discrete-value functions can be expressed as decision trees).
+DTL also maintains only a single current hypothesis.
+DTL never revisits choices once they are made (no backtracking).
+It is also non-incremental (off-line) --- this means that it takes all of the training data in batch form rather than one entry at a time.
+
+* Pruning
+The goal of pruning is to avoid overfitting the training data.
+This can be done by dividing training data into a training and validation set.
+To prune a decision node, remove the subtree located at the node, making it a leaf node and assign it the most common classification of the training examples affiliated with this node.
+Nodes are removed if the pruned tree performs no worse on the validation data.
+Pruning order is guided by maximum reduction in error.
+
+* Numerical Features
+What if features are numerical, e.g. number of As in sequence?
+- Discretise the values by introducing intervals.
+- Sort numerical feature values and pick interval bounds that are between changes in category values.
+- Each bound /c/ defines a boolean feature (true if feature value > /c/, and false otherwise).
+
+* Missing Feature Values
+- Solution 1 :: When a feature F is evaluated, assign missing values of F the most common value in the training examples of the respective category.
+- Soultion 2 :: Compute probabilities of feature values based on occurences in training data, and distribute examples with unknown feature values to the children nodes according to these probabilities.
