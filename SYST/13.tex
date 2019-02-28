@@ -1,0 +1,218 @@
+% Created 2019-02-28 Thu 16:16
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 13: Page Replacement}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 13: Page Replacement},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:org8b10a5a}
+\subsection{When does Page Replacement Occur?}
+\label{sec:org6425452}
+When a page fault occurs, we need to bring the desired page into memory.
+However, sometimes there are no free frames for the page to fill.
+This is when we must replace one of the pre-existing pages to with the new one.
+
+\subsection{Outline of Page Replacement}
+\label{sec:org007ac98}
+Page replacement is done by finding some page in memory, but not really in use and paging it out.
+We use an algorithm to decide which frame to free.
+The performance of this algorithm is based on trying to achieve the minimum number of page faults possible.
+When replacing pages it should be noted that the same page can be brought into memory several times.
+
+\subsection{Optimisation of Page Replacement}
+\label{sec:orgbc35d25}
+Use a \textbf{modify*(*dirty})*bit* to reduce overhead of page transfers (then only modified pages are written back to the disk and we are not rewriting unchanged pages).
+Page replacement completes separation between logical memory and physical memory (large virtual memory can be provided on a smaller physical memory).
+
+\section{Replacement Mechanism}
+\label{sec:org55917b5}
+\begin{enumerate}
+\item Find the location of the desired page on disk
+\item Find a free frame
+\begin{itemize}
+\item if there is a free frame, use it
+\item if there is no free frame, use a page replacement algorithm
+\begin{itemize}
+\item select a \textbf{victim frame}
+\item write victim frame to disk if it is \emph{dirty}
+\end{itemize}
+\end{itemize}
+\item Bring the desired page into the (newly) free frame (i.e. update the page and frame tables).
+\item Continue the process by restarting the instruction that caused the trap.
+\end{enumerate}
+
+\section{Page Replacement Algorithms}
+\label{sec:org2388eb0}
+\textbf{Remember}: page-replacement algorithms aim for the lowest page-fault rate on both first access and re-access.
+Algorithms are evaluated by running it on a particular string of memory references and computing the number of page faults on that string.
+The string is just page numbers, not full addresses.
+Repeated access to the same page does not cause a page fault.
+Results depend on the number of frames available.
+
+\subsection{FIFO}
+\label{sec:orgf91c936}
+Just use a FIFO queue to keep track ages of pages.
+One would expect that the more frames are allocated to a process, the fewer page faults.
+In FIFO this is not necessarily true (see Belady's anomaly).
+
+\subsection{Optimal}
+\label{sec:org16609fc}
+Best possible replacement policy: replace page that will not be used for longest period of time.
+If we can see into the future (like when we have a reference string) then we can see which page will not be used for the longest period of time.
+Obviously this is really only theoretical so it is often used mainly as an upper-bound in comparative evaluation.
+
+\subsection{Least Recently Used (LRU)}
+\label{sec:org667c3e1}
+Use past knowledge rather than future: replace page that has not been used for the longest period of time.
+Obviously, this involves keeping track of time of last use for each page.
+Using the lecture reference string, it had 12 faults which was better than FIFO but worse than OPT.
+
+It is generally a good approach and widely used but there are implementation issues.
+
+\subsection{LRU Approximation Algorithms}
+\label{sec:org8743693}
+These are obviously similar to LRU but without complex timestamping.
+\begin{itemize}
+\item \textbf{Reference Bit} :
+\begin{itemize}
+\item With each page associate a hardware-provided bit; initially 0
+\item When a page is referenced the associated bit is set to 1
+\item Replace any page with reference bit = 0 (if one exists). However, we do not know the order
+\end{itemize}
+\item \textbf{Second-Chance Algorithm}:
+\begin{itemize}
+\item FIFO scheme, plus hardware-provided reference bit
+\item If page to be replaced has
+\begin{itemize}
+\item Reference bit = 0 \(\rightarrow\) Replace it
+\item Reference bit = 1 then:
+\begin{itemize}
+\item Set reference bit 0, leave page in memory
+\item Replace next page, subject to same rules
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\section{Page and Frame Locking}
+\label{sec:org93176bc}
+The OS may wish some pages to remain in physical memory frames (e.g parts of the OS code itself or I/O buffers).
+\subsection{Frame Locking}
+\label{sec:org1a9f31b}
+If a frame is locked, it may not be replaced.
+It requires a lock bit with each frame (usually supported by the OS rather than hardware).
+
+\section{Frame Allocation}
+\label{sec:orgb60ec21}
+\textbf{Frame allocation algorithms} determine how many frames to give each process and which frames to replace in case of scarcity.
+Each process needs a \textbf{minimum} number of frames.
+The \textbf{maximum} is the total frames in the system.
+There are many allocation schemes such as \emph{equal allocation}, \emph{size-proportional allocation}, \emph{priority allocation}, etc.
+It is important to keep a free frame buffer pool.
+
+\subsection{Global Replacement}
+\label{sec:orgfa26708}
+\begin{description}
+\item[{Global Replacement}] Process selects a replacement frame from the set of all frames.
+\begin{itemize}
+\item One process can take a frame from another
+\item In priority based allocation of frames, this may enable a high priority process to increase its allocated frames by taking a frame froom a low priority process
+\item Page fault behaviour of a process becomes dependent on the behaviour of other processes
+\item Greater overall throughput, so more common (e.g. Linux)
+\end{itemize}
+\end{description}
+\subsection{Local Replacement}
+\label{sec:org71f869e}
+\begin{description}
+\item[{Local Replacement}] Each process selects from only its own set of allocated frames.
+\begin{itemize}
+\item More consistent per-process performance
+\item If a process does not have sufficient number of frames allocated to it, the process will suffer many page faults (thrashing)
+\item Possibly underutilised memory
+\end{itemize}
+\end{description}
+
+\section{Thrashing}
+\label{sec:orgdfe0501}
+\begin{description}
+\item[{Thrashing}] When a process is busier swapping pages in and out then executing itself.
+\end{description}
+If a process does not have \emph{enough} pages, the page-fault rate is very high.
+Insufficient frames lead to page faults.
+Pages are swapped out and then needed again, so page fault so another page is swapped out which is needed again\ldots{}
+
+This can lead to:
+\begin{itemize}
+\item Low CPU utilisation
+\item Operating system thinking that it needs to increase the degree of multiprogramming
+\item Another process added to the system
+\end{itemize}
+
+\subsection{Solving Thrashing}
+\label{sec:org094bfeb}
+\subsubsection{Locality Model}
+\label{sec:orgf97523e}
+Demand paging works well using a \textbf{locality model}.
+This is when processes migrate from one locality to another (localities may overlap).
+Thrashing occurs when:
+\begin{equation}
+\sum \text{size of locality} > \text{total memory size}
+\end{equation}
+The effects of thrashing can be limited by:
+\begin{itemize}
+\item Local page replacement
+\item Priority page replacement --- replace a page from a process with the lowest priority.
+\end{itemize}
+
+\subsubsection{Working-Set Model}
+\label{sec:org1b87bdf}
+Define \(\Delta\) to be a working-set window.
+Then analyse the most recent \(\Delta\) page references.
+If a page is in use, it is in the working set but if it is no longer used then it will drop from the working set \(\Delta\) time units after its last reference.
+
+WSS\textsubscript{i}(working set of Process P\textsubscript{i}) is defined to be the total number of pages referenced in the window \(\Delta\).
+WSS\textsubscript{i} tries to approximate the size of the locality of process P\textsubscript{i}:
+\begin{itemize}
+\item If \(\Delta\) is too small will not encompass entire locality
+\item If \(\Delta\) is too large will encompass several localities
+\item If \(\Delta\) = \(\infty\) \(\rightarrow\) Will encompass the whole program
+\end{itemize}
+\begin{equation}
+D = \sum\limits_{i=0}^n WSS_i
+\end{equation}
+If \(D > m\) \(\rightarrow\) Thrashing (where \(m\) is the total number of frames).
+
+Policy: if \(D > m\), then suspend or swap out one of the processes.
+
+\subsubsection{Page-Fault Frequency}
+\label{sec:orge0a5dfc}
+This is a more direct approach than WSS.
+It is done by establishing an \emph{acceptable} \textbf{page-fault frequency} (PFF) rate and use local replacement policy.
+If the actual rate is too low, process loses a frame and if the actual rate is too high, the process gains a frame.
+\end{document}
