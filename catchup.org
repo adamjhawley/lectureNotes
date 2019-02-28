@@ -20,13 +20,13 @@ C-c C-c : Toggle Checkbox
    - [ ] 1
    - [X] 2
 ** Pt2. 
-*** TODO Lectures [5/7]
+*** TODO Lectures [6/7]
    - [X] 6
    - [X] 7
    - [X] 8
    - [X] 9
    - [X] 10
-   - [ ] 11
+   - [X] 11
    - [ ] 12
 
 *** TODO Practicals [1/4]

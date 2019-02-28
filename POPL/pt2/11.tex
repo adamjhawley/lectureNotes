@@ -1,0 +1,76 @@
+% Created 2019-02-28 Thu 11:46
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 11: Message Passing 3}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 11: Message Passing 3},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Erlang}
+\label{sec:org9d62641}
+\begin{itemize}
+\item It is an \textbf{eager} functional language.
+\item Asynchronous message passing communication model
+\begin{itemize}
+\item \textbf{Non-Blocking} send
+\item Send never fails (even to non-existent ids)
+\item Inter-process \textbf{buffers} are \textbf{unbounded} - conceptually
+\item Sending order is mainitained at receiver
+\item Receives from different senders, are read non-deterministically
+\end{itemize}
+\item \textbf{Unlimited} message types
+\item \textbf{Direct asymmetric} naming via \textbf{process id} (pid)
+\end{itemize}
+
+\subsection{Send !}
+\label{sec:org0d31047}
+Values of any type can be sent.
+It has Occam-like syntax (e.g \texttt{Pid4 ! \{pos, 42\}}).
+
+\subsection{\texttt{receive}}
+\label{sec:org5114c17}
+Each process has an unbounded queue for received messages.
+The arrival order is maintained for each sender but the buffer is interleaved between senders.
+
+Removing messages from the mailbox is using pattern matching from the oldest entry and it is blocking if no match is available.
+
+Receive so has ways of implementing a select from Ada or ALT from Occam and a guarded select:
+\begin{verbatim}
+% Ada Select or Occam ALT
+receive
+    pattern1 -> expression1;
+    pattern2 -> expression2;
+    pattern3 -> expression3;
+end
+
+% Guarded Select
+receive
+    pattern1 when guard1 -> expression1;
+    pattern2 when guard2 -> expression2;
+    pattern3 when guard3 -> expression3;
+\end{verbatim}
+\end{document}
