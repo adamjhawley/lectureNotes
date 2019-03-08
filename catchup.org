@@ -14,6 +14,11 @@ C-c C-c : Toggle Checkbox
   - [ ] 16
   - [ ] 17
   - [ ] 18
+  - [ ] 19
+  - [ ] 20
+  - [ ] 21
+  - [ ] 22
+   
 * POPL
 ** Pt1. 
 *** TODO Lectures [1/2]
@@ -45,12 +50,19 @@ C-c C-c : Toggle Checkbox
   - [ ] Prac2
   - [ ] Prac3
 ** Pt2
-*** TODO Lectures [3/5]
+*** TODO Lectures [3/6]
    - [X] 1 
    - [X] 2
    - [X] 3
    - [ ] 4
    - [ ] 5
+   - [ ] 6
+** Pt3
+*** TODO Lectures [0/2]
+- [ ] 1
+- [ ] 2
+*** TODO Practicals [0/1]
+- [ ] 1
 * SEPR
 ** TODO Lectures [0/1]
    - [ ] Guest lecture: Safety Critical Software
