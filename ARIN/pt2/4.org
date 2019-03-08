@@ -1,0 +1,36 @@
+#+TITLE: ML Section 1.4: Evaluation of Supervised Learning
+#+AUTHOR: Adam Hawley
+
+* Hypothesis Evaluation
+General questions:
+- How can one estimate the performance of a learned hypothesis on future data?
+- How good is the estimate?
+- Comparative performance evaluations.
+*Formally:* Given a hypothesis /h/ and a data sample containing /n/ examples drawn at random according to the distribution /D/, what is the best estimate of the accuracy of /h/ over future instances drawn from the same distribution?
+What is the probable error in this accuracy estimate?
+
+* Evaluation Problems
+- Limited samples of data may be misleading (e.g. prime numbers and data set = {3,5,7} leads to hypothesis of odd numbers).
+- Observed accuracy on training data is often too optimistic (e.g. due to overfitting).
+- Solution: use independent test examples.
+- Problem: estimate may still depend on the specific makeup of the set of training/test examples.
+
+* Preliminary Definitions:
+- /f/ :: The target customisation function to be learned (f:Examples \rarr Categories).
+- /h/ :: The hypothesis learned (h: Examples \rarr Categories).
+- /S/ :: Data sample of size /n/.
+- /D/ :: Probability distribution over all data points.
+- Sample Error :: 
+\begin{equation}
+error_s(h) = \frac{1}{2}\sum\limits_{x\in S} \delta(f(x),h(x)
+\end{equation}
+Where:
+\begin{equation}
+\delta(y,z) = \text{1 if }y\neq z\text{, and 0 otherwise.}
+\end{equation}
+- True Error ::
+\begin{equation}
+error)D(h) = Pr_{x \in D}[f(x)\neq h(x)]
+\end{equation}
+
+* Confidence Intervals

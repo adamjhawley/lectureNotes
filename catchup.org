@@ -50,11 +50,11 @@ C-c C-c : Toggle Checkbox
   - [ ] Prac2
   - [ ] Prac3
 ** Pt2
-*** TODO Lectures [3/6]
+*** TODO Lectures [4/6]
    - [X] 1 
    - [X] 2
    - [X] 3
-   - [ ] 4
+   - [X] 4
    - [ ] 5
    - [ ] 6
 ** Pt3

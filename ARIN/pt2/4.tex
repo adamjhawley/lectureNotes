@@ -1,0 +1,78 @@
+% Created 2019-03-08 Fri 20:00
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{ML Section 1.4: Evaluation of Supervised Learning}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={ML Section 1.4: Evaluation of Supervised Learning},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Hypothesis Evaluation}
+\label{sec:org5c85fb4}
+General questions:
+\begin{itemize}
+\item How can one estimate the performance of a learned hypothesis on future data?
+\item How good is the estimate?
+\item Comparative performance evaluations.
+\end{itemize}
+\textbf{Formally:} Given a hypothesis \emph{h} and a data sample containing \emph{n} examples drawn at random according to the distribution \emph{D}, what is the best estimate of the accuracy of \emph{h} over future instances drawn from the same distribution?
+What is the probable error in this accuracy estimate?
+
+\section{Evaluation Problems}
+\label{sec:org6a1e430}
+\begin{itemize}
+\item Limited samples of data may be misleading (e.g. prime numbers and data set = \{3,5,7\} leads to hypothesis of odd numbers).
+\item Observed accuracy on training data is often too optimistic (e.g. due to overfitting).
+\item Solution: use independent test examples.
+\item Problem: estimate may still depend on the specific makeup of the set of training/test examples.
+\end{itemize}
+
+\section{Preliminary Definitions:}
+\label{sec:org1de180a}
+\begin{description}
+\item[{\emph{f}}] The target customisation function to be learned (f:Examples \(\rightarrow\) Categories).
+\item[{\emph{h}}] The hypothesis learned (h: Examples \(\rightarrow\) Categories).
+\item[{\emph{S}}] Data sample of size \emph{n}.
+\item[{\emph{D}}] Probability distribution over all data points.
+\item[{Sample Error}] 
+\end{description}
+\begin{equation}
+error_s(h) = \frac{1}{2}\sum\limits_{x\in S} \delta(f(x),h(x)
+\end{equation}
+Where:
+\begin{equation}
+\delta(y,z) = \text{1 if }y\neq z\text{, and 0 otherwise.}
+\end{equation}
+\begin{description}
+\item[{True Error}] 
+\end{description}
+\begin{equation}
+error)D(h) = Pr_{x \in D}[f(x)\neq h(x)]
+\end{equation}
+
+\section{Confidence Intervals}
+\label{sec:org79a8da5}
+\end{document}
