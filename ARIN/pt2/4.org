@@ -34,3 +34,5 @@ error)D(h) = Pr_{x \in D}[f(x)\neq h(x)]
 \end{equation}
 
 * Confidence Intervals
+
+

@@ -1,0 +1,175 @@
+% Created 2019-03-12 Tue 00:45
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 14: Input/Output \& Storage Management}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 14: Input/Output \& Storage Management},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{I/O Management}
+\label{sec:org77343b9}
+\subsection{Introduction}
+\label{sec:org0a60547}
+I/O subsystem is responsible for controlling devices connected to a computer.
+It must provide processes with a sufficiently simple interface and also take device characteristics into account to maximise performance and efficiency.
+
+There is a large variety of I/O devices:
+\begin{itemize}
+\item Storage (e.g disk drives, non-volatile memory)
+\item Communications (e.g. Ethernet, WiFi, Bluetooth, USB)
+\item User Interface (e.g. mouse, touch, keyboard, display, sound)
+\end{itemize}
+
+\subsection{Device Drivers}
+\label{sec:org6e0e9a8}
+Device drivers are low-level sofware that interacts directly with device hardware, they hide the hardware details to the higher levels of the OS and user applications and are often developed by the hardware vendor.
+They track the status of the device and enforce access/allocation policies.
+Types of drivers:
+\begin{description}
+\item[{Dedicated}] Each device is allocated to a single process
+\item[{Shared}] Each device is shared between multiple processes
+\item[{Virtual}] Hides sharing from processes
+\end{description}
+\subsection{Devices}
+\label{sec:orgdf84688}
+Devices usually have registers where the device driver places commands, addresses and data to write or read data from registers after command execution.
+A minimum setup usually consists of the following:
+\begin{itemize}
+\item Data-In Register
+\item Data-Out Register
+\item Status Register
+\item Control Register
+\end{itemize}
+Where each register is typically 1-4 bytes and they may be contained in a FIFO buffer.
+
+Devices themselves also have addresses used by direct I/O instructions or memory-mapped I/O.
+
+\subsection{I/O Management}
+\label{sec:orgfa5f7c5}
+The I/O subsystem provides interfaces to access devices via device drivers (or access to specific devices in a family of devices hidden by the device driver).
+There are three main device communication mechanisms:
+\begin{itemize}
+\item Polling \& Interrupts
+\item Direct Memory Access (DMA)
+\item Buffering
+\end{itemize}
+
+\subsection{Polling}
+\label{sec:org00ce911}
+Polling is about checking if a device is ready for communication so for each byte of I/O:
+\begin{enumerate}
+\item Read busy bit from status register until 0
+\item Host sets read or write but and if write copies data into data-out register.
+\item Host sets command-ready bit
+\item Controller sets busy bit, executes transfer
+\item Controller clears busy bit, error bit, command-ready bit when transfer done.
+\end{enumerate}
+Step 1 is a busy-wait cycle to wait for I/O from device.
+This is reasonable if the device is fast but inefficient if it is slow.
+The CPU could switch to other tasks, but if miss a cycle data could be overwritten/lost.
+
+\subsection{Interrrupts}
+\label{sec:org64067cc}
+Polling can happen in 3 instruction cycles:
+\begin{enumerate}
+\item Read status
+\item Extract status bit
+\item Branch if not zero
+\end{enumerate}
+How to be more efficient if devices are seldom ready?
+
+CPU Interrupt-Request line triggered by I/O device (checked by processor after each instruction).
+The interrupt handler receives interrupts (maskable to ignore or delay some interrupts).
+Interrupt vector to dispatch interrupt to correct handler.
+This has a context switch at the start and at the end.
+We get \textbf{interrrupt chaining} if more than one device at same interrrupt number.
+
+\subsection{Direct Memory Access (DMA)}
+\label{sec:org0663fe1}
+This is used to avoid programmed I/O (one byte at a time) for large data movement.
+This requires a DMA controller and bypasses CPU to transfer data directly between I/O device and memory.
+
+The OS writes DMA command block into memory.
+\begin{itemize}
+\item Source and destination addresses
+\item Reade or write mode
+\item Count of bytes
+\item Writes location of command block to DMA controller.
+\end{itemize}
+
+\section{Storage Devices}
+\label{sec:orgcb2dc60}
+\subsection{Introduction}
+\label{sec:org2dc4b27}
+The hierarchy of storage devices is driven by performance and volatility of data.
+\textbf{Data access time} includes:
+\begin{description}
+\item[{Ready time}] Time to prepare set up storage media to read/write data at the appropriate location (e.g. wind/rewind tape, rotate disk, charge memory row)
+\item[{Transfer time}] Time to read/write data from media
+\end{description}
+Different devices may impose access latencies at different orders of magnituse and hence, the OS should manage each of them appropriatly and mediate transfers (e.g. buffering).
+\subsection{Tertiary Storage}
+\label{sec:org0711805}
+\textbf{Tertiary storage} is usually used for backups, storage of infrequently used data and transfer between systems.
+The two main forms of tertiary storage are:
+\begin{itemize}
+\item Magnetic tapes:
+\begin{itemize}
+\item GB to TB capacity
+\item Very slow access time (must wind and rewind to position tape under read-write head but once in place, reasonable transfer rates >140 MB/s)
+\end{itemize}
+\item Optical discs:
+\begin{itemize}
+\item MB to GB capacity
+\item Read-only or read-write using high intensity laser beams
+\end{itemize}
+\end{itemize}
+\subsection{Secondary Storage}
+\label{sec:org3467f11}
+\textbf{Secondary storage} is mainly used for non-volatile storage, high-capacity storage supporting swapping/paging.
+\subsubsection{Magnetic Disks (HDDs)}
+\label{sec:orgdc36f3f}
+\begin{itemize}
+\item Made of \emph{n} disks (2/n/ sides), each side is divided into tracks (circular), and each track into sectors.
+\item \textbf{Cyclinder}: Set of tracks at the same position on all sides
+\item \textbf{Access Time}: Seek time (disk head movement) + Search time (rotational delay) + Transfer time
+\item Typical Avg Values: 
+\begin{itemize}
+\item Seek = 25ms
+\item Search = 4ms
+\item Transfer = 0.00094ms/MB
+\item Rotation speed = 7200rpm (120rps)
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Non-volatile memory (NVMs, SSDs)}
+\label{sec:orga6cbdc5}
+\begin{itemize}
+\item Made of no mechanical components
+\item Redundant Arrays of Independent Disks (RAIDs)
+\end{itemize}
+\end{document}
