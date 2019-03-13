@@ -100,5 +100,73 @@ The two main forms of tertiary storage are:
 
 *** Non-volatile memory (NVMs, SSDs)
 - Made of no mechanical components
-- Redundant Arrays of Independent Disks (RAIDs)
+- More reliable than HDDs (no moving parts), can be faster (no seek time or latency), consumes less power.
+- More expensive per MB, lower capacity, may have shorter lifespan (writes wear it out).
 
+*** Redundant Arrays of Independent (Inexpensive) Disks (RAIDs)
+- Set of physical disks viewed as a single logic unit by the OS.
+- Simultaneous access to multiple drives
+  + Increased I/O performance
+  + Improved data recovery in case of failure
+- Data is divided into segments called stripes, which are distributed across the disks in the array.
+- RAIDs can be classified as level 0,1, \ldots , 6 (different levels denote different approaches to data redundancy and error correction methods).
+
+**** RAID 0
+- Block-level striping: data is divided into segments that are stored across the disks in the array.
+- Minimum disks: 2
+- Read speed-up is roughly proportional to the number of disks in the array, because distinct data can be read from different disks simultaneously.
+- Write speed-up is roughly proportional to the number of disks in the array, because distinct data can be written to different disks simultaneously.
+- No redundancy, therefore no fault tolerance.
+- As reliability is inversely proportional to the number of disks, a RAID 0 will be more vulnerable to faults than a single hard disk.
+Where $MTTF$ is Mean Time To Failure:
+\begin{equation}
+MTTF_{group} \approx \frac{MTTF_{disk}}{number}
+\end{equation}
+It is possible to use disks of different capacities, but the storage space added to the array by each disk is limited to the size of the smallest disk.
+- For example, if a 120GB disk is striped together with a 100GB disk, the capacity of the array will be 200GB.
+
+**** RAID 1
+- Full redundancy: mirroring (data is copied in all disks of the array)
+- Minimum disks: 2
+- Tolerates faults on up to $N-1$ disks
+- Read speed-up is roughly proportional to the number of disks in the array because distinct daya can be read from different disks simultaneously.
+- No write speed-up, as writes have to be done on all disks.
+- Very low space efficiency: $1/N$
+
+**** RAID 2,3,4
+*SKIPPED IN LECTURE AND NOT ASSESSED*: SEE LECTURES/SILBERSCHATZ FOR DETAILS
+
+**** RAID 5
+- Block-level striping, distributed parity. (Think of parity bits from ICAR)
+- Minimum 3 disks, tolerates fault in one disk
+- Writes are costly operations
+- Widely used
+ 
+**** RAID 6
+- Block-level striping, double distributed parity. (Think of parity bits from ICAR)
+- Minimum disks: 4, tolerates faults in two disks.
+- Writes are costly
+- Widely used
+
+* Storage Management
+Multiple requests have to be handled concurrently, several programs may have requested storage operations.
+There are a number of policies for servicing disk requests.
+
+The I/O scheduler is similar to the process scheduler.
+It choses which request should be chosen next and often depends on some criteria which usually aim to reduce average response times.
+There may also be prioritised requests e.g. from OS components.
+Specific devices may require dedicated scheduling policies (e.g. to minimise seek time in magnetic disks and avoid redundant writes in non-volatile memory).
+* Disk Management
+** Disk Formatting
+- Low-level (physical) disk formatting is when a disk is divided into sectors (built-in error correction codes, also called checksums).
+- Logical formatting is to do with creating a file-system - directory trees, maps of free and allocated space.
+
+** Partitions
+Partitions are when there are multiple logical disks on a single physical disk.
+
+** Blocks
+- Boot Block :: Initial bootable code at a known sector (useful as it helps reduce power-up complexity in hardware).
+- Bad Blocks :: These are blocks which have been permanently corrupted and file systems have to be able to mark them.
+
+** Defragmentation
+Defragmentation is when sectors which are used by files are rearranged to be contiguous.

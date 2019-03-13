@@ -1,4 +1,4 @@
-% Created 2019-03-12 Tue 00:45
+% Created 2019-03-13 Wed 18:06
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,9 +31,9 @@
 
 
 \section{I/O Management}
-\label{sec:org77343b9}
+\label{sec:orge22c6ee}
 \subsection{Introduction}
-\label{sec:org0a60547}
+\label{sec:org6d123ec}
 I/O subsystem is responsible for controlling devices connected to a computer.
 It must provide processes with a sufficiently simple interface and also take device characteristics into account to maximise performance and efficiency.
 
@@ -45,7 +45,7 @@ There is a large variety of I/O devices:
 \end{itemize}
 
 \subsection{Device Drivers}
-\label{sec:org6e0e9a8}
+\label{sec:orgaf691dc}
 Device drivers are low-level sofware that interacts directly with device hardware, they hide the hardware details to the higher levels of the OS and user applications and are often developed by the hardware vendor.
 They track the status of the device and enforce access/allocation policies.
 Types of drivers:
@@ -55,7 +55,7 @@ Types of drivers:
 \item[{Virtual}] Hides sharing from processes
 \end{description}
 \subsection{Devices}
-\label{sec:orgdf84688}
+\label{sec:org5bb3dbe}
 Devices usually have registers where the device driver places commands, addresses and data to write or read data from registers after command execution.
 A minimum setup usually consists of the following:
 \begin{itemize}
@@ -69,7 +69,7 @@ Where each register is typically 1-4 bytes and they may be contained in a FIFO b
 Devices themselves also have addresses used by direct I/O instructions or memory-mapped I/O.
 
 \subsection{I/O Management}
-\label{sec:orgfa5f7c5}
+\label{sec:orgfc8e422}
 The I/O subsystem provides interfaces to access devices via device drivers (or access to specific devices in a family of devices hidden by the device driver).
 There are three main device communication mechanisms:
 \begin{itemize}
@@ -79,7 +79,7 @@ There are three main device communication mechanisms:
 \end{itemize}
 
 \subsection{Polling}
-\label{sec:org00ce911}
+\label{sec:org0ec5291}
 Polling is about checking if a device is ready for communication so for each byte of I/O:
 \begin{enumerate}
 \item Read busy bit from status register until 0
@@ -93,7 +93,7 @@ This is reasonable if the device is fast but inefficient if it is slow.
 The CPU could switch to other tasks, but if miss a cycle data could be overwritten/lost.
 
 \subsection{Interrrupts}
-\label{sec:org64067cc}
+\label{sec:org57e3c12}
 Polling can happen in 3 instruction cycles:
 \begin{enumerate}
 \item Read status
@@ -109,7 +109,7 @@ This has a context switch at the start and at the end.
 We get \textbf{interrrupt chaining} if more than one device at same interrrupt number.
 
 \subsection{Direct Memory Access (DMA)}
-\label{sec:org0663fe1}
+\label{sec:org31ac013}
 This is used to avoid programmed I/O (one byte at a time) for large data movement.
 This requires a DMA controller and bypasses CPU to transfer data directly between I/O device and memory.
 
@@ -122,9 +122,9 @@ The OS writes DMA command block into memory.
 \end{itemize}
 
 \section{Storage Devices}
-\label{sec:orgcb2dc60}
+\label{sec:org086e042}
 \subsection{Introduction}
-\label{sec:org2dc4b27}
+\label{sec:orge22b44d}
 The hierarchy of storage devices is driven by performance and volatility of data.
 \textbf{Data access time} includes:
 \begin{description}
@@ -133,7 +133,7 @@ The hierarchy of storage devices is driven by performance and volatility of data
 \end{description}
 Different devices may impose access latencies at different orders of magnituse and hence, the OS should manage each of them appropriatly and mediate transfers (e.g. buffering).
 \subsection{Tertiary Storage}
-\label{sec:org0711805}
+\label{sec:org5e9bb57}
 \textbf{Tertiary storage} is usually used for backups, storage of infrequently used data and transfer between systems.
 The two main forms of tertiary storage are:
 \begin{itemize}
@@ -149,10 +149,10 @@ The two main forms of tertiary storage are:
 \end{itemize}
 \end{itemize}
 \subsection{Secondary Storage}
-\label{sec:org3467f11}
+\label{sec:orgb0ff567}
 \textbf{Secondary storage} is mainly used for non-volatile storage, high-capacity storage supporting swapping/paging.
 \subsubsection{Magnetic Disks (HDDs)}
-\label{sec:orgdc36f3f}
+\label{sec:orgb2f056c}
 \begin{itemize}
 \item Made of \emph{n} disks (2/n/ sides), each side is divided into tracks (circular), and each track into sectors.
 \item \textbf{Cyclinder}: Set of tracks at the same position on all sides
@@ -167,9 +167,110 @@ The two main forms of tertiary storage are:
 \end{itemize}
 
 \subsubsection{Non-volatile memory (NVMs, SSDs)}
-\label{sec:orga6cbdc5}
+\label{sec:orgc85df7e}
 \begin{itemize}
 \item Made of no mechanical components
-\item Redundant Arrays of Independent Disks (RAIDs)
+\item More reliable than HDDs (no moving parts), can be faster (no seek time or latency), consumes less power.
+\item More expensive per MB, lower capacity, may have shorter lifespan (writes wear it out).
 \end{itemize}
+
+\subsubsection{Redundant Arrays of Independent (Inexpensive) Disks (RAIDs)}
+\label{sec:orga6a8005}
+\begin{itemize}
+\item Set of physical disks viewed as a single logic unit by the OS.
+\item Simultaneous access to multiple drives
+\begin{itemize}
+\item Increased I/O performance
+\item Improved data recovery in case of failure
+\end{itemize}
+\item Data is divided into segments called stripes, which are distributed across the disks in the array.
+\item RAIDs can be classified as level 0,1, \ldots , 6 (different levels denote different approaches to data redundancy and error correction methods).
+\end{itemize}
+
+\begin{enumerate}
+\item RAID 0
+\label{sec:org3ed7138}
+\begin{itemize}
+\item Block-level striping: data is divided into segments that are stored across the disks in the array.
+\item Minimum disks: 2
+\item Read speed-up is roughly proportional to the number of disks in the array, because distinct data can be read from different disks simultaneously.
+\item Write speed-up is roughly proportional to the number of disks in the array, because distinct data can be written to different disks simultaneously.
+\item No redundancy, therefore no fault tolerance.
+\item As reliability is inversely proportional to the number of disks, a RAID 0 will be more vulnerable to faults than a single hard disk.
+\end{itemize}
+Where \(MTTF\) is Mean Time To Failure:
+\begin{equation}
+MTTF_{group} \approx \frac{MTTF_{disk}}{number}
+\end{equation}
+It is possible to use disks of different capacities, but the storage space added to the array by each disk is limited to the size of the smallest disk.
+\begin{itemize}
+\item For example, if a 120GB disk is striped together with a 100GB disk, the capacity of the array will be 200GB.
+\end{itemize}
+
+\item RAID 1
+\label{sec:org971bd5c}
+\begin{itemize}
+\item Full redundancy: mirroring (data is copied in all disks of the array)
+\item Minimum disks: 2
+\item Tolerates faults on up to \(N-1\) disks
+\item Read speed-up is roughly proportional to the number of disks in the array because distinct daya can be read from different disks simultaneously.
+\item No write speed-up, as writes have to be done on all disks.
+\item Very low space efficiency: \(1/N\)
+\end{itemize}
+
+\item RAID 2,3,4
+\label{sec:orgf30365f}
+\textbf{SKIPPED IN LECTURE AND NOT ASSESSED}: SEE LECTURES/SILBERSCHATZ FOR DETAILS
+
+\item RAID 5
+\label{sec:orgf6a0085}
+\begin{itemize}
+\item Block-level striping, distributed parity. (Think of parity bits from ICAR)
+\item Minimum 3 disks, tolerates fault in one disk
+\item Writes are costly operations
+\item Widely used
+\end{itemize}
+
+\item RAID 6
+\label{sec:orge0377ca}
+\begin{itemize}
+\item Block-level striping, double distributed parity. (Think of parity bits from ICAR)
+\item Minimum disks: 4, tolerates faults in two disks.
+\item Writes are costly
+\item Widely used
+\end{itemize}
+\end{enumerate}
+
+\section{Storage Management}
+\label{sec:orgfae50c7}
+Multiple requests have to be handled concurrently, several programs may have requested storage operations.
+There are a number of policies for servicing disk requests.
+
+The I/O scheduler is similar to the process scheduler.
+It choses which request should be chosen next and often depends on some criteria which usually aim to reduce average response times.
+There may also be prioritised requests e.g. from OS components.
+Specific devices may require dedicated scheduling policies (e.g. to minimise seek time in magnetic disks and avoid redundant writes in non-volatile memory).
+\section{Disk Management}
+\label{sec:org75dc5fa}
+\subsection{Disk Formatting}
+\label{sec:org7e5044f}
+\begin{itemize}
+\item Low-level (physical) disk formatting is when a disk is divided into sectors (built-in error correction codes, also called checksums).
+\item Logical formatting is to do with creating a file-system - directory trees, maps of free and allocated space.
+\end{itemize}
+
+\subsection{Partitions}
+\label{sec:orgd17add0}
+Partitions are when there are multiple logical disks on a single physical disk.
+
+\subsection{Blocks}
+\label{sec:orgbbb8621}
+\begin{description}
+\item[{Boot Block}] Initial bootable code at a known sector (useful as it helps reduce power-up complexity in hardware).
+\item[{Bad Blocks}] These are blocks which have been permanently corrupted and file systems have to be able to mark them.
+\end{description}
+
+\subsection{Defragmentation}
+\label{sec:orgc701b5e}
+Defragmentation is when sectors which are used by files are rearranged to be contiguous.
 \end{document}
