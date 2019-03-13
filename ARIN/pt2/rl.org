@@ -1,0 +1,58 @@
+#+TITLE: ML Section 2: Reinforcement Learning
+#+AUTHOR: Adam Hawley
+
+* Psychology & Engineering of Reinforcement Learning
+See lecture for history.
+
+* Agent Paradigm
+A common setup for the agent paradigm of RL involves having an agent which carries out *actions* on an *environment* through the use of *effectors*.
+These actions are based on the *reward signal* and *states* from the environment which are read using *sensors*.
+
+* RL vs. Supervised Learning
+What makes RL different?
+- No supervisor feedback: learning from reward signal only which is often delayed, not instantaneous.
+- Agent influences the selection of training experience.
+- Sequential aspect of decision making.
+
+* The Markov Decision Process
+The Markov decision process is used to model the environment.
+
+A (single-agent) MDP is a tuple (S,A,p,R) where:
+- S :: A set of states
+- A :: A set of actions
+- p: S x A x S \rarr [0,1] :: Specifies the transition probabilities between states.
+- R: S x A \rarr R :: Specifies the reward for each state-action pair.
+
+Note: deterministic transition function $\delta: S \times A \implies S$.
+
+* Agent State vs. Environment State
+It is very important to recognise the difference between these two.
+Agents have their own representation of the environment state.
+Agents may have *partial observability* so they are not able to observe everything in the environment.
+This may be benefitial as they may want to focus in on relevant parts of the environment.
+Ideally only the information necessary to make an optimal decision is contained in the agent state.
+
+* Markov States
+A state S_t is Markov if and only if S_t contains all relevant information to determine the next state.
+
+Note: any state can be made into a Markov state by incorporating the complete history.
+
+* RL Output
+*Goal*: learn an /optimal policy/ \pi: S \rarr A
+
+Evaluation of policy via discounted cumulative reward:
+\begin{equation}
+V^{\pi}(S_t) = \sum\limits_{i \le 0} \gamma^i r_{t+1}
+\end{equation}
+where:
+- $0\le \gamma < 1$ is a discount factor (\gamma = 0 means that only immediate reward is considered).
+- r_{t+1} is the reward at time t+1 determined by performing actions specified by policy \pi.
+The goal previously mentioned can now be redefined as: Agent learns policy \pi that maximises $V^{\pi}(s)$ for all states s.
+So the optimal policy \pi^* = argmax_{\pi} V^{\pi}(S) for all S.
+*Notation*: $V^{\pi^*}(S) = V^*(S)$.
+
+The optimal action in state s is the action a that maximises the sum of the immediate reward r(s,a) plus the value V^* of the immedaite successor state, discounted by \gamma:
+\begin{equation}
+\pi*(S) = argmax_a[r(s,a) + \gamma V^*(\delta(s,a))]
+\end{equation}
+If functions r and \delta are known then the agent can acquire \pi^* by computing V^*.

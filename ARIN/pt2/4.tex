@@ -1,4 +1,4 @@
-% Created 2019-03-09 Sat 23:54
+% Created 2019-03-13 Wed 21:56
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 
 
 \section{Hypothesis Evaluation}
-\label{sec:orgee844ca}
+\label{sec:org19494d9}
 General questions:
 \begin{itemize}
 \item How can one estimate the performance of a learned hypothesis on future data?
@@ -42,7 +42,7 @@ General questions:
 What is the probable error in this accuracy estimate?
 
 \section{Evaluation Problems}
-\label{sec:orgddc7c25}
+\label{sec:org87a9150}
 \begin{itemize}
 \item Limited samples of data may be misleading (e.g. prime numbers and data set = \{3,5,7\} leads to hypothesis of odd numbers).
 \item Observed accuracy on training data is often too optimistic (e.g. due to overfitting).
@@ -51,9 +51,9 @@ What is the probable error in this accuracy estimate?
 \end{itemize}
 
 \section{Preliminary Definitions:}
-\label{sec:orgfa3a742}
+\label{sec:orgd586c63}
 \begin{description}
-\item[{\emph{f}}] The target customisation function to be learned (f:Examples \(\rightarrow\) Categories).
+\item[{\emph{f}}] The target categorisation function to be learned (f:Examples \(\rightarrow\) Categories).
 \item[{\emph{h}}] The hypothesis learned (h: Examples \(\rightarrow\) Categories).
 \item[{\emph{S}}] Data sample of size \emph{n}.
 \item[{\emph{D}}] Probability distribution over all data points.
@@ -73,6 +73,83 @@ Where:
 error)D(h) = Pr_{x \in D}[f(x)\neq h(x)]
 \end{equation}
 
-\section{Confidence Intervals}
-\label{sec:orge5f1ec2}
+\section{Confidence Intervals (for discrete-valued hypotheses)}
+\label{sec:org189091f}
+Given the following conditions:
+\begin{enumerate}
+\item The sample \(S\) contains \(n\) examples drawn independent of one another and independent of \(h\), according to the probability distribution \(D\).
+\item \(n \ge 30\)
+\item Hypothesis \(h\) commits \(r\) errors over these \(n\) examples.
+\end{enumerate}
+Then, with \(N\%\) probability, \(error_D(h)\) lies in the interval:
+\begin{equation}
+error_s(h) \pm z_n \sqrt{\frac{error_s(h)(1-error_s(h))}{n}}
+\end{equation}
+
+\section{More Evaluation Questions}
+\label{sec:org3391730}
+\begin{itemize}
+\item Q: Where to get independent test examples?
+\item A: Use subset of training data (and don't use it for training)
+\end{itemize}
+The problem with this is that our data set might be very small and so we would want to use every piece of it for training rather than saving it for testing.
+\begin{itemize}
+\item Q: Where can we get more samples to increase confidence?
+\item A: Divide the training data into several subsets. Use one of them as test data and the rest as training data. Then repeat for each subset.
+\end{itemize}
+
+\section{k-fold Cross-Validation Algorithm}
+\label{sec:orgc34f1ec}
+Partition the available data \(D_0\) into \(k\) disjoint subsets \(T_1, \ldots , T_k\) of equal size, where this size is at least 30.
+\begin{itemize}
+\item \texttt{for i from 1 to k do \{}\\
+ \texttt{S\_i := D\_0 - T\_i;}\\
+ \texttt{h := learner hypothesis on training data S\_i;}\\
+ \(\delta\)\textsubscript{i} \texttt{:= error rate of h on T\_i;}\\
+\texttt{\}}
+\item Return average error rate \(\delta\) := \((1/k)\sum\limits_{1\le i\le k}\) \(\delta\)\textsubscript{i}
+\end{itemize}
+The true error lies with \(N\%\) probability in the interval:
+\begin{equation}
+\delta \pm t_{N,k-1} s_{\delta}
+\end{equation}
+where
+\begin{equation}
+s_{\delta} = \sqrt{\frac{1}{(k(k-1))} \sum\limits_{1\le i\le k}(\delta_i - \delta)^2}
+\end{equation}
+\section{Comparison of Hypothesis}
+\label{sec:org7b117fa}
+\subsection{Standard Error from the Mean}
+\label{sec:org6da8db4}
+A commonly used cheap trick for comparison which is used is to compute the standard error (STE).
+The standard error is equal to \(\frac{STD}{\sqrt{k}}\).
+The confidence interval is then defined as \(\delta \pm STE\).
+If two confidence intervals resulting from two hypotheses overlap, it can not be stated that one hypothesis is better than the other.
+\section{Further Problems}
+\label{sec:org995b75d}
+\begin{itemize}
+\item Has the training set been chosen with the same distribution as future examples?
+\item \(k\) is limited by size of training set.
+\begin{itemize}
+\item One alternative is to draw (possibly overlapping) subsets randomly.
+\item Disadvantage: Test sets are not completely independent and have not been chosen with the same distribution as the training set.
+\end{itemize}
+\end{itemize}
+
+\section{Parameter Tuning}
+\label{sec:org0201055}
+It is important that the test data is not used in any way to create the classifier.
+Some learning schemes operate in two stages:
+\begin{enumerate}
+\item Build the basic structure
+\item Optimise parameter settings
+\end{enumerate}
+The test data cannot be used for parameter tuning!
+Proper procedure uses three sets: 
+\begin{itemize}
+\item Training data
+\item Validation data
+\item Test data
+\end{itemize}
+Validation data is used to optimise parameters.
 \end{document}
