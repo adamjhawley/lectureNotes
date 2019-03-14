@@ -1,0 +1,74 @@
+% Created 2019-03-14 Thu 09:25
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{ML Section 3: Unsupervised Learning}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={ML Section 3: Unsupervised Learning},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:orgf115edd}
+\begin{itemize}
+\item Supervised learning requires pre-categorised training data provided by a \emph{supervisor}.
+\item Reinforcement learning requires a reward function which is normally provided by an engineer.
+\end{itemize}
+What if only data without any annotion is available?
+This can happen in certain circumstances such as behavioural segmentation, e.g. segmentation of customers by purchase history, inventory categorisation and detecting anomalous behaviour.
+
+\section{Clustering}
+\label{sec:orgc265dc1}
+\subsection{k-means Algorithm}
+\label{sec:orgbda48a9}
+\textbf{Input:} data (in vector format) and a number of clusters \emph{k}.
+\begin{enumerate}
+\item Randomly select \emph{k} centroids \emph{c\textsubscript{i}} from the data.
+\item Asssign each data point \emph{x} to a centroid according to: \((argmin_{c_i \in C}) dist(c_i,x)^2\)
+\item Update centroids, by setting the centroid of each cluster S\textsubscript{i} to the mean of all data points assigned to the cluster: \(c_i = \frac{1}{\|S_i\|}\sum\limits_{x_i \in S_i} x_i\).
+\item Repeat steps 2 and 3 until convergence (or had enough).
+\end{enumerate}
+How to chose \emph{k}?
+When you plot the ``Average within-cluster distance to centroid'' vs. \emph{k} there will be an \emph{elbow point} where increasing \emph{k} no longer decreases the distance by much.
+This is the ideal value of \emph{k}.
+
+\section{Summary of ML}
+\label{sec:org580c884}
+\begin{itemize}
+\item Supervised learning:
+\begin{itemize}
+\item Decision tree learning
+\item Neural networks (backpropogation)
+\end{itemize}
+\item Reinforcement learning:
+\begin{itemize}
+\item Q Learning
+\end{itemize}
+\item Unsupervised learning:
+\begin{itemize}
+\item K-Means Clustering
+\end{itemize}
+\end{itemize}
+\end{document}

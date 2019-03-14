@@ -56,3 +56,59 @@ The optimal action in state s is the action a that maximises the sum of the imme
 \pi*(S) = argmax_a[r(s,a) + \gamma V^*(\delta(s,a))]
 \end{equation}
 If functions r and \delta are known then the agent can acquire \pi^* by computing V^*.
+
+** Bellman Equation
+For computing V^*
+\begin{equation}
+V^*(s) := r(s) + \gamma max_a\sum\limits_s T(s,a,s') V^*(s')
+\end{equation}
+For n states: n equations with n unknowns.
+*But*: n equations are non-linear (because of the /max/ operator).
+
+** Value Iteration
+1. For all states s: V_0(s) := 0
+2. t := 0
+3. Update values of all states s based on successor states: $V_{t+1}(s) := r(s) + \gamma max_a V_t(\delta(s,a))$ (the Bellman equation for deterministic MVPs)
+4. t := t + 1;
+5. Repeat steps 3 and 4 until convergence (or had enough)
+This algorithm is *guaranteed* to converge to the optimal solution.
+See lecture for formal proof on this.
+
+** Model-Based vs. Model Free
+What if \delta and $r$ are unknown?
+- Solution 1: Learn them both from experience (model-based).
+- Solution 2: Learn quality function $Q$ directly (model-free).
+\begin{equation}
+Q(s,a) = r(s,a) + \gamma V^* (\delta(s,a))
+\end{equation}
+This is another version of the Bellman Equation.
+This means that the optimal policy computation: $\pi^*(s) = argmax_a Q(s,a)$.
+And it is then possible to learn $Q$ even if \delta and $r$ are unknown.
+*SEE LECTURE FOR Q LEARNING ALGORITHM + PROOF*
+
+** Policy Iteration
+(An alternative to Value Iteration)
+1. Start with arbitrary policy \pi_0
+2. i := 0
+3. Evaluate: Given \pi_i calculate corresponding V_i
+4. Improve: \pi_{i+1}(s) := argmax_a(V_i(\delta(s,a)))
+5. Repeat steps 3 and 4 until convergence(or had enough)
+
+*** Evaluating a Policy
+Given \pi_i: V_i(s) = r(s) + \gamma V_i(\delta(s,a)) for all states s.
+If there are /n/ states, this yields /n/ linear equations in /n/ unknowns since there is no longer an argmax term.
+Therefore it is /easy/ to solve.
+
+** Reminder of RL vs. Supervised Learning
+- Supervised learning: instructive feedback.
+- Reinforcement learning: evaluative feedback.
+Therefore in RL, there is a need for active exploration: trial-and-error search.
+
+*** Exploration vs. Exploitation
+- Exploration: choose actions that gather information on the environment
+- Exploitation: choose actions which have (so far) shown to lead to large rewards.
+The *exploration (action selection) strategy* is therefore controlling the trade-off between exploration and exploitation.
+Generally we shift gradually with time from exploration to exploitation.
+A couple of examples of these strategies include /\epsilon-greedy/ and /Boltzmann/.
+
+*SEE LECTURE FOR DETAILS OF THESE EXAMPLES*
