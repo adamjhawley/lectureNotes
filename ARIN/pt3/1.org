@@ -1,0 +1,42 @@
+#+LATEX_HEADER: \usepackage{turnstile}
+#+TITLE: Lecture 1: Logical Agents
+#+AUTHOR: Adam Hawley
+
+* Intro
+The slides are very similar to the content of the book.
+See chapter 7.
+
+* Knowledge Bases
+- Knowledge base :: Set of *sentences* in a *formal* language.
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+- At the knowledge level: what they know, regardless of how they are implemented
+- At the implementation level: data structures in KB and algorithms that manipulate them
+
+* Logic in General
+- *Logics* are formal languages for representing information such that conclusions can be drawn.
+- *Syntax* defines the sentences in the language.
+- *Semantics* define the /meaning/ of the sentences; i.e define truth of a sentence in a world.
+
+* Entailment
+- *Entailment* means that one thing follows from another:
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base $KB$ entails sentence \alpha if and only if \alpha is true in all worlds where $KB$ is true.
+E.g. $x + y = 4$ entails $4 = x + y$
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+* Models
+Logicians typically think of *models*, which are formally structured worlds with respect to which truth can be evaluated.
+We say /m/ *is a model of* a sentence \alpha if \alpha is true in /m/.
+M(\alpha) is the set of all models of \alpha
+
+* Inference
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+- $KB \vdash_i \alpha = $ sentence \alpha can be derived form $KB$ by procedure /i/.
+- *Soundness*: /i/ is sound if whenever $KB\vdash_i \alpha$, it is also true that $KB$ \models \alpha.
+- *Completeness*: /i/ is complete if whenever $KB \models \alpha$, it is also true that $KB$ \vdash_i \alpha.
+
+

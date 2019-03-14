@@ -58,13 +58,14 @@ C-c C-c : Toggle Checkbox
    - [X] 5
    - [X] 6
 ** Pt3
-*** TODO Lectures [0/2]
-   - [ ] 1
+*** TODO Lectures [1/4]
+   - [X] 1
    - [ ] 2
    - [ ] 3
    - [ ] 4
 *** TODO Practicals [0/1]
-- [ ] 1
+   - [ ] 1
+   - [ ] 2
 * SEPR
 ** TODO Lectures [0/1]
    - [ ] Guest lecture: Safety Critical Software

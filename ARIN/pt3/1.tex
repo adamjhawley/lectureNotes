@@ -1,0 +1,81 @@
+% Created 2019-03-14 Thu 15:33
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{turnstile}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 1: Logical Agents}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 1: Logical Agents},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org1ef4d80}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org0ba973e}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:orgfc2d17b}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:orgbd8529e}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:orgeaf9148}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:org42785cc}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\end{document}
