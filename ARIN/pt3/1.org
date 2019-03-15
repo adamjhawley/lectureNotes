@@ -35,8 +35,43 @@ M(\alpha) is the set of all models of \alpha
 
 * Inference
 In logic an inference is a procedure by which you can deduce that something does follow from something else.
-- $KB \vdash_i \alpha = $ sentence \alpha can be derived form $KB$ by procedure /i/.
-- *Soundness*: /i/ is sound if whenever $KB\vdash_i \alpha$, it is also true that $KB$ \models \alpha.
-- *Completeness*: /i/ is complete if whenever $KB \models \alpha$, it is also true that $KB$ \vdash_i \alpha.
+- $KB \vdash_i \alpha =$ sentence \alpha can be derived form $KB$ by procedure /i/.
+- *Soundness*: /i/ is sound if whenever $KB \vdash_i \alpha$, it is also true that $KB \models \alpha$.
+- *Completeness*: /i/ is complete if whenever $KB \models \alpha$, it is also true that $KB \vdash_i \alpha$.
+
+* Propositional Logic: Syntax
+Propositional logic is the simples logic.
+The proposition sumbold /P_1/, /P_2/ etc are senetences.
+If /S/ is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+- Conjuction
+- Disjunction
+- Implication
+- Biconditional
+
+* Logical Equivalence
+Two sentences are *logically equivalent* iff true in the same models:
+- $\alpha \equiv \beta$ if and only if $\alpha \models \beta$ and $\beta \models \alpha$
+
+* Validity & Satisfiability
+A sentence is *valid* if it is true in all models (e.g $True$, $A\lor\neg A$, $A\implies A$).
+Validity is connected to inference via the *Deduction Theorem*:
+- $KB \models \alpha$ if and only f $(KB \implies \alpha)$ is valid.
+A sentence is *satisfiable* if it is true in /some/ model (e.g. $A\lor B$).
+A sentence is *unsatisfiable* if it is true in /no/ models (e.g. $A\land \neg A$)
+Satisfiability is connected to inference via the following:
+- $KB \models \alpha$ if and only if $(KB \land \neg \alpha)$ is unsatisfiable, i.e. prove \alpha by /reductio ad absurdum/.
+
+* Proof Methods
+Proof methods divide into (roughly) two kinds:
+- *Application of Inference Rules*:
+  + Legitimate (sound) generation of new sentences from old.
+  + Proof = a sequence of inference rule applications (can use inference rules as operators in a standard search alg).
+  + Typically require translation of sentences into a *normal form*.
+- *Model Checking*:
+  + Truth table (always exponential in /n/)
+  + Improved backtracking
+  + Heuristic search in model space (sound but incomplete)
+  
 
 

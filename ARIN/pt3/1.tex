@@ -1,4 +1,4 @@
-% Created 2019-03-14 Thu 15:33
+% Created 2019-03-15 Fri 14:22
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -23,7 +23,7 @@
  pdftitle={Lecture 1: Logical Agents},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdfcreator={Emacs 25.2.2 (Org mode 9.2.1)}, 
  pdflang={English}}
 \begin{document}
 
@@ -32,12 +32,12 @@
 
 
 \section{Intro}
-\label{sec:org1ef4d80}
+\label{sec:org8ac8ab8}
 The slides are very similar to the content of the book.
 See chapter 7.
 
 \section{Knowledge Bases}
-\label{sec:org0ba973e}
+\label{sec:org21b6bcd}
 \begin{description}
 \item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
 \end{description}
@@ -50,7 +50,7 @@ Agents can be viewed:
 \end{itemize}
 
 \section{Logic in General}
-\label{sec:orgfc2d17b}
+\label{sec:org687c359}
 \begin{itemize}
 \item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
 \item \textbf{Syntax} defines the sentences in the language.
@@ -58,7 +58,7 @@ Agents can be viewed:
 \end{itemize}
 
 \section{Entailment}
-\label{sec:orgbd8529e}
+\label{sec:org34b83f8}
 \begin{itemize}
 \item \textbf{Entailment} means that one thing follows from another:
 \end{itemize}
@@ -70,12 +70,54 @@ E.g. \(x + y = 4\) entails \(4 = x + y\)
 Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
 
 \section{Models}
-\label{sec:orgeaf9148}
+\label{sec:org54e56c1}
 Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
 We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
 M(\(\alpha\)) is the set of all models of \(\alpha\)
 
 \section{Inference}
-\label{sec:org42785cc}
+\label{sec:orgb6ce7cf}
 In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
 \end{document}
