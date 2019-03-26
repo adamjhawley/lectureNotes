@@ -1,0 +1,243 @@
+% Created 2019-03-26 Tue 11:16
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 15: File Management}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 15: File Management},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{File Management Outline}
+\label{sec:org6774802}
+\begin{itemize}
+\item Permanent storage of data and programs (files and directories)
+\item File systems
+\begin{itemize}
+\item Information and mechanisms used to handle files and directories on disk.
+\item File protection
+\item Examples: FAT (win9x), NTFS (winNT), ext family, etc.
+\end{itemize}
+\end{itemize}
+
+\section{File Concept}
+\label{sec:org3a870a9}
+A file is a \emph{logical storage unit} where the data is non-volatile.
+Files tend to have attributes such as name, type, location, size, protection, time of creation and modification etc.
+File information is kept in the directory.
+
+\section{File operations}
+\label{sec:org6aaaa07}
+A file is an abstract data type that can be manipulated by the applications which can be thought of as an array of bytes.
+The OS provides an API to operate on files, including functions for:
+\begin{itemize}
+\item File creation
+\item Opening and closing files
+\item Read and writing files
+\item Repositioning within a file
+\item Deleting or resetting
+\item Appending
+\item Renaming
+\item Copying
+\item Changing privileges
+\item Memory-mapped files
+\end{itemize}
+
+\section{File Types}
+\label{sec:org7884c66}
+File types determine which applications can understand the contents of the file.
+In Unix and Windows, file types correspond to the file name extensions but in old MacOS it was a separate attribute.
+
+\section{Internal File Structure}
+\label{sec:orgee84179}
+Files are stored on devices such as HDD or SDD.
+Files are stored in physical blocks HDs without a file structure is just an array of blocks.
+No more than one file can use an individual block so this results in internal fragmentation.
+It is important to note that \textbf{BLOCK \(\ne\) SECTOR}.
+
+\section{Directories}
+\label{sec:org548adf4}
+A directory is a special file which holds information of other files which is owned and managed by the OS.
+It provides a name space for the file names --- all names in name space need to be unique (effectively maps names to the files themeselves).
+File operations may also update directories.
+
+\subsection{Tree-Based Directories}
+\label{sec:orga743f38}
+Tree-based directories contain root directories and subdirectories.
+Files can be accessed using an \textbf{absolute path} by prefixing the filename with the sequence of all directories drom the \emph{root} e.g. \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me\textbackslash{}lecturing\textbackslash{}osi.html}.
+
+They can also be accessed using a \textbf{relative path} which is similar to using the absolute path but it makes an assumption that there is a \textbf{current directory} e.g. when in \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me} (current) we can just refer to \texttt{lecturing\textbackslash{}osi.html}.
+The advantage of this is that there is improved simplicity when dealing with deep trees (normal case).
+
+\subsection{Non Tree-Based Directories}
+\label{sec:orge82e840}
+Non Tree-Based directories allow files to be reached from multiple directories.
+To do this we have to use aliasing where multiple names point to the same file.
+This creates extra challenge where extra care should be taken with the aliases to avoid broken links.
+
+\section{Access Methods}
+\label{sec:orgb36ab2d}
+Once a file is opened it can be accessed.
+During the opening of a file, a type of access method is selected: sequential or direct.
+
+\subsection{Sequential Access}
+\label{sec:org71aab54}
+The file is produced in order, one record after the other.
+Sequential access is used for applications needing to read files from the start to the end.
+The API for sequential access typically includes \texttt{read\_next()}, \texttt{write\_next()} and \texttt{reset()} calls.
+Writes are usually performed only at the end; data is not always deleted and is instead flagged as invalid.
+
+\subsection{Direct Access}
+\label{sec:orgceaf9a5}
+File is made up of fixed-length logical records.
+Records can be read and written in any order (non-sequentially).
+Therefore the API typically includes \texttt{read(n)} and \texttt{write(n)} calls.
+Before a read/write operation is performed, the current file pointer has to be moved to the desired position, \textbf{SEEK}.
+
+\section{Access Control}
+\label{sec:org23fbce2}
+Access control is the control over whether and how users/processes can access a file.
+Types of access: read, write, execute, travers, list, rename and delete.
+Permissions on each file are typically given at three levels of privileges:
+\begin{itemize}
+\item Owner
+\item Group (Groups of users, e.g. people in one department)
+\item Universe (Any other user)
+\end{itemize}
+
+\section{Access Granularity}
+\label{sec:org5d6820c}
+Read-write operations are done in units of \textbf{blocks} which are usually one or more sectors of a storage device.
+Can be from 32 bytes to 64kb but a typical value is 4kb.
+The OS does the buffering so writes are not done immediately to the disk, only when the block is full, the file is closed or when there is an explicit \textbf{flush/synch}.
+
+\section{File System Mounting}
+\label{sec:orgff48395}
+Before a storage device can be used, it should be \textbf{mounted} as part of a file system.
+It verifies that the information in the disk is a valid file system.
+Before a storage device can be physically removed it should be \textbf{unmounted} which involves checking that all files are closed and all information is written to the disk (no information is cached).
+
+\section{Allocation of Files}
+\label{sec:org258f65d}
+Files are stored in storage devices as blocks.
+There are three main mechanisms to allocate blocks to files:
+\begin{itemize}
+\item Continuous Allocation
+\item Linked Allocation
+\item Indexed Allocation
+\end{itemize}
+
+\subsection{Continuous Allocation}
+\label{sec:orge427d76}
+Each file occupies a set of contiguous blocks of disk.
+This means that the file handler needs to know the first block and the number of blocks.
+\begin{itemize}
+\item Number of disk seeks is minimised since the disk head does not need to move very far.
+\item Access to file is very easy
+\end{itemize}
+However
+\begin{itemize}
+\item Finding space is more difficult (similar problems as external fragmentation in dynamic partitions such as best-fit vs. first-fit policies and relocation of files).
+\item Allocating file size is also very difficult if files are allowed to grow.
+\end{itemize}
+Continuous allocation is used by the IBM VM/CMS operating system for its efficiency.
+
+\subsection{Linked Allocation}
+\label{sec:org0469cd3}
+Each file is a linked list of blocks (each block contains the block number of the next block in the list).
+This allows blocks scattered throughout the disk.
+The directory holds a pointer to the first and last block of the disk (this makes reading and accessing the end of the file easier).
+\begin{itemize}
+\item Very easy to accommodate growing files.
+\end{itemize}
+However
+\begin{itemize}
+\item A major problem is that access to the i\textsuperscript{th} block requires scanning all blocks from the first one this can lead to poor worst-case access times \(\implies\) especially dependent of disk scheduling.
+\end{itemize}
+A possible solution to the problem is to group the blocks continuously in clusters.
+
+There is another major problem with linked allocation, its reliability.
+If one block gets damaged then the rest of the file is lost!
+
+For example, consider FAT (File Allocation Table):
+Same idea as a linked list, but links are stored at the beginning of each partition for the whole disk rather than the next block number being stored in the current block.
+What happes if the FAT becomes corrupted?
+
+\subsection{Indexed Allocation}
+\label{sec:orgf51d540}
+Previous methods do not nicely support direct access.
+In indexed allocation, the first block of a file (the index block) contains a list of the blocks used by the file (similar to the paging memory allocation).
+This makes direct access easy.
+The index block is usually cached.
+Obviously this leads to some wasted space (an additional full block is used for each file).
+Index blocks can be linked for large files.
+
+\section{Free Block Management}
+\label{sec:orgcc68fcf}
+When a file needs additional blocks it needs to use the ones which are free.
+A good allocation policy results in improved performance.
+Methods could be:
+\begin{itemize}
+\item Bit Vector (i.e. 0001000100100111000, where 1 = free and 0 = busy)
+\item Linked list containing the free blocks
+\item Grouping to prepare for files which will never have such a small size.
+\end{itemize}
+Allocate a free block which is close to the last block on the file to minimise seek times.
+
+\section{Efficiency \& Performance}
+\label{sec:org0f0a1a9}
+\begin{itemize}
+\item Efficiency: How Well Available Space is Used
+\begin{itemize}
+\item Lost space due to pointer sized (12/16/32 bits)
+\item Size of index blocks and allocations tables.
+\item Internal fragmentation
+\end{itemize}
+
+\item Performance
+\begin{itemize}
+\item Access time
+\item Update time: storing \emph{last update time} requires update of directory entry.
+\item Adequate usage of cache is essential
+\item Read-ahead improves performance in sequential access.
+\end{itemize}
+\end{itemize}
+It is difficult to compare because it depends on how the files will be used.
+If accesses will be mostly sequential then continuous is best.
+While if accesses will be mostly direct access then indexed is best.
+Generally it is a combination of approaches that leads to the best performance.
+
+\section{Recovery}
+\label{sec:org59168cc}
+Data on disk is essential and its loss can cause great harm.
+In case of a computer failure the data on the disk may be inconsistent e.g. broken links, bad index info.
+\textbf{Consistency checking} is performed when the file system is not properly unmounted.
+Backup and restore:
+\begin{itemize}
+\item Complete backup or incremental (modified files only, \emph{diff} outputs)
+\item Using sets of backup devices (tapes, HDs)
+\item RAID Configs
+\end{itemize}
+\end{document}
