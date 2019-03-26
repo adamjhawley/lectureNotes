@@ -1,0 +1,92 @@
+% Created 2019-03-26 Tue 15:38
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 3: SAT Solvers \& Local Search}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 3: SAT Solvers \& Local Search},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Giving Up On Completeness}
+\label{sec:orgfdda17d}
+SAT is NP-Complete and is hard.
+One option for the impatient is to maintain soundness but give up on completeness.
+So search for a satisfying assignment if we find one then CNF is satisfiable and if not then we don't know either way.
+
+\section{Local Search}
+\label{sec:org3c757ab}
+Look for \emph{good} states \emph{near} the current state.
+Goal states are particularly good!
+Don't bother remembering where you have been so little memory is required.
+
+\section{Local Search for SAT}
+\label{sec:org2c79fdd}
+\begin{itemize}
+\item States are completely defined models, not partially-defined ones.
+\item Search is for a satisfying model: these are goal states.
+\item Natrual evaluation function is: number of unsatisfied clauses.
+\item Clearly the goal is to minimise this function.
+\end{itemize}
+
+\subsection{Min-Conflicts Step}
+\label{sec:org6abcf7a}
+Choose a symbol such that \textbf{flipping} its truth-value minimises the number of unsatisfied clauses.
+Only one symbol is affected and this is the reason that this method is considered \emph{local}.
+
+\subsection{Random Walk Step}
+\label{sec:org2ad3ad1}
+In a random walk step, a symbol is chosen at random.
+Its truth-value is flipped.
+This can help the searchh escape a local minimum.
+
+\subsection{WalkSAT Algorithm}
+\label{sec:org5701be4}
+For each local move only flip symbols appearing in an unsatisfied clause.
+Choose random walk step with probability p and min-conflict step with probability 1-p.
+p is usually set to be about 0.5.
+
+\subsubsection{Features of the WalkSAT Algorithm}
+\label{sec:orgddfb1c1}
+\begin{itemize}
+\item If p>0, max\textunderscore flips = \(\infty\) and the CNF is satisfiable then WalkSAT will (eventually) find a model.
+\item But if max\textunderscore flips  = \(\infty\) and the CNF is unsatisfiable it will never terminate.
+\end{itemize}
+WalkSAT is therefore a good option when we know (or at least suspect) that the CNF is satisfiable, but want to find a satisfying model.
+
+\section{Under and Over-Constrained SAT Problems}
+\label{sec:org6be04df}
+More symbols means more models, increading the \emph{chance} of find = \(\infty\) and the CNF is unsatisfiable it will never terminate.
+WalkSAT is therefore a good option when we know (or at least suspect) that the CNF is satisfiable, but want to find a satisfying model.
+
+\section{Under and Over-Constrained SAT Problems}
+\label{sec:orgef2ce55}
+More symbols means more models, increasing the \emph{chance} of finding one that satisfies the CNF.
+More clauses means fewer models, decreasing the \emph{chance} of finding one that satisfies the CNF.
+This is why the \(\frac{clause}{symbol}\) ratio matters.
+If it is low then the problem is underconstrained, if high then it is overconstrained.
+
+See lecture slides for proof.
+\end{document}

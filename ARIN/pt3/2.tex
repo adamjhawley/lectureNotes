@@ -1,0 +1,135 @@
+% Created 2019-03-26 Tue 14:55
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 2: SAT Solvers \& the DPLL Algorithm}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 2: SAT Solvers \& the DPLL Algorithm},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Why SAT Matters for AI?}
+\label{sec:org796256c}
+\begin{itemize}
+\item SAT is NP-Complete; it is a hard problem.
+\item Many other problems can be converted to SAT.
+\end{itemize}
+
+\section{Satisfying a Clause}
+\label{sec:org0691404}
+A \textbf{literal} is a propositional symbol or the negation of one.
+For a clause to be true in a model it is enough for one of the literals to be true in that model.
+
+\section{Breaking Clauses}
+\label{sec:org30da39f}
+For a clause to be false in a model, all literals must be false in that model.
+We say the model \emph{breaks} the clause.
+
+\section{When a Model Does Not Satisfy a CNF Formula}
+\label{sec:org207bb29}
+A CNF (conjunctive normal form) is a conjuction of clauses.
+In these notes often the phrase 'a CNF' will appear in the place of 'a formula in CNF' in the interests of brevity.
+Since it is a conjunction, if a model breaks even one clause it fails to satisfy the CNF.
+If all clauses are satisfied then so is the CNF.
+
+\section{Determining Satisfiablility}
+\label{sec:orgc4e5938}
+With \emph{n} propositional symbols there are 2\textsuperscript{n} models.
+We can determine whether a CNF is satisfiable by enumerating all models.
+If we come across a satisfying model then the answer is YES, otherwise (after checking all 2\textsuperscript{n} models), the answer is NO.
+
+\textbf{Note}: We typically do not need a fully defined model to decide whether a clause is satisfied (nor if it is broken).
+
+e.g. if \(A = true\), then \((A \lor \neg B \lor C)\) is satisfied regardless of the truth-values of \(B\) and \(C\).
+or if \(A = false, B = true, C = false\) then \((A \lor \neg B \lor C)\) is broken, regardless of the truth value of \(D\).
+
+\section{SAT Solving As Search}
+\label{sec:org17630c7}
+One can view the SAT problem as a search for a satisfying model.
+The states are partially-defined models, i.e. truth assignments for some of the propositional symbols.
+We can move to a new state by assigning true/false to a variable.
+And can also backtrack to an earlier state.
+DPPL is depth-first search with simple, but effective heuristics.
+
+
+\section{Pure Symbols}
+\label{sec:org25af95f}
+Consider:
+\begin{equation}
+A \lor \neg B
+\end{equation}
+
+\begin{equation}
+\neg B \lor \neg C
+\end{equation}
+
+\begin{equation}
+A \lor C
+\end{equation}
+
+Given these three statements, we can say that \(A\) and \(B\) are both \textbf{pure}, since they have the same 'sign' in all clauses.
+\(C\), however, is impure.
+
+\textbf{Note}: If a CNF has a model, then it has one with all pure symbols set to make their literals true.
+
+All clauses containing a given pure symbol will be satisfied and other clauses won't depend on it.
+So \textbf{fix} the truth-values of pure symbols.
+
+Given the same statements, if we have \(B = false\), then \((\neg B \lor \neg C)\) is already true and therefore \(C\) \emph{becomes} pure.
+In general, when looking for pure symbols we can ignore clauses already known to be true.
+
+\section{Unit Clause Heuristic}
+\label{sec:org431c5ce}
+A \textbf{unit clause} contains a single literal.
+If \(B = true\) then \((\neg B \lor \neg C)\) simplifies to \(\neg C\) and so \(C\) must be set to \(false\).
+In general, if all literals bar one are \(false\) in a (particularly-built) modek, then \textbf{fix} the last one to satisfy the clause.
+
+\section{Unit Propogation}
+\label{sec:org17e6f87}
+Focing a variable to take a particular value may generate a \emph{cascade} of forced assigments.
+For example, suppose \(C \lor A\) is one of our clauses.
+If \(C\) is set to false then \(A\) must be set to true.
+This is called \textbf{unit propogation}.
+
+\section{Component Analysis}
+\label{sec:org55b2faa}
+As we assign variables, satisfied clauses can be removed and literals can be removed from yet-to-be-satisfied clauses.
+The resulting CNF may end up being representable as \(X \land Y\) where \(X\) and \(Y\) are both CNFs with no overlapping variables.
+\(X\) and \(Y\) are then components which can be worked on separately.
+
+\section{Variable \& Value Ordering}
+\label{sec:orgc13fba5}
+Which variable to try next? Which variable to try first?
+\emph{Degree heuristic} chooses the variable which appears most frequently over the remaining clauses.
+
+\section{Other Tricks}
+\label{sec:orgcf59b2b}
+\begin{itemize}
+\item Intelligent Backtracking (as opposed to chronologival backtracking in standard depth-first search).
+\item Clause learning (very important in modern SAT solvers, it is where you write clauses which weren't given explicitly at the beginning).
+\item Random restarts
+\item Good programming!
+\end{itemize}
+\end{document}

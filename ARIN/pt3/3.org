@@ -1,0 +1,49 @@
+#+TITLE: Lecture 3: SAT Solvers & Local Search
+#+AUTHOR: Adam Hawley
+
+* Giving Up On Completeness
+SAT is NP-Complete and is hard.
+One option for the impatient is to maintain soundness but give up on completeness.
+So search for a satisfying assignment if we find one then CNF is satisfiable and if not then we don't know either way.
+
+* Local Search
+Look for /good/ states /near/ the current state.
+Goal states are particularly good!
+Don't bother remembering where you have been so little memory is required.
+
+* Local Search for SAT
+- States are completely defined models, not partially-defined ones.
+- Search is for a satisfying model: these are goal states.
+- Natrual evaluation function is: number of unsatisfied clauses.
+- Clearly the goal is to minimise this function.
+
+** Min-Conflicts Step
+Choose a symbol such that *flipping* its truth-value minimises the number of unsatisfied clauses.
+Only one symbol is affected and this is the reason that this method is considered /local/.
+
+** Random Walk Step
+In a random walk step, a symbol is chosen at random.
+Its truth-value is flipped.
+This can help the searchh escape a local minimum.
+
+** WalkSAT Algorithm
+For each local move only flip symbols appearing in an unsatisfied clause.
+Choose random walk step with probability p and min-conflict step with probability 1-p.
+p is usually set to be about 0.5.
+
+*** Features of the WalkSAT Algorithm
+- If p>0, max\textunderscore flips = \infty and the CNF is satisfiable then WalkSAT will (eventually) find a model.
+- But if max\textunderscore flips  = \infty and the CNF is unsatisfiable it will never terminate.
+WalkSAT is therefore a good option when we know (or at least suspect) that the CNF is satisfiable, but want to find a satisfying model.
+
+* Under and Over-Constrained SAT Problems
+More symbols means more models, increading the /chance/ of find = \infty and the CNF is unsatisfiable it will never terminate.
+WalkSAT is therefore a good option when we know (or at least suspect) that the CNF is satisfiable, but want to find a satisfying model.
+
+* Under and Over-Constrained SAT Problems
+More symbols means more models, increasing the /chance/ of finding one that satisfies the CNF.
+More clauses means fewer models, decreasing the /chance/ of finding one that satisfies the CNF.
+This is why the $\frac{clause}{symbol}$ ratio matters.
+If it is low then the problem is underconstrained, if high then it is overconstrained.
+
+See lecture slides for proof.

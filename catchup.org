@@ -1,5 +1,6 @@
 Keybind reminder:
 C-c C-c : Toggle Checkbox
+TODO Next: ARIN Prac
 * SYST
 ** TODO Lectures [9/16]
   - [X] 7
@@ -58,11 +59,12 @@ C-c C-c : Toggle Checkbox
    - [X] 5
    - [X] 6
 ** Pt3
-*** TODO Lectures [1/4]
+*** TODO Lectures [2/5]
    - [X] 1
-   - [ ] 2
+   - [X] 2
    - [ ] 3
    - [ ] 4
+   - [ ] 5
 *** TODO Practicals [0/1]
    - [ ] 1
    - [ ] 2
