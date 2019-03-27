@@ -1,0 +1,124 @@
+#+TITLE: Lecture 16: Introduction to Networking
+#+AUTHOR: Adam Hawley
+
+* Computer Networks
+- An _interconnection_ of _autonomous_ computers
+They should be ableto exchange information (connected via some medium such as copper wire, microwaves etc.).
+They also lack a centralised control.
+
+Motivation for developing networks:
+- Resource sharing
+- Remote access and communication
+- Reliability and redundancy
+- Economic advantages
+
+* Examples of Networks
+- Personal Area Network (PAN)
+- Local Area Network (LAN)
+- Wide Area Network (WAN)
+- Internet
+
+* Network Topologies
+Examples:
+- Bus
+- Ring
+- Star
+- Mesh
+
+* Connectivity
+At the lowest level *nodes* are connected by some physical medium called a *link*.
+In the course, if it is not otherwise stated then it should be assumed that links are in a *duplex mode* (rather than simplex) where data can be transported in both directions.
+Physical (direct) connections can be *point-to-point* or *multiple-access*.
+
+* Indirect Connectivity
+- Physical connections are often not direct.
+When using indirect connectivity there is usually a *switch node* involved which is a node attached to multiple point-to-point links.
+There are two main classes of indirect connectivity: circuit-switched networks and packet-switched networks.
+
+** Circuit-Switched Networks
+- A circuit must be established before data is sent.
+- All blocks of a large message are always sent via the same route e.g. telephone network.
+- Advantage: Time for data to be delivered is predictable once the circuit is set.
+SEE SLIDES FOR DEMO
+
+** Packet-Switched Networks
+- Handle blocks of data (/packets/)
+- Different ways to handle packets along the way e.g. store-and-forward, wormhole etc.
+SEE SLIDES FOR DEMO
+
+* Interconnection of Networks
+/An internet/ is an interconnection of independent networks.
+The currently operational TCP/IP internet is called /The Internet/.
+
+* Addressing, Routing & Casting
+*Addresses* of nodes are needed to uniquely identify recipient nodes of messages.
+Switches use addresses to describe how to forward (to /route/) a message towards its destination.
+Depending on whether a source node (sender) sense a message to a single destination node (receiver), or to multiple or even all nodes, one speaks of *unicasting, multicasting* or *broadcasting*, respectively.
+
+* Reliability
+** Errors At The Bit Level
+Corruption of single bits is very unlikely in copper cable (1:1,000,000) and optical fibre (1:10,000,000,000,000).
+The corruption often occurs in clusters (burst errors) and are caused by power surges, lightning or microwaves.
+This kind of corruption can be detected and sometimes corrected.
+
+** Errors At The Packet Level
+This is when complete packets are lost and can be because of non-correctable bit errors.
+These errors also appear at congested switches because it can be difficult to distinguish between a packet that is indeed lost and one that is merely late in arriving at its destination.
+
+** Errors At The Node/Link Level:
+- Due to a cut physical link
+- Caused by hardware or software crashes
+- Are eventually (after a /long/ time) corrected
+- It is difficult to distinguish between a cut and an error-prone link, or between a failed and slow node.
+*Note*: Packet-switched networks have the abililty to possibly route around a failed node or link.
+
+* Common Units in Networking
+- Units in computing are commonly shown as powers of 2 e.g. GB = 2^{30} bytes = 2^{33} bits.
+- Units of engineering are commonly shwon as powers of 10. e.g. Gbps: giga bit per second = 10^9 or 2^{30} bits per second
+ 
+* Performance
+The efficiency of applications running over the network often depends on the efficiency of the network itself.
+There are two key performance metrics:
+- Bandwidth (/transmission speeds/) How many bytes per second can I move
+- Latency (/transmission delays/) What is the time taken from beginning to end of a transfer
+These can both be measured at the levels of individual links as well as end-to-end channels.
+
+** Bandwidth
+Number of bits that can be transmitted over the link/channel in a certain period of time.
+Bandwidth is usually measured in bps (bits per second).
+Factors which influence bandwidth:
+- The physical/electrical characteristics of links
+- The software overhead needed for handling/transforming each bit of data (in the case of channels)
+- The load of networks (in the case of channels)
+
+** Latency (Delay)
+Latency in networks consists of three components:
+1. Speed-of-light *propogation* delay (the speed of light is 2.3\times 10^8 m/s in cable and 2.0 \times 10^8 m/s in fibre.
+2. Time needed to *transmit* a unit of data (usually a packet).
+3. *Queuing* delays inside the network (at switches).
+Formula:
+\begin{equation}
+Latency = Propogation + Transmission + Queuing
+\end{equation}
+\begin{equation}
+Propogation = \frac{Distance}{SpeedOfLightInMedium}
+\end{equation}
+\begin{equation}
+Transmission = \frac{Size}{Bandwidth}
+\end{equation}
+
+** Latency Vs. Bandwidth
+To which degree latency and bandwidth dominate performance depends on the application of the program.
+For example, a digital library program that is asked to fetch a 25MB image, with a 10Mbps channel needing about 20s for transmission means that other latency which is usually in the range of ms, does not matter.
+While a transatlantic network with a bandwidth of 45Mbps will need around 0.366ms for transmission of a 2KB message but the other latency which is in the range of 100ms dominates.
+
+** Delay \times Bandwidth Product
+How many bits can be sent before the first one arrives at the receiver?
+- Answer: #bits = dela \times bandwidth
+The product also indicated how many bits can be /stored/ in a link.
+
+** Application Performance Needs
+Often applications want as much bandwidth as possible but sometimes other factors are more important.
+For example, the human eye can only process about 30 fps so bandwidth more than this is not useful.
+What matters is controlling jitter, i.e. the variation in latency (buffers storing incoming packets should not underflow or overflow).
+Lower and upper bounds on delays are needed.

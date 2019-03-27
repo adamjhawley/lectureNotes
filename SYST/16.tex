@@ -1,0 +1,200 @@
+% Created 2019-03-27 Wed 16:41
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 16: Introduction to Networking}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 16: Introduction to Networking},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Computer Networks}
+\label{sec:orgdef3cb1}
+\begin{itemize}
+\item An \uline{interconnection} of \uline{autonomous} computers
+\end{itemize}
+They should be ableto exchange information (connected via some medium such as copper wire, microwaves etc.).
+They also lack a centralised control.
+
+Motivation for developing networks:
+\begin{itemize}
+\item Resource sharing
+\item Remote access and communication
+\item Reliability and redundancy
+\item Economic advantages
+\end{itemize}
+
+\section{Examples of Networks}
+\label{sec:org0270caa}
+\begin{itemize}
+\item Personal Area Network (PAN)
+\item Local Area Network (LAN)
+\item Wide Area Network (WAN)
+\item Internet
+\end{itemize}
+
+\section{Network Topologies}
+\label{sec:org443b66f}
+Examples:
+\begin{itemize}
+\item Bus
+\item Ring
+\item Star
+\item Mesh
+\end{itemize}
+
+\section{Connectivity}
+\label{sec:orgbb7b840}
+At the lowest level \textbf{nodes} are connected by some physical medium called a \textbf{link}.
+In the course, if it is not otherwise stated then it should be assumed that links are in a \textbf{duplex mode} (rather than simplex) where data can be transported in both directions.
+Physical (direct) connections can be \textbf{point-to-point} or \textbf{multiple-access}.
+
+\section{Indirect Connectivity}
+\label{sec:org62cd7e8}
+\begin{itemize}
+\item Physical connections are often not direct.
+\end{itemize}
+When using indirect connectivity there is usually a \textbf{switch node} involved which is a node attached to multiple point-to-point links.
+There are two main classes of indirect connectivity: circuit-switched networks and packet-switched networks.
+
+\subsection{Circuit-Switched Networks}
+\label{sec:org3f6c490}
+\begin{itemize}
+\item A circuit must be established before data is sent.
+\item All blocks of a large message are always sent via the same route e.g. telephone network.
+\item Advantage: Time for data to be delivered is predictable once the circuit is set.
+\end{itemize}
+SEE SLIDES FOR DEMO
+
+\subsection{Packet-Switched Networks}
+\label{sec:orgd794909}
+\begin{itemize}
+\item Handle blocks of data (\emph{packets})
+\item Different ways to handle packets along the way e.g. store-and-forward, wormhole etc.
+\end{itemize}
+SEE SLIDES FOR DEMO
+
+\section{Interconnection of Networks}
+\label{sec:org5952d75}
+\emph{An internet} is an interconnection of independent networks.
+The currently operational TCP/IP internet is called \emph{The Internet}.
+
+\section{Addressing, Routing \& Casting}
+\label{sec:orgdbe2976}
+\textbf{Addresses} of nodes are needed to uniquely identify recipient nodes of messages.
+Switches use addresses to describe how to forward (to \emph{route}) a message towards its destination.
+Depending on whether a source node (sender) sense a message to a single destination node (receiver), or to multiple or even all nodes, one speaks of \textbf{unicasting, multicasting} or \textbf{broadcasting}, respectively.
+
+\section{Reliability}
+\label{sec:orgbeeb098}
+\subsection{Errors At The Bit Level}
+\label{sec:orgbd5cb0c}
+Corruption of single bits is very unlikely in copper cable (1:1,000,000) and optical fibre (1:10,000,000,000,000).
+The corruption often occurs in clusters (burst errors) and are caused by power surges, lightning or microwaves.
+This kind of corruption can be detected and sometimes corrected.
+
+\subsection{Errors At The Packet Level}
+\label{sec:orgffac70e}
+This is when complete packets are lost and can be because of non-correctable bit errors.
+These errors also appear at congested switches because it can be difficult to distinguish between a packet that is indeed lost and one that is merely late in arriving at its destination.
+
+\subsection{Errors At The Node/Link Level:}
+\label{sec:org9803586}
+\begin{itemize}
+\item Due to a cut physical link
+\item Caused by hardware or software crashes
+\item Are eventually (after a \emph{long} time) corrected
+\item It is difficult to distinguish between a cut and an error-prone link, or between a failed and slow node.
+\end{itemize}
+\textbf{Note}: Packet-switched networks have the abililty to possibly route around a failed node or link.
+
+\section{Common Units in Networking}
+\label{sec:orgdb20f1d}
+\begin{itemize}
+\item Units in computing are commonly shown as powers of 2 e.g. GB = 2\textsuperscript{30} bytes = 2\textsuperscript{33} bits.
+\item Units of engineering are commonly shwon as powers of 10. e.g. Gbps: giga bit per second = 10\textsuperscript{9} or 2\textsuperscript{30} bits per second
+\end{itemize}
+
+\section{Performance}
+\label{sec:org8dc7222}
+The efficiency of applications running over the network often depends on the efficiency of the network itself.
+There are two key performance metrics:
+\begin{itemize}
+\item Bandwidth (\emph{transmission speeds}) How many bytes per second can I move
+\item Latency (\emph{transmission delays}) What is the time taken from beginning to end of a transfer
+\end{itemize}
+These can both be measured at the levels of individual links as well as end-to-end channels.
+
+\subsection{Bandwidth}
+\label{sec:org2ab1e60}
+Number of bits that can be transmitted over the link/channel in a certain period of time.
+Bandwidth is usually measured in bps (bits per second).
+Factors which influence bandwidth:
+\begin{itemize}
+\item The physical/electrical characteristics of links
+\item The software overhead needed for handling/transforming each bit of data (in the case of channels)
+\item The load of networks (in the case of channels)
+\end{itemize}
+
+\subsection{Latency (Delay)}
+\label{sec:org426f532}
+Latency in networks consists of three components:
+\begin{enumerate}
+\item Speed-of-light \textbf{propogation} delay (the speed of light is 2.3\texttimes{} 10\textsuperscript{8} m/s in cable and 2.0 \texttimes{} 10\textsuperscript{8} m/s in fibre.
+\item Time needed to \textbf{transmit} a unit of data (usually a packet).
+\item \textbf{Queuing} delays inside the network (at switches).
+\end{enumerate}
+Formula:
+\begin{equation}
+Latency = Propogation + Transmission + Queuing
+\end{equation}
+\begin{equation}
+Propogation = \frac{Distance}{SpeedOfLightInMedium}
+\end{equation}
+\begin{equation}
+Transmission = \frac{Size}{Bandwidth}
+\end{equation}
+
+\subsection{Latency Vs. Bandwidth}
+\label{sec:org176c629}
+To which degree latency and bandwidth dominate performance depends on the application of the program.
+For example, a digital library program that is asked to fetch a 25MB image, with a 10Mbps channel needing about 20s for transmission means that other latency which is usually in the range of ms, does not matter.
+While a transatlantic network with a bandwidth of 45Mbps will need around 0.366ms for transmission of a 2KB message but the other latency which is in the range of 100ms dominates.
+
+\subsection{Delay \texttimes{} Bandwidth Product}
+\label{sec:org0c5e0c8}
+How many bits can be sent before the first one arrives at the receiver?
+\begin{itemize}
+\item Answer: \#bits = dela \texttimes{} bandwidth
+\end{itemize}
+The product also indicated how many bits can be \emph{stored} in a link.
+
+\subsection{Application Performance Needs}
+\label{sec:org0cd8106}
+Often applications want as much bandwidth as possible but sometimes other factors are more important.
+For example, the human eye can only process about 30 fps so bandwidth more than this is not useful.
+What matters is controlling jitter, i.e. the variation in latency (buffers storing incoming packets should not underflow or overflow).
+Lower and upper bounds on delays are needed.
+\end{document}
