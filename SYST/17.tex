@@ -1,0 +1,183 @@
+% Created 2019-03-28 Thu 12:38
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 17: Network Stack}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 17: Network Stack},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Network Requirements}
+\label{sec:orgba87a1e}
+A computer network must:
+\begin{itemize}
+\item Provide general, cost-effectivem, fair, robust and high-performance, connectivity among a large set of computers.
+\item Accommodate changes in the underlying technologies and in the demands of application programs. (e.g. developments in the ability to produce fibre-optic cable)
+\end{itemize}
+To cope with complexity, the principle of \textbf{abstraction} is usually applied in the sciences.
+In network design, abstraction is reflected in the concept of a \textbf{network architecture}.
+
+\section{The Principle of Abstraction}
+\label{sec:orgc94e795}
+Identify a \textbf{model} capturing some important system aspect.
+Then encapsulate this model in an object such that is is \textbf{accessible} to other system components via its interface and its implementation details are hidden.
+
+\section{End-to-End Communication}
+\label{sec:orgdffa641}
+Providing cost-effective connectivity among hosts is a necessary but too weak requirement to networks.
+What is needed is a means for application processes running on different hosts to communicate over the network.
+
+Services for setting up, maintaining and using end-to-end connections are common for many application programs (implemented as part of the OS).
+Services should support commonly used communication patters such as:
+\begin{itemize}
+\item \textbf{Request-reply}: (For reliable exchange of messages between a client and a server e.g. a download).
+\item \textbf{Message Stream}: Potentially unreliable ordered sequence of messages (e.g. video on demand).
+\end{itemize}
+
+\section{Network API}
+\label{sec:org3b1104b}
+Interface that the OS (running on some node) provides to its networking subsystem.
+It is a piece of software that provides abstract routines for invoking common services of the network in a particular OS.
+Its implementation maps the offered abstract routines to the \textbf{services} provided by the network.
+For example, take UNIX sockets.
+
+\section{Network Architecture: Layering}
+\label{sec:org7e37983}
+Several steps of abstraction leads to \textbf{layering}.
+The services provided at the high-level (the more abstract) layers are implemented in terms of the services of the lower-level (the less abstract and more concrete) layers.
+There might be \textbf{multiple abstractions at a given layer} which is the case when considering different types of chennels.
+
+\subsection{Advantages \& Disadvantages of Layering}
+\label{sec:org049ee96}
+Advantages:
+\begin{itemize}
+\item Obtaining manageable tasks by splitting a complex problem into multiple, simpler sub-problems.
+\item Achieving a modular design such that adding or altering a service affects only one layer, thus reusing the functionality of all other layers.
+\end{itemize}
+Disadvantages:
+\begin{itemize}
+\item Implementing a layered design might induce overheads and, thereby, reduce efficiency.
+\end{itemize}
+However the advantages by far outweigh this disadvantage which can usually be dealt with.
+\begin{itemize}
+\item \textbf{Note}: In network design, the objects making up the layers are the \emph{protocols}.
+\end{itemize}
+
+\section{Protocols: The Networking Software}
+\label{sec:orgcbf23a8}
+The role of protocols in a layered architecture:
+\begin{itemize}
+\item Each layer \emph{n} of some host may carry a conversation with layer \emph{n} on some other host.
+\item The layer \emph{n} protocol defines the rules used in this conversation.
+\end{itemize}
+Several layers of protocols build a \textbf{protocol stack}.
+
+\section{Services and Protocols}
+\label{sec:org6bf551b}
+\begin{description}
+\item[{Service}] Interface on the other objects on the same host that want to use its communication services (such as send and receive primitives).
+\item[{Protocol}] Interface to the counterparts (peers) on other machines, which defines a set of rules governing the messages that the protocol exchanges with its peers to implement the services.
+\end{description}
+
+\section{Protocol Graphs}
+\label{sec:org2f7025e}
+Protocol graphs visualise the dependencies between protocols at different layers (see slides for example).
+
+\section{OSI Reference Model (OSI Architecture)}
+\label{sec:orge552cb3}
+The 7-layer \textbf{Open Systems Interconnection (OSI)} architecture is standardised by the International Standards Organisation (ISO).
+There are two sets of layers; one for end-hosts and another for switch nodes.
+The end host stack contains the following:
+\begin{itemize}
+\item Application
+\item Presentation
+\item Session
+\item Transport
+\item Network
+\item Data Link
+\item Physical
+\end{itemize}
+While the switch node stack only contains:
+\begin{itemize}
+\item Network
+\item Data Link
+\item Physical
+\end{itemize}
+
+\section{Basic Purpose of ISO Layer}
+\label{sec:org7ebcd69}
+\begin{description}
+\item[{Physical Layer}] Handles transmission of raw bits over a physical link.
+\item[{Data Link Layer}] Collects a stream of bits into a \textbf{frame} i.e. frames, not raw bits, are delivered to hosts. (It is usually implemented in network adaptors and in device drivers running on the node's OS.
+\item[{Network Layer}] Deals with routing in packet-switched networks and employs the term \textbf{packet} rather than frame.
+\item[{Transport Layer}] Implements process-to-process channels and employs the term \textbf{message} rather than packet or frame.
+\item[{Session Layer}] Ties togethr different ttransport streams e.g. audio and video for video conferencing.
+\item[{Presentation Layer}] Coodrinates the format of data exchanged between peers e.g. the length of integer represenations.
+\item[{Application Layer}] Includes application protocols e.g. HTTP.
+\end{description}
+
+\section{Internet Architecture (TCP/IP Architecture)}
+\label{sec:orgf072e28}
+The Internet architecture only considers 4 layers of the OSI model; specifically, it leaves out the presentation and session layer and says that these should be dealt with in the application layer.
+The data link and physical layer are also replaced with a \textbf{host-to-network} layer which is what made it so popular since it expects so little of these layers.
+
+\section{Overview of the Internet Protocols}
+\label{sec:org36fe112}
+The Internet Protocol (IP) supports the interconnection of multiple network technologies into a single, logical network.
+There are two main rtansport protocols (end-to-end protocols):
+\begin{itemize}
+\item The \textbf{Transmission Control Protocol TCP} provides a reliably byte-stream channel.
+\item The \textbf{User Datagram Protocol (UDP)} provides an unreliable message delivery channel.
+\end{itemize}
+The Internet comes with many application protocols such as:
+\begin{itemize}
+\item File Transfer Protocol (FTP)
+\item HyperText Transfer Protocol (HTTP)
+\item Directory Name Service (DNS)
+\item Real-time Transfer Protocol (RTP)
+\end{itemize}
+
+\section{OSI vs. Internet Architecture}
+\label{sec:org78c91c8}
+The Internet protocols were invented before the OSI model, and the Internet architecture was just a result of an existing implementation.
+The Internet protocols became the de-facto standard since they were shipped with the popular Berkeley distribution of UNIX, which also helped their further development.
+The conceptual OSI reference model, however, is a great use for conceptually discussing and teaching about computer networks.
+
+\section{Network Standardisation}
+\label{sec:org4c1c95d}
+\begin{itemize}
+\item International Telecommunication Union (ITU): Telecom sector includes data communications systems.
+\item International Standards Organisation (ISO): Member of the ITU.
+\item Institute of Electrical and Electronics Engineers (IEEE): Standards are occasionally adapted by ISO.
+\item Internet Society:
+\begin{itemize}
+\item Internet Engineering Task Force (IETF)
+\item Internet Research Task Force (IRTF)
+\end{itemize}
+\end{itemize}
+Generally protocols are submitted to different organisations depending on their level in the stack.
+They are submitted by engineers (often funded by their employer) who try to create vendor-independent and non-ambiguous rules.
+\end{document}

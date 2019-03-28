@@ -1,0 +1,110 @@
+#+TITLE: Lecture 17: Network Stack
+#+AUTHOR: Adam Hawley
+
+* Network Requirements
+A computer network must:
+- Provide general, cost-effectivem, fair, robust and high-performance, connectivity among a large set of computers.
+- Accommodate changes in the underlying technologies and in the demands of application programs. (e.g. developments in the ability to produce fibre-optic cable)
+To cope with complexity, the principle of *abstraction* is usually applied in the sciences.
+In network design, abstraction is reflected in the concept of a *network architecture*.
+
+* The Principle of Abstraction
+Identify a *model* capturing some important system aspect.
+Then encapsulate this model in an object such that is is *accessible* to other system components via its interface and its implementation details are hidden.
+
+* End-to-End Communication
+Providing cost-effective connectivity among hosts is a necessary but too weak requirement to networks.
+What is needed is a means for application processes running on different hosts to communicate over the network.
+
+Services for setting up, maintaining and using end-to-end connections are common for many application programs (implemented as part of the OS).
+Services should support commonly used communication patters such as:
+- *Request-reply*: (For reliable exchange of messages between a client and a server e.g. a download).
+- *Message Stream*: Potentially unreliable ordered sequence of messages (e.g. video on demand).
+
+* Network API
+Interface that the OS (running on some node) provides to its networking subsystem.
+It is a piece of software that provides abstract routines for invoking common services of the network in a particular OS.
+Its implementation maps the offered abstract routines to the *services* provided by the network.
+For example, take UNIX sockets.
+
+* Network Architecture: Layering
+Several steps of abstraction leads to *layering*.
+The services provided at the high-level (the more abstract) layers are implemented in terms of the services of the lower-level (the less abstract and more concrete) layers.
+There might be *multiple abstractions at a given layer* which is the case when considering different types of chennels.
+
+** Advantages & Disadvantages of Layering
+Advantages:
+- Obtaining manageable tasks by splitting a complex problem into multiple, simpler sub-problems.
+- Achieving a modular design such that adding or altering a service affects only one layer, thus reusing the functionality of all other layers.
+Disadvantages:
+- Implementing a layered design might induce overheads and, thereby, reduce efficiency. 
+However the advantages by far outweigh this disadvantage which can usually be dealt with.
+- *Note*: In network design, the objects making up the layers are the /protocols/.
+
+* Protocols: The Networking Software
+The role of protocols in a layered architecture:
+- Each layer /n/ of some host may carry a conversation with layer /n/ on some other host.
+- The layer /n/ protocol defines the rules used in this conversation.
+Several layers of protocols build a *protocol stack*.
+
+* Services and Protocols
+- Service :: Interface on the other objects on the same host that want to use its communication services (such as send and receive primitives).
+- Protocol :: Interface to the counterparts (peers) on other machines, which defines a set of rules governing the messages that the protocol exchanges with its peers to implement the services.
+
+* Protocol Graphs 
+Protocol graphs visualise the dependencies between protocols at different layers (see slides for example).
+
+* OSI Reference Model (OSI Architecture)
+The 7-layer *Open Systems Interconnection (OSI)* architecture is standardised by the International Standards Organisation (ISO).
+There are two sets of layers; one for end-hosts and another for switch nodes.
+The end host stack contains the following:
+- Application
+- Presentation
+- Session
+- Transport
+- Network
+- Data Link
+- Physical
+While the switch node stack only contains:
+- Network
+- Data Link
+- Physical
+
+* Basic Purpose of ISO Layer
+- Physical Layer :: Handles transmission of raw bits over a physical link.
+- Data Link Layer :: Collects a stream of bits into a *frame* i.e. frames, not raw bits, are delivered to hosts. (It is usually implemented in network adaptors and in device drivers running on the node's OS.
+- Network Layer :: Deals with routing in packet-switched networks and employs the term *packet* rather than frame.
+- Transport Layer :: Implements process-to-process channels and employs the term *message* rather than packet or frame.
+- Session Layer :: Ties togethr different ttransport streams e.g. audio and video for video conferencing.
+- Presentation Layer :: Coodrinates the format of data exchanged between peers e.g. the length of integer represenations.
+- Application Layer :: Includes application protocols e.g. HTTP.
+
+* Internet Architecture (TCP/IP Architecture)
+The Internet architecture only considers 4 layers of the OSI model; specifically, it leaves out the presentation and session layer and says that these should be dealt with in the application layer.
+The data link and physical layer are also replaced with a *host-to-network* layer which is what made it so popular since it expects so little of these layers.
+
+* Overview of the Internet Protocols
+The Internet Protocol (IP) supports the interconnection of multiple network technologies into a single, logical network.
+There are two main rtansport protocols (end-to-end protocols):
+- The *Transmission Control Protocol TCP* provides a reliably byte-stream channel.
+- The *User Datagram Protocol (UDP)* provides an unreliable message delivery channel.
+The Internet comes with many application protocols such as:
+- File Transfer Protocol (FTP)
+- HyperText Transfer Protocol (HTTP)
+- Directory Name Service (DNS)
+- Real-time Transfer Protocol (RTP)
+
+* OSI vs. Internet Architecture
+The Internet protocols were invented before the OSI model, and the Internet architecture was just a result of an existing implementation.
+The Internet protocols became the de-facto standard since they were shipped with the popular Berkeley distribution of UNIX, which also helped their further development.
+The conceptual OSI reference model, however, is a great use for conceptually discussing and teaching about computer networks.
+
+* Network Standardisation
+- International Telecommunication Union (ITU): Telecom sector includes data communications systems.
+- International Standards Organisation (ISO): Member of the ITU.
+- Institute of Electrical and Electronics Engineers (IEEE): Standards are occasionally adapted by ISO.
+- Internet Society:
+  + Internet Engineering Task Force (IETF)
+  + Internet Research Task Force (IRTF)
+Generally protocols are submitted to different organisations depending on their level in the stack.
+They are submitted by engineers (often funded by their employer) who try to create vendor-independent and non-ambiguous rules.
