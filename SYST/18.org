@@ -1,0 +1,39 @@
+#+TITLE: Lecture 18: Physical & Data Link Layers
+#+AUTHOR: Adam Hawley
+
+* Physical Layer
+Deals with the transmission of bits over physical medium (twisted pair/coaxial cables, fibre optics, wireless etc.).
+The layers usually have a standardised interface to transmission media (e.g. how 1/0 signals are carried over a link).
+
+Requirements of the physical layer include both *synchronisation* and *flow control* as well as multiplexing (FDM (frequency division multiplexing), TDM (time division multiplexing) and CDM (code division multiplexing)).
+Multiplexing is where you use the same connection for multiple transmissions.
+
+* Data Link Layer
+Deals with the framing of raw data, as well as flow control and error correction (i.e. if they cannot be solved at the physical level).
+The data linke layer is often divided into two sublayers:
+- *Logical Link Control (LLC)*: Multiplex protocols running over the data link layer, error and flow control.
+- *Media Access Control (MAC)*: Control channel access, append and check FCS (frame chack sequence), discard malformed frames, addressing.
+
+** Example: Ethernet
+- Standard: IEEE 802.3
+
+Uses CSMA/CD local area network technology:
++ Multiple-Access (MA): Several nodes are connected to the same cable (cf. data bus).
++ Carrier Sense (CS): A node can distinguish between a busy and an idle link.
++ Collision Detect (CD): A node listens when it transmits a frame in order to detect whether the frame interferes (collides) with a frame transmitted by another node.
+Multiple Ethernet segments are joined by *repeaters* that forward the signals.
+In an Ethernet, every signal is propagated in all directions over the entire network, even crossing repeater boundaries.
+- Problem: All hosts compete for access to the same link; they are said to be in the same *collision detection*.
+The problem is solved by intelligently partitioning the *collision domain* using the following:
+- Hub :: Multiway repeater supporting several point-to-point segments - still only one collision domain.
+- Bridge :: Each port is connected to a different collision domain. Transmissions within separate domains are allowed to happen in parallel.
+- Switch :: Frames are sent only to their destinations --- no collisions.
+How can we know that a frame is going between certain nodes?
+
+Each Ethernet adaptor has a unique Ethernet (MAC) address, which is 6 bytes long and read as a sequence of six numbers, each given as a pair of hexadecimal digits (e.g. 08:00:2B:E4:B1:02).
+Each connected adaptor receives all frames transmitted over an Ethernet, but passes to the upper protocol layers only those matching:
+- The adaptor's own address (unicase)
+- The Ethernet broadcast address (FF:FF:FF:FF:FF:FF).
+- Multicase addresses (not used in practice just in the standard) (least significant bit of the first byte set).
+See lecture for frame format example.
+

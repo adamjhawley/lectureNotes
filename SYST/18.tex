@@ -1,0 +1,73 @@
+% Created 2019-03-31 Sun 21:32
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 18: Physical \& Data Link Layers}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 18: Physical \& Data Link Layers},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Physical Layer}
+\label{sec:org3a6b9a1}
+Deals with the transmission of bits over physical medium (twisted pair/coaxial cables, fibre optics, wireless etc.).
+The layers usually have a standardised interface to transmission media (e.g. how 1/0 signals are carried over a link).
+
+Requirements of the physical layer include both \textbf{synchronisation} and \textbf{flow control} as well as multiplexing (FDM (frequency division multiplexing), TDM (time division multiplexing) and CDM (code division multiplexing)).
+Multiplexing is where you use the same connection for multiple transmissions.
+
+\section{Data Link Layer}
+\label{sec:orgc49f324}
+Deals with the framing of raw data, as well as flow control and error correction (i.e. if they cannot be solved at the physical level).
+The data linke layer is often divided into two sublayers:
+\begin{itemize}
+\item \textbf{Logical Link Control (LLC)}: Multiplex protocols running over the data link layer, error and flow control.
+\item \textbf{Media Access Control (MAC)}: Control channel access, append and check FCS (frame chack sequence), discard malformed frames, addressing.
+\end{itemize}
+
+\subsection{Example: Ethernet}
+\label{sec:org846e67b}
+\begin{itemize}
+\item Standard: IEEE 802.3
+\end{itemize}
+
+Uses CSMA/CD local area network technology:
+\begin{itemize}
+\item Multiple-Access (MA): Several nodes are connected to the same cable (cf. data bus).
+\item Carrier Sense (CS): A node can distinguish between a busy and an idle link.
+\item Collision Detect (CD): A node listens when it transmits a frame in order to detect whether the frame interferes (collides) with a frame transmitted by another node.
+\end{itemize}
+Multiple Ethernet segments are joined by \textbf{repeaters} that forward the signals.
+In an Ethernet, every signal is propagated in all directions over the entire network, even crossing repeater boundaries.
+\begin{itemize}
+\item Problem: All hosts compete for access to the same link; they are said to be in the same \textbf{collision detection}.
+\end{itemize}
+The problem is solved by intelligently partitioning the \textbf{collision domain} using the following:
+\begin{description}
+\item[{Hub}] Multiway repeater supporting several point-to-point segments - still only one collision domain.
+\item[{Bridge}] Each port is connected to a different collision domain. Transmissions within separate domains are allowed to happen in parallel.
+\item[{Switch}] Frames are sent only to their destinations --- no collisions.
+\end{description}
+\end{document}
