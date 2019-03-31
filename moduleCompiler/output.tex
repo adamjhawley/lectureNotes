@@ -1,0 +1,988 @@
+% Created 2019-03-15 Fri 14:22
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{turnstile}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 1: Logical Agents}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 1: Logical Agents},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.2.2 (Org mode 9.2.1)}, 
+ pdflang={English}}
+% Created 2019-03-26 Tue 14:55
+\title{Lecture 2: SAT Solvers \& the DPLL Algorithm}
+ pdftitle={Lecture 2: SAT Solvers \& the DPLL Algorithm},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+
+\maketitle
+\tableofcontents
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+\section{Logic in General}
+\label{sec:org687c359}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\section{Entailment}
+\label{sec:org34b83f8}
+\item \textbf{Entailment} means that one thing follows from another:
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\section{Proof Methods}
+\label{sec:org12fc565}
+\end{document}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:org687c359}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:org34b83f8}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
+
+\maketitle
+\tableofcontents
+
+
+\section{Why SAT Matters for AI?}
+\label{sec:org796256c}
+\begin{itemize}
+\item SAT is NP-Complete; it is a hard problem.
+\item Many other problems can be converted to SAT.
+\end{itemize}
+
+\section{Satisfying a Clause}
+\label{sec:org0691404}
+A \textbf{literal} is a propositional symbol or the negation of one.
+For a clause to be true in a model it is enough for one of the literals to be true in that model.
+
+\section{Breaking Clauses}
+\label{sec:org30da39f}
+For a clause to be false in a model, all literals must be false in that model.
+We say the model \emph{breaks} the clause.
+
+\section{When a Model Does Not Satisfy a CNF Formula}
+\label{sec:org207bb29}
+A CNF (conjunctive normal form) is a conjuction of clauses.
+In these notes often the phrase 'a CNF' will appear in the place of 'a formula in CNF' in the interests of brevity.
+Since it is a conjunction, if a model breaks even one clause it fails to satisfy the CNF.
+If all clauses are satisfied then so is the CNF.
+
+\section{Determining Satisfiablility}
+\label{sec:orgc4e5938}
+With \emph{n} propositional symbols there are 2\textsuperscript{n} models.
+We can determine whether a CNF is satisfiable by enumerating all models.
+If we come across a satisfying model then the answer is YES, otherwise (after checking all 2\textsuperscript{n} models), the answer is NO.
+
+\textbf{Note}: We typically do not need a fully defined model to decide whether a clause is satisfied (nor if it is broken).
+
+e.g. if \(A = true\), then \((A \lor \neg B \lor C)\) is satisfied regardless of the truth-values of \(B\) and \(C\).
+or if \(A = false, B = true, C = false\) then \((A \lor \neg B \lor C)\) is broken, regardless of the truth value of \(D\).
+
+\section{SAT Solving As Search}
+\label{sec:org17630c7}
+One can view the SAT problem as a search for a satisfying model.
+The states are partially-defined models, i.e. truth assignments for some of the propositional symbols.
+We can move to a new state by assigning true/false to a variable.
+And can also backtrack to an earlier state.
+DPPL is depth-first search with simple, but effective heuristics.
+
+
+\section{Pure Symbols}
+\label{sec:org25af95f}
+Consider:
+\begin{equation}
+A \lor \neg B
+\end{equation}
+
+\begin{equation}
+\neg B \lor \neg C
+\end{equation}
+
+\begin{equation}
+A \lor C
+\end{equation}
+
+Given these three statements, we can say that \(A\) and \(B\) are both \textbf{pure}, since they have the same 'sign' in all clauses.
+\(C\), however, is impure.
+
+\textbf{Note}: If a CNF has a model, then it has one with all pure symbols set to make their literals true.
+
+All clauses containing a given pure symbol will be satisfied and other clauses won't depend on it.
+So \textbf{fix} the truth-values of pure symbols.
+
+Given the same statements, if we have \(B = false\), then \((\neg B \lor \neg C)\) is already true and therefore \(C\) \emph{becomes} pure.
+In general, when looking for pure symbols we can ignore clauses already known to be true.
+
+\section{Unit Clause Heuristic}
+\label{sec:org431c5ce}
+A \textbf{unit clause} contains a single literal.
+If \(B = true\) then \((\neg B \lor \neg C)\) simplifies to \(\neg C\) and so \(C\) must be set to \(false\).
+In general, if all literals bar one are \(false\) in a (particularly-built) modek, then \textbf{fix} the last one to satisfy the clause.
+
+\section{Unit Propogation}
+\label{sec:org17e6f87}
+Focing a variable to take a particular value may generate a \emph{cascade} of forced assigments.
+For example, suppose \(C \lor A\) is one of our clauses.
+If \(C\) is set to false then \(A\) must be set to true.
+This is called \textbf{unit propogation}.
+
+\section{Component Analysis}
+\label{sec:org55b2faa}
+As we assign variables, satisfied clauses can be removed and literals can be removed from yet-to-be-satisfied clauses.
+The resulting CNF may end up being representable as \(X \land Y\) where \(X\) and \(Y\) are both CNFs with no overlapping variables.
+\(X\) and \(Y\) are then components which can be worked on separately.
+
+\section{Variable \& Value Ordering}
+\label{sec:orgc13fba5}
+Which variable to try next? Which variable to try first?
+\emph{Degree heuristic} chooses the variable which appears most frequently over the remaining clauses.
+
+\section{Other Tricks}
+\label{sec:orgcf59b2b}
+\begin{itemize}
+\item Intelligent Backtracking (as opposed to chronologival backtracking in standard depth-first search).
+\item Clause learning (very important in modern SAT solvers, it is where you write clauses which weren't given explicitly at the beginning).
+\item Random restarts
+\item Good programming!
+\end{itemize}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:org687c359}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:org34b83f8}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
+
+\maketitle
+\tableofcontents
+
+
+\section{Why SAT Matters for AI?}
+\label{sec:org796256c}
+\begin{itemize}
+\item SAT is NP-Complete; it is a hard problem.
+\item Many other problems can be converted to SAT.
+\end{itemize}
+
+\section{Satisfying a Clause}
+\label{sec:org0691404}
+A \textbf{literal} is a propositional symbol or the negation of one.
+For a clause to be true in a model it is enough for one of the literals to be true in that model.
+
+\section{Breaking Clauses}
+\label{sec:org30da39f}
+For a clause to be false in a model, all literals must be false in that model.
+We say the model \emph{breaks} the clause.
+
+\section{When a Model Does Not Satisfy a CNF Formula}
+\label{sec:org207bb29}
+A CNF (conjunctive normal form) is a conjuction of clauses.
+In these notes often the phrase 'a CNF' will appear in the place of 'a formula in CNF' in the interests of brevity.
+Since it is a conjunction, if a model breaks even one clause it fails to satisfy the CNF.
+If all clauses are satisfied then so is the CNF.
+
+\section{Determining Satisfiablility}
+\label{sec:orgc4e5938}
+With \emph{n} propositional symbols there are 2\textsuperscript{n} models.
+We can determine whether a CNF is satisfiable by enumerating all models.
+If we come across a satisfying model then the answer is YES, otherwise (after checking all 2\textsuperscript{n} models), the answer is NO.
+
+\textbf{Note}: We typically do not need a fully defined model to decide whether a clause is satisfied (nor if it is broken).
+
+e.g. if \(A = true\), then \((A \lor \neg B \lor C)\) is satisfied regardless of the truth-values of \(B\) and \(C\).
+or if \(A = false, B = true, C = false\) then \((A \lor \neg B \lor C)\) is broken, regardless of the truth value of \(D\).
+
+\section{SAT Solving As Search}
+\label{sec:org17630c7}
+One can view the SAT problem as a search for a satisfying model.
+The states are partially-defined models, i.e. truth assignments for some of the propositional symbols.
+We can move to a new state by assigning true/false to a variable.
+And can also backtrack to an earlier state.
+DPPL is depth-first search with simple, but effective heuristics.
+
+
+\section{Pure Symbols}
+\label{sec:org25af95f}
+Consider:
+\begin{equation}
+A \lor \neg B
+\end{equation}
+
+\begin{equation}
+\neg B \lor \neg C
+\end{equation}
+
+\begin{equation}
+A \lor C
+\end{equation}
+
+Given these three statements, we can say that \(A\) and \(B\) are both \textbf{pure}, since they have the same 'sign' in all clauses.
+\(C\), however, is impure.
+
+\textbf{Note}: If a CNF has a model, then it has one with all pure symbols set to make their literals true.
+
+All clauses containing a given pure symbol will be satisfied and other clauses won't depend on it.
+So \textbf{fix} the truth-values of pure symbols.
+
+Given the same statements, if we have \(B = false\), then \((\neg B \lor \neg C)\) is already true and therefore \(C\) \emph{becomes} pure.
+In general, when looking for pure symbols we can ignore clauses already known to be true.
+
+\section{Unit Clause Heuristic}
+\label{sec:org431c5ce}
+A \textbf{unit clause} contains a single literal.
+If \(B = true\) then \((\neg B \lor \neg C)\) simplifies to \(\neg C\) and so \(C\) must be set to \(false\).
+In general, if all literals bar one are \(false\) in a (particularly-built) modek, then \textbf{fix} the last one to satisfy the clause.
+
+\section{Unit Propogation}
+\label{sec:org17e6f87}
+Focing a variable to take a particular value may generate a \emph{cascade} of forced assigments.
+For example, suppose \(C \lor A\) is one of our clauses.
+If \(C\) is set to false then \(A\) must be set to true.
+This is called \textbf{unit propogation}.
+
+\section{Component Analysis}
+\label{sec:org55b2faa}
+As we assign variables, satisfied clauses can be removed and literals can be removed from yet-to-be-satisfied clauses.
+The resulting CNF may end up being representable as \(X \land Y\) where \(X\) and \(Y\) are both CNFs with no overlapping variables.
+\(X\) and \(Y\) are then components which can be worked on separately.
+
+\section{Variable \& Value Ordering}
+\label{sec:orgc13fba5}
+Which variable to try next? Which variable to try first?
+\emph{Degree heuristic} chooses the variable which appears most frequently over the remaining clauses.
+
+\section{Other Tricks}
+\label{sec:orgcf59b2b}
+\begin{itemize}
+\item Intelligent Backtracking (as opposed to chronologival backtracking in standard depth-first search).
+\item Clause learning (very important in modern SAT solvers, it is where you write clauses which weren't given explicitly at the beginning).
+\item Random restarts
+\item Good programming!
+\end{itemize}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:org687c359}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:org34b83f8}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
+
+\maketitle
+\tableofcontents
+
+
+\section{Why SAT Matters for AI?}
+\label{sec:org796256c}
+\begin{itemize}
+\item SAT is NP-Complete; it is a hard problem.
+\item Many other problems can be converted to SAT.
+\end{itemize}
+
+\section{Satisfying a Clause}
+\label{sec:org0691404}
+A \textbf{literal} is a propositional symbol or the negation of one.
+For a clause to be true in a model it is enough for one of the literals to be true in that model.
+
+\section{Breaking Clauses}
+\label{sec:org30da39f}
+For a clause to be false in a model, all literals must be false in that model.
+We say the model \emph{breaks} the clause.
+
+\section{When a Model Does Not Satisfy a CNF Formula}
+\label{sec:org207bb29}
+A CNF (conjunctive normal form) is a conjuction of clauses.
+In these notes often the phrase 'a CNF' will appear in the place of 'a formula in CNF' in the interests of brevity.
+Since it is a conjunction, if a model breaks even one clause it fails to satisfy the CNF.
+If all clauses are satisfied then so is the CNF.
+
+\section{Determining Satisfiablility}
+\label{sec:orgc4e5938}
+With \emph{n} propositional symbols there are 2\textsuperscript{n} models.
+We can determine whether a CNF is satisfiable by enumerating all models.
+If we come across a satisfying model then the answer is YES, otherwise (after checking all 2\textsuperscript{n} models), the answer is NO.
+
+\textbf{Note}: We typically do not need a fully defined model to decide whether a clause is satisfied (nor if it is broken).
+
+e.g. if \(A = true\), then \((A \lor \neg B \lor C)\) is satisfied regardless of the truth-values of \(B\) and \(C\).
+or if \(A = false, B = true, C = false\) then \((A \lor \neg B \lor C)\) is broken, regardless of the truth value of \(D\).
+
+\section{SAT Solving As Search}
+\label{sec:org17630c7}
+One can view the SAT problem as a search for a satisfying model.
+The states are partially-defined models, i.e. truth assignments for some of the propositional symbols.
+We can move to a new state by assigning true/false to a variable.
+And can also backtrack to an earlier state.
+DPPL is depth-first search with simple, but effective heuristics.
+
+
+\section{Pure Symbols}
+\label{sec:org25af95f}
+Consider:
+\begin{equation}
+A \lor \neg B
+\end{equation}
+
+\begin{equation}
+\neg B \lor \neg C
+\end{equation}
+
+\begin{equation}
+A \lor C
+\end{equation}
+
+Given these three statements, we can say that \(A\) and \(B\) are both \textbf{pure}, since they have the same 'sign' in all clauses.
+\(C\), however, is impure.
+
+\textbf{Note}: If a CNF has a model, then it has one with all pure symbols set to make their literals true.
+
+All clauses containing a given pure symbol will be satisfied and other clauses won't depend on it.
+So \textbf{fix} the truth-values of pure symbols.
+
+Given the same statements, if we have \(B = false\), then \((\neg B \lor \neg C)\) is already true and therefore \(C\) \emph{becomes} pure.
+In general, when looking for pure symbols we can ignore clauses already known to be true.
+
+\section{Unit Clause Heuristic}
+\label{sec:org431c5ce}
+A \textbf{unit clause} contains a single literal.
+If \(B = true\) then \((\neg B \lor \neg C)\) simplifies to \(\neg C\) and so \(C\) must be set to \(false\).
+In general, if all literals bar one are \(false\) in a (particularly-built) modek, then \textbf{fix} the last one to satisfy the clause.
+
+\section{Unit Propogation}
+\label{sec:org17e6f87}
+Focing a variable to take a particular value may generate a \emph{cascade} of forced assigments.
+For example, suppose \(C \lor A\) is one of our clauses.
+If \(C\) is set to false then \(A\) must be set to true.
+This is called \textbf{unit propogation}.
+
+\section{Component Analysis}
+\label{sec:org55b2faa}
+As we assign variables, satisfied clauses can be removed and literals can be removed from yet-to-be-satisfied clauses.
+The resulting CNF may end up being representable as \(X \land Y\) where \(X\) and \(Y\) are both CNFs with no overlapping variables.
+\(X\) and \(Y\) are then components which can be worked on separately.
+
+\section{Variable \& Value Ordering}
+\label{sec:orgc13fba5}
+Which variable to try next? Which variable to try first?
+\emph{Degree heuristic} chooses the variable which appears most frequently over the remaining clauses.
+
+\section{Other Tricks}
+\label{sec:orgcf59b2b}
+\begin{itemize}
+\item Intelligent Backtracking (as opposed to chronologival backtracking in standard depth-first search).
+\item Clause learning (very important in modern SAT solvers, it is where you write clauses which weren't given explicitly at the beginning).
+\item Random restarts
+\item Good programming!
+\end{itemize}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:org687c359}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:org34b83f8}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:org687c359}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:org34b83f8}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org8ac8ab8}
+The slides are very similar to the content of the book.
+See chapter 7.
+
+\section{Knowledge Bases}
+\label{sec:org21b6bcd}
+\begin{description}
+\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\end{description}
+The declarative approach to building an agent (or other system) is to tell it what it needs to know.
+Then it can ask itself what to do and the answers should follow from the KB.
+Agents can be viewed:
+\begin{itemize}
+\item At the knowledge level: what they know, regardless of how they are implemented
+\item At the implementation level: data structures in KB and algorithms that manipulate them
+\end{itemize}
+
+\section{Logic in General}
+\label{sec:org687c359}
+\begin{itemize}
+\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
+\item \textbf{Syntax} defines the sentences in the language.
+\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\end{itemize}
+
+\section{Entailment}
+\label{sec:org34b83f8}
+\begin{itemize}
+\item \textbf{Entailment} means that one thing follows from another:
+\end{itemize}
+\begin{equation}
+KB \models \alpha
+\end{equation}
+This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
+E.g. \(x + y = 4\) entails \(4 = x + y\)
+Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+
+\section{Models}
+\label{sec:org54e56c1}
+Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
+We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
+M(\(\alpha\)) is the set of all models of \(\alpha\)
+
+\section{Inference}
+\label{sec:orgb6ce7cf}
+In logic an inference is a procedure by which you can deduce that something does follow from something else.
+\begin{itemize}
+\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
+\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
+\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
+\end{itemize}
+
+\section{Propositional Logic: Syntax}
+\label{sec:orgfc5d0b1}
+Propositional logic is the simples logic.
+The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
+If \emph{S} is a sentence, ¬S is also a sentence (through negation).
+This also applies for the rules of:
+\begin{itemize}
+\item Conjuction
+\item Disjunction
+\item Implication
+\item Biconditional
+\end{itemize}
+
+\section{Logical Equivalence}
+\label{sec:org06d2780}
+Two sentences are \textbf{logically equivalent} iff true in the same models:
+\begin{itemize}
+\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
+\end{itemize}
+
+\section{Validity \& Satisfiability}
+\label{sec:orge996c99}
+A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
+Validity is connected to inference via the \textbf{Deduction Theorem}:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
+\end{itemize}
+A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
+A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
+Satisfiability is connected to inference via the following:
+\begin{itemize}
+\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
+\end{itemize}
+
+\section{Proof Methods}
+\label{sec:org12fc565}
+\end{document}
