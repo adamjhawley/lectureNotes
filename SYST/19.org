@@ -1,0 +1,38 @@
+#+TITLE: Lecture 19: Network Layer & Internet Protocol
+#+AUTHOR: Adam Hawley
+
+* Network Layer Outline
+The network layer is responsible for packet forwarding and routing through intermediate routers.
+
+* Packet Forwarding
+Send an incoming or previously buffered packet to the appropriate output port.
+Consult an identifier in the packet header and interpret it with respect to the:
+- Connectionless (datagram) Approach
+- Connection-Oriented Approach
+- Source-Routed Approach
+We will make a couple of assumptions:
+- We identify nodes via globally unique addresses (such as Ethernet addresses).
+- Each input and output port of a switch is given a unique number (relative to the considered switch).
+
+** Connectionless (Datagram) Approach
+Every packet contains the full destination address.
+The decision of how to forward packets is made by a *forwarding table* (*routing table*).
+*** Advantages:
+- A host can send a packet anywhere anytime, i.e. all packets can immediately be forwarded by consulting the forwarding table.
+- A switch or link failure must not have serious consequences as long as one may route around the failure (by modifying forwarding tables accordingly).
+*** Disadvantages:
+- A sending host does not know whether the network is capable of delivering a packet or whether the destination host is even up.
+- Each packet is forwarded independently of other packets means that packets may be sent via different routs and, thus may reach the destination out of order.
+
+* Connection-Oriented Approach
+Uses the concept of a *virtual circuit(VC), which requires that first a virtual connection from the source to the host is set up before any data can be transferred.
+Virtual circuits can be set up in different ways:
+- Permanently/statically by the system administrator, leading to *permanent virtual circuits (PVC)*.
+- Temporarily/dynamically by the sending host via sending appropriate messages into the network (signalling); this leads to *switched virtual circuits (SVC)*.
+The second option is by far the most widely used out of the two.
+
+** Establishing VCs
+Each switch needs to keep the following information *for each VC* (connection) in a *virtual circuit table*:
+- An *incoming interface* (port) on which packets for this VC arrive.
+- A *virtual circuit identifier (VCI)* that will be 
+Continue @12:43
