@@ -1,4 +1,4 @@
-% Created 2019-03-31 Sun 21:32
+% Created 2019-04-01 Mon 15:36
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 
 
 \section{Physical Layer}
-\label{sec:org3a6b9a1}
+\label{sec:org454d4f9}
 Deals with the transmission of bits over physical medium (twisted pair/coaxial cables, fibre optics, wireless etc.).
 The layers usually have a standardised interface to transmission media (e.g. how 1/0 signals are carried over a link).
 
@@ -39,7 +39,7 @@ Requirements of the physical layer include both \textbf{synchronisation} and \te
 Multiplexing is where you use the same connection for multiple transmissions.
 
 \section{Data Link Layer}
-\label{sec:orgc49f324}
+\label{sec:org3fb3528}
 Deals with the framing of raw data, as well as flow control and error correction (i.e. if they cannot be solved at the physical level).
 The data linke layer is often divided into two sublayers:
 \begin{itemize}
@@ -48,7 +48,7 @@ The data linke layer is often divided into two sublayers:
 \end{itemize}
 
 \subsection{Example: Ethernet}
-\label{sec:org846e67b}
+\label{sec:orgbca43ec}
 \begin{itemize}
 \item Standard: IEEE 802.3
 \end{itemize}
@@ -70,4 +70,84 @@ The problem is solved by intelligently partitioning the \textbf{collision domain
 \item[{Bridge}] Each port is connected to a different collision domain. Transmissions within separate domains are allowed to happen in parallel.
 \item[{Switch}] Frames are sent only to their destinations --- no collisions.
 \end{description}
+How can we know that a frame is going between certain nodes?
+
+Each Ethernet adaptor has a unique Ethernet (MAC) address, which is 6 bytes long and read as a sequence of six numbers, each given as a pair of hexadecimal digits (e.g. 08:00:2B:E4:B1:02).
+Each connected adaptor receives all frames transmitted over an Ethernet, but passes to the upper protocol layers only those matching:
+\begin{itemize}
+\item The adaptor's own address (unicase)
+\item The Ethernet broadcast address (FF:FF:FF:FF:FF:FF).
+\item Multicase addresses (not used in practice just in the standard) (least significant bit of the first byte set).
+\end{itemize}
+See lecture for frame format example.
+
+Other Data Link Layer protocols include:
+\begin{itemize}
+\item IEEE 802.11 - Wireless Lan
+\item IEEE 802.16 - Wireless Broadband (e.g. WiMax)
+\item IEEE 802.15.4 - Low-rate Personal Area Networks (e.g. ZigBee, WirelessHart)
+\end{itemize}
+
+\section{Learning Bridges}
+\label{sec:org7a0c83d}
+How does a bridge know to which port to forward a packet, i.e. on which port a destination host resides?
+
+A bridge inspects the source address of each received frame and notes the number of the incoming port.
+The pair </port number/, /source address/> is added to the bridge's forwarding table.
+If there exists no entry for a destination address (yet), the packet is forwarded to all ports, except the packet's incoming port.
+
+Learning algorithm:
+\begin{enumerate}
+\item The forwarding table is empty when the bridge boots.
+\item The forwarding table it updated according to the above scheme.
+\item Table entries are discarded after some amount of time to protect against the possibility of LAN addresses changing segments.
+\end{enumerate}
+The table is updated when messages are sent as even though they cannot know which domain the receiver is in, they can know which the sender is.
+
+
+\section{Problems with Loops in Extended LANs}
+\label{sec:org9a55d1c}
+Loops in extended LANs:
+\begin{itemize}
+\item Provide \textbf{redundancy} in case of failures of links/bridges.
+\item Potentially enable frames to \textbf{loop forever}.
+\end{itemize}
+To stop them looping forever, a \textbf{distributed spanning tree algorithm} is run, which selects, for each bridge, the ports over which it should forward frames such that loops are avoided.
+
+\subsection{Spanning Tree}
+\label{sec:org8489571}
+Think of an extended LAN (with loops) as a graph (with cycles).
+The \textbf{spanning tree} of a graph is a \textbf{subgraph} that emerges from the original graph by leaving out edges such that no cycles/loops remain.
+There is a spanning tree algorithm included in the IEEE 802.1 specification for LAN bridges.
+Each bridge decides the ports over which it is (not) willing to forward frames.
+
+\subsection{Distributed Spanning Tree Algorithm}
+\label{sec:org34e4572}
+\subsubsection{Basic Idea}
+\label{sec:org6efdf2e}
+\begin{enumerate}
+\item The algorithm first elects the bridge with the smallest id (address) as the \textbf{root} of the spanning tree.
+\item Each bridge computes the \textbf{shortest path} to the root and notes its ports that lie on this path (\emph{preferred port towards root})/
+\item Each LAN elects a single designated bridge (one of the closest to the root --- smallest id wins in tie) which is made responsible for forwarding frames towards the root bridge.
+\end{enumerate}
+Afterwards each bridge just forwards frames over those ports (i.e. to those LANs) for which it is the designated bridge.
+
+Implemented by bridges exchanging configuration messages with each other; these messages include:
+\begin{description}
+\item[{id}] For the bridge that the sending bridge believes to be the \textbf{root}.
+\item[{distance}] (measured in hops) from the sending to the root bridge.
+\item[{id}] for the bridge sending the message.
+\end{description}
+Each bridge:
+\begin{itemize}
+\item Initially thinks that it is the root and sends over all of its ports the message (id,0,id), where id is the bridge's identifier.
+\item May receive a message over one of its ports and checks whether:
+\begin{itemize}
+\item It identifies a root with a smaller id.
+\item It identifies a root with an equal id but with shorter distance.
+\item Root id and distance are equal but the sending bridge has a smaller id.
+\end{itemize}
+\item If so, it adds 1 to the distance, saves this info \& discards old info.
+\end{itemize}
+See slides ror example.
 \end{document}

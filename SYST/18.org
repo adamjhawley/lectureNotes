@@ -37,3 +37,53 @@ Each connected adaptor receives all frames transmitted over an Ethernet, but pas
 - Multicase addresses (not used in practice just in the standard) (least significant bit of the first byte set).
 See lecture for frame format example.
 
+Other Data Link Layer protocols include:
+- IEEE 802.11 - Wireless Lan
+- IEEE 802.16 - Wireless Broadband (e.g. WiMax)
+- IEEE 802.15.4 - Low-rate Personal Area Networks (e.g. ZigBee, WirelessHart)
+
+* Learning Bridges
+How does a bridge know to which port to forward a packet, i.e. on which port a destination host resides?
+
+A bridge inspects the source address of each received frame and notes the number of the incoming port.
+The pair </port number/, /source address/> is added to the bridge's forwarding table.
+If there exists no entry for a destination address (yet), the packet is forwarded to all ports, except the packet's incoming port.
+
+Learning algorithm:
+1. The forwarding table is empty when the bridge boots.
+2. The forwarding table it updated according to the above scheme.
+3. Table entries are discarded after some amount of time to protect against the possibility of LAN addresses changing segments.
+The table is updated when messages are sent as even though they cannot know which domain the receiver is in, they can know which the sender is.
+
+
+* Problems with Loops in Extended LANs
+Loops in extended LANs:
+- Provide *redundancy* in case of failures of links/bridges.
+- Potentially enable frames to *loop forever*.
+To stop them looping forever, a *distributed spanning tree algorithm* is run, which selects, for each bridge, the ports over which it should forward frames such that loops are avoided.
+
+** Spanning Tree
+Think of an extended LAN (with loops) as a graph (with cycles).
+The *spanning tree* of a graph is a *subgraph* that emerges from the original graph by leaving out edges such that no cycles/loops remain.
+There is a spanning tree algorithm included in the IEEE 802.1 specification for LAN bridges.
+Each bridge decides the ports over which it is (not) willing to forward frames.
+
+** Distributed Spanning Tree Algorithm
+*** Basic Idea
+1. The algorithm first elects the bridge with the smallest id (address) as the *root* of the spanning tree.
+2. Each bridge computes the *shortest path* to the root and notes its ports that lie on this path (/preferred port towards root/)/
+3. Each LAN elects a single designated bridge (one of the closest to the root --- smallest id wins in tie) which is made responsible for forwarding frames towards the root bridge.
+Afterwards each bridge just forwards frames over those ports (i.e. to those LANs) for which it is the designated bridge.
+
+Implemented by bridges exchanging configuration messages with each other; these messages include:
+- id :: For the bridge that the sending bridge believes to be the *root*.
+- distance :: (measured in hops) from the sending to the root bridge.
+- id :: for the bridge sending the message.
+Each bridge:
+- Initially thinks that it is the root and sends over all of its ports the message (id,0,id), where id is the bridge's identifier.
+- May receive a message over one of its ports and checks whether:
+  + It identifies a root with a smaller id.
+  + It identifies a root with an equal id but with shorter distance.
+  + Root id and distance are equal but the sending bridge has a smaller id.
+- If so, it adds 1 to the distance, saves this info & discards old info. 
+See slides ror example.
