@@ -1,0 +1,168 @@
+% Created 2019-04-07 Sun 09:39
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 19: Network Layer \& Internet Protocol}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 19: Network Layer \& Internet Protocol},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Network Layer Outline}
+\label{sec:org7bc5dd6}
+The network layer is responsible for packet forwarding and routing through intermediate routers.
+
+\section{Packet Forwarding}
+\label{sec:org8fb40f2}
+Send an incoming or previously buffered packet to the appropriate output port.
+Consult an identifier in the packet header and interpret it with respect to the:
+\begin{itemize}
+\item Connectionless (datagram) Approach
+\item Connection-Oriented Approach
+\item Source-Routed Approach
+\end{itemize}
+We will make a couple of assumptions:
+\begin{itemize}
+\item We identify nodes via globally unique addresses (such as Ethernet addresses).
+\item Each input and output port of a switch is given a unique number (relative to the considered switch).
+\end{itemize}
+
+\subsection{Connectionless (Datagram) Approach}
+\label{sec:org5f9c020}
+Every packet contains the full destination address.
+The decision of how to forward packets is made by a \textbf{forwarding table} (\textbf{routing table}).
+\subsubsection{Advantages:}
+\label{sec:org00c1d97}
+\begin{itemize}
+\item A host can send a packet anywhere anytime, i.e. all packets can immediately be forwarded by consulting the forwarding table.
+\item A switch or link failure must not have serious consequences as long as one may route around the failure (by modifying forwarding tables accordingly).
+\end{itemize}
+\subsubsection{Disadvantages:}
+\label{sec:org6fa6423}
+\begin{itemize}
+\item A sending host does not know whether the network is capable of delivering a packet or whether the destination host is even up.
+\item Each packet is forwarded independently of other packets means that packets may be sent via different routs and, thus may reach the destination out of order.
+\end{itemize}
+
+\section{Connection-Oriented Approach}
+\label{sec:orgcf792ed}
+Uses the concept of a *virtual circuit(VC), which requires that first a virtual connection from the source to the host is set up before any data can be transferred.
+Virtual circuits can be set up in different ways:
+\begin{itemize}
+\item Permanently/statically by the system administrator, leading to \textbf{permanent virtual circuits (PVC)}.
+\item Temporarily/dynamically by the sending host via sending appropriate messages into the network (signalling); this leads to \textbf{switched virtual circuits (SVC)}.
+\end{itemize}
+The second option is by far the most widely used out of the two.
+
+\subsection{Establishing VCs}
+\label{sec:org03a67ce}
+Each switch needs to keep the following information \textbf{for each VC} (connection) in a \textbf{virtual circuit table}:
+\begin{itemize}
+\item An \textbf{incoming interface} (port) on which packets for this VC arrive.
+\item A \textbf{virtual circuit identifier (VCI)} that will be carried in the header of arriving packets.
+\item An \textbf{outgoing interface} on which packets for this VC leave.
+\item A VCI that will be used for outgoing packets.
+\end{itemize}
+Important remarks:
+\begin{itemize}
+\item The VCI is \textbf{not global}; it has significance only on a given link.
+\item When setting up a VC, the network administrator picks VCI that are currently unused.
+\end{itemize}
+Disadvantages:
+\begin{itemize}
+\item There is at least 1 RTT (round-trip delay) of delay before any data can be sent.
+\item A switch/link failure leads to a broken connection.
+\item Released/broken virtual circuits need to be torn down.
+\end{itemize}
+Advantages:
+\begin{itemize}
+\item Each data packet does not need to include the full address of the receiver, but just a small identifier (a VCI) that is unique relative to each link (the overhead caused by headers is reduced).
+\item When a virtual circuit is established, the sender knows that there is a route to the receiver, the receiver is willing and able to receive and there are enough resources along the route.
+\end{itemize}
+See slide 15 for very useful comparison table.
+
+\subsection{Source Routing}
+\label{sec:org1cb87b4}
+All information about network topology that is required to switch a packet across the network is provided by the source host.
+\begin{enumerate}
+\item Include an \textbf{ordered list of port numbers} in a packet's header.
+\item Each switch forwards the packet to the port determined by the number at the front of the list.
+\item Before forwarding, a switch must:
+\begin{itemize}
+\item \textbf{Strip} the front number from the packet, or
+\item \textbf{Rotate} the ordered list such that the next port number comes to the front. (At the last switch, the received list is then identical to the list originally sent by the sending host).
+\end{itemize}
+\end{enumerate}
+Disadvantages:
+\begin{itemize}
+\item Every host needs to know many details of the network's topology in order to be able to construct a packet header.
+\begin{itemize}
+\item Similar to the problem of building forwarding tables in a datagram network, or determining how to route a setup messsage in a VC network.
+\item Suffers from a scaling problem since getting complete path information is very hard in reasonably large networks.
+\end{itemize}
+\item Headers have a variable size, probably with no upper bound.
+\end{itemize}
+Source routing is used in:
+\begin{itemize}
+\item Virtual circuit networks as a means for getting the initial request from the sending host to the destination host.
+\item Embedded systems and PANs (Personal Area Networks) where the topology is simple and unlikely to change.
+\item In the Internet protocol as an option (a \emph{datagram} protocol).
+\end{itemize}
+
+\section{Internetworking}
+\label{sec:org8c2d194}
+\begin{description}
+\item[{Internetwork}] An arbitrary \textbf{collection of networks} using different technologies, which are interconnected via \textbf{routers} (\textbf{gateways}) to provide a host-to-host packet delivery service, i.e. an internetwork is a \textbf{logical network}.
+\item The underlying networks, each based on a single technology, are often called \textbf{physical networks}, which might contain collections of Ethernets connects by bridges or switches.
+\item \emph{Simply put, an \textbf{internetwork} is a network of networks.}
+\item The Internet Protocol glues the single network together, yielding a large, logical and heterogeneous network.
+\end{description}
+
+\section{IP Service Model}
+\label{sec:org521e7ba}
+The IP \textbf{service model} defines the host-to-host services which an internetwork should provide.
+Philosphy:
+\begin{itemize}
+\item The model is \textbf{undemanding} enough such that any existing and hopefully any future network technology is able to provide the services.
+\item The protocol assumes a \textbf{best-effort, connectionless service} of the underlying physical networks.
+\item Therefore it runs on virtually any network.
+\end{itemize}
+
+\section{IP Addressing}
+\label{sec:orgce6f7f2}
+To identify all hosts in an internetwork, a global addressing scheme is needed, giving each node a unique address.
+Problem:
+\begin{itemize}
+\item Ethernet addresses are flat, i.e. they have no structure that provides forwarding information to routing protocols.
+\end{itemize}
+Solution:
+\begin{itemize}
+\item IP addresses are hierarchical, reflecting the hierarchy of an internetwork.
+\begin{itemize}
+\item \texttt{IP Address = <network part, host part>}
+\end{itemize}
+\end{itemize}
+Each host is assigned an IP address; similary, every interface/port of a router is assigned an IP address.
+\end{document}

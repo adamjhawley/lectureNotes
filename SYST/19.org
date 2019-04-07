@@ -34,5 +34,97 @@ The second option is by far the most widely used out of the two.
 ** Establishing VCs
 Each switch needs to keep the following information *for each VC* (connection) in a *virtual circuit table*:
 - An *incoming interface* (port) on which packets for this VC arrive.
-- A *virtual circuit identifier (VCI)* that will be 
-Continue @12:43
+- A *virtual circuit identifier (VCI)* that will be carried in the header of arriving packets.
+- An *outgoing interface* on which packets for this VC leave.
+- A VCI that will be used for outgoing packets.
+Important remarks:
+- The VCI is *not global*; it has significance only on a given link.
+- When setting up a VC, the network administrator picks VCI that are currently unused.
+Disadvantages:
+- There is at least 1 RTT (round-trip delay) of delay before any data can be sent.
+- A switch/link failure leads to a broken connection.
+- Released/broken virtual circuits need to be torn down.
+Advantages:
+- Each data packet does not need to include the full address of the receiver, but just a small identifier (a VCI) that is unique relative to each link (the overhead caused by headers is reduced).
+- When a virtual circuit is established, the sender knows that there is a route to the receiver, the receiver is willing and able to receive and there are enough resources along the route.
+See slide 15 for very useful comparison table.
+
+** Source Routing
+All information about network topology that is required to switch a packet across the network is provided by the source host.
+1. Include an *ordered list of port numbers* in a packet's header.
+2. Each switch forwards the packet to the port determined by the number at the front of the list.
+3. Before forwarding, a switch must:
+   - *Strip* the front number from the packet, or
+   - *Rotate* the ordered list such that the next port number comes to the front. (At the last switch, the received list is then identical to the list originally sent by the sending host).
+Disadvantages:
+- Every host needs to know many details of the network's topology in order to be able to construct a packet header.
+  + Similar to the problem of building forwarding tables in a datagram network, or determining how to route a setup messsage in a VC network.
+  + Suffers from a scaling problem since getting complete path information is very hard in reasonably large networks.
+- Headers have a variable size, probably with no upper bound.
+Source routing is used in:
+- Virtual circuit networks as a means for getting the initial request from the sending host to the destination host.
+- Embedded systems and PANs (Personal Area Networks) where the topology is simple and unlikely to change.
+- In the Internet protocol as an option (a /datagram/ protocol).
+
+* Internetworking
+- Internetwork :: An arbitrary *collection of networks* using different technologies, which are interconnected via *routers* (*gateways*) to provide a host-to-host packet delivery service, i.e. an internetwork is a *logical network*.
+- The underlying networks, each based on a single technology, are often called *physical networks*, which might contain collections of Ethernets connects by bridges or switches.
+- /Simply put, an *internetwork* is a network of networks./
+- The Internet Protocol glues the single network together, yielding a large, logical and heterogeneous network.
+
+* IP Service Model 
+The IP *service model* defines the host-to-host services which an internetwork should provide.
+Philosphy:
+- The model is *undemanding* enough such that any existing and hopefully any future network technology is able to provide the services.
+- The protocol assumes a *best-effort, connectionless service* of the underlying physical networks.
+- Therefore it runs on virtually any network.
+
+* IP Addressing
+To identify all hosts in an internetwork, a global addressing scheme is needed, giving each node a unique address.
+Problem:
+- Ethernet addresses are flat, i.e. they have no structure that provides forwarding information to routing protocols.
+Solution:
+- IP addresses are hierarchical, reflecting the hierarchy of an internetwork.
+  + ~IP Address = <network part, host part>~
+Each host is assigned an IP address; similary, every interface/port of a router is assigned an IP address.
+
+** IPv4 Addressing Scheme
+A /classful scheme/, i.e. the sizes of network part and host part differ depending of the /class/ of the addresses (see slide 25 for examples).
+Each IP address has exactly 32 bits, written as four decimal integers (representing the value of each IP address byte) separated by dots (e.g. 171.69.210.245).
+Class D is used for multicast groups (leading address bits 1110).
+There were about 4 billion IP addresses:
+- \frac{1}{2} of them are class A addresses, for WANs (Internet backbones)
+  + Only up to 126 networks (values 0 and 127 are reserved).
+  + Up to about 16 million hosts in each network so the idea of being able to find hosts easier is lost when it is one of 16 mil.
+- \frac{1}{4} of them are class B addresses, for campus-sized networks.
+  + Up to about 16,000 networks.
+  + At most about 65,000 hosts at each network.
+- \frac{1}{8} of them are class C addresses, for LANs.
+  + Over 2,000,000 networks
+  + Up to 254 hosts per network (address 255 is reserved for broadcast and address 0 is an invalid address).
+
+First solution was subnet masks.
+
+*** Subnets & Masking
+- Subnetting :: Splitting an existing network into small more manageable networks.
+This avoids huge data overheads on networks and increases network efficiency.
+It is done by /borrowing/ bits from the host part and adding them to the network part of the address.
+/ANDing/ the mask with the IP address should yield the relevant subnet.
+
+*** Classless Addressing
+Classful addressing (which is almost obsolete) was replaced by *classless* addressing to overcome address depletion.
+No classes but addresses were still given in blocks with some restrictions:
+- Addresses in the block must be *contiguous*.
+- Number of addresses must be a power of 2.
+- First address must be divisible by the number of addresses.
+It used *CIDR (classless Inter-Domain Routing) Notation*.
+- x.y.z.t/n \rarr x.y.z.t is one of the addresses in the block, //n/ defines the mask.
+
+** IPv6
+- 128-bit addresses (8 groups of 16-bit hexadecimal numbers separated by ":".
+- Leading zeros can be removed.
+- :: = all zeros in one or more group of 16-bit hex numbers.
+However this protocol is not compatible with IPv4, therefore v6 will not take over all data networking requirements in a working future timeframe and we will most lkely have a dual stack world for several years.
+
+
+
