@@ -1,0 +1,59 @@
+% Created 2019-04-07 Sun 11:01
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 20: Network Layer \& Internet Protocol Continued}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 20: Network Layer \& Internet Protocol Continued},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Routing}
+\label{sec:org8b89bfd}
+Routing is needed for forwarding packets in a datagram (connectionless) network, or for establishing virtual circuits in a VC (connection oriented) network.
+Routing algorithms or protocols create routing tables from which one may derive the neccesary forwarding tables.
+These in turn, define the output port through which a packet will be forwarded.
+
+Most routing protocols work only for 10s or 100s of nodes and hence they are referred to as \textbf{interior gateway protocols (IGPs)} or (\textbf{intra-domain routing protocols}).
+To make them scale, internetworks employ a hierarchical routing structure based on \textbf{domains}.
+\begin{itemize}
+\item A \textbf{domain} is an internetwork where all routers are under a single administritative entity (e.g. university campus).
+\item Each domain uses IGPs to route packages within its boundaries and uses gateway routes to forward packets to other domains (inter-domain routing).
+\end{itemize}
+
+\subsection{Graph Representation of Routing}
+\label{sec:org5234b52}
+Routing is a graph-theoretic problem and requires one to calculate the lowest-cost path between two nodes.
+\begin{itemize}
+\item Nodes are hosts, switches, routers or networks
+\item Edges are network links, each associated with a cost.
+\item Cost of a path is the sum of the costs of all traversed edges.
+\end{itemize}
+There are two main types of algorithms for solving the problem:
+\begin{itemize}
+\item Global routing: all routers have complete topology and link cost info --- "link state" algorithms.
+\item Decentralised routing: router knows link costs to neighbours --- "distance vector" algorithms.
+\end{itemize}
+\end{document}

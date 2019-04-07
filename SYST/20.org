@@ -1,0 +1,26 @@
+#+TITLE: Lecture 20: Network Layer & Internet Protocol Continued
+#+AUTHOR: Adam Hawley
+
+* Routing
+Routing is needed for forwarding packets in a datagram (connectionless) network, or for establishing virtual circuits in a VC (connection oriented) network.
+Routing algorithms or protocols create routing tables from which one may derive the neccesary forwarding tables.
+These in turn, define the output port through which a packet will be forwarded.
+
+Most routing protocols work only for 10s or 100s of nodes and hence they are referred to as *interior gateway protocols (IGPs)* or (*intra-domain routing protocols*).
+To make them scale, internetworks employ a hierarchical routing structure based on *domains*.
+- A *domain* is an internetwork where all routers are under a single administritative entity (e.g. university campus).
+- Each domain uses IGPs to route packages within its boundaries and uses gateway routes to forward packets to other domains (inter-domain routing).
+
+** Graph Representation of Routing
+Routing is a graph-theoretic problem and requires one to calculate the lowest-cost path between two nodes.
+- Nodes are hosts, switches, routers or networks
+- Edges are network links, each associated with a cost.
+- Cost of a path is the sum of the costs of all traversed edges.
+There are two main types of algorithms for solving the problem:
+- Global routing: all routers have complete topology and link cost info --- "link state" algorithms.
+- Decentralised routing: router knows link costs to neighbours --- "distance vector" algorithms.
+
+** Link State Routing Algorithm
+Dijkstra's Shortest Path Algorithm
+
+Continue @11:20
