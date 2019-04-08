@@ -6,10 +6,10 @@ import shutil
 from collect_files import filter_tex_files
 
 def extract_preamble(tex_paths):
-    preamble = []
+    preamble = ["\\documentclass{article}"]
     titles = []
-    contents = ['\\begin{document}\n']
-    exceptions = ['\\hypersetup{\n']
+    contents = ['\\begin{document}\n', '\\tableofcontents\n']
+    exceptions = ['\\hypersetup{\n', "\\documentclass{article}\n", "\\documentclass[11pt]{article}\n"]
     for path in tex_paths:
         f = open(path, "r")
         lines = f.readlines()
@@ -36,15 +36,47 @@ def extract_preamble(tex_paths):
 def insert_titles_as_sections(contents, titles):
     insertAtIndex = 0
     titleIndexes = []
+    offset = 0
     for lineNumber, line in enumerate(contents):
-        if line == '\\tableofcontents\n':
-            titleIndexes.append(lineNumber)
+        if line == '\\maketitle\n':
+            titleIndexes.append(lineNumber+1)
 
     for i, title in enumerate(titles):
-        contents.insert(titleIndexes[i], ("\\section{" + title + "}\n"))
+        contents[titleIndexes[i]] = ("\\section{" + title + "}\n")
 
     return contents
 
+def decrease_level_of_section(contents):
+    toBeSubbed = []
+    toBePara = []
+    for lineNumber, line in enumerate(contents):
+        if line[:14] == "\\subsubsection":
+            toBePara.append((lineNumber, line[14:]))
+        if line[:9] == "\\section{":
+            toBeSubbed.append((lineNumber, line))
+        elif line[:4] == "\\sub":
+            toBeSubbed.append((lineNumber, line))
+
+    for i in toBeSubbed:
+        contents[i[0]] = "\\sub" + i[1][1:]
+
+    for i in toBePara:
+        contents[i[0]] = "\\paragraph" + i[1]
+
+    return contents
+
+"""
+def filter_toc_title(contents):
+    to_be_removed = []
+    for n,line in enumerate(contents):
+       if (line == "\\tableofcontents\n") or (line == "\\maketitle\n"):
+           to_be_removed.append(n)
+
+    for i in to_be_removed[2:]:
+        del contents[i]
+
+    return contents
+"""
 
 def main():
     try:
@@ -60,7 +92,12 @@ def main():
         copies.append(copy_path)
         shutil.copyfile(path, copy_path)
 
+    copies.sort()
+    print(copies)
+
     titles, preamble, file_contents = extract_preamble(copies)
+
+    file_contents = decrease_level_of_section(file_contents)
 
     file_contents = insert_titles_as_sections(file_contents, titles)
 

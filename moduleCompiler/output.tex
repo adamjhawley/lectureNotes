@@ -1,6 +1,5 @@
-% Created 2019-03-15 Fri 14:22
+\documentclass{article}% Created 2019-02-21 Thu 14:11
 % Intended LaTeX compiler: pdflatex
-\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
@@ -14,213 +13,2655 @@
 \usepackage{amssymb}
 \usepackage{capt-of}
 \usepackage{hyperref}
-\usepackage{turnstile}
 \author{Adam Hawley}
 \date{\today}
-% Created 2019-03-26 Tue 14:55
+% Created 2019-02-26 Tue 12:39
+% Created 2019-02-26 Tue 17:35
+% Created 2019-02-28 Thu 16:16
+% Created 2019-03-13 Wed 18:06
+% Created 2019-03-26 Tue 11:16
+% Created 2019-03-27 Wed 16:41
+% Created 2019-03-28 Thu 12:38
+% Created 2019-04-01 Mon 15:36
+% Created 2019-04-07 Sun 09:39
+% Created 2019-04-08 Mon 12:46
+% Created 2019-04-08 Mon 15:48
+
+\usepackage{array}
+% Created 2019-02-05 Tue 12:13
+% Created 2019-02-05 Tue 18:23
+% Created 2019-02-06 Wed 15:15
 \title{TEST}
 \begin{document}
-
-\maketitle
-\section{Lecture 1: Logical Agents}
 \tableofcontents
 
+\maketitle
+\section{Lecture 10: Introduction to Memory Management}
 
-\section{Intro}
-\label{sec:org8ac8ab8}
-The slides are very similar to the content of the book.
-See chapter 7.
 
-\section{Knowledge Bases}
-\label{sec:org21b6bcd}
+\subsection{Background}
+\label{sec:orga76f10a}
+\subsubsection{Introduction}
+\label{sec:org78ddd86}
+Programs must be brought (from storage) into memory and placed within a process for it to be run.
+The main memory and registers are the only storage entities that a CPU can access directly.
+The CPU fetches instructions from main memory according to the value of the program counter.
+A typical instruction execution cycle looks like this:
+\begin{enumerate}
+\item Fetch instruction from memory
+\item Decode the instruction
+\item Operand fetch
+\item Possible storage of result in memory
+\end{enumerate}
+
+Memory units only see a stream of one of the following:
+\begin{itemize}
+\item Read request + address
+\item Write request + data + address
+\end{itemize}
+Memory unit does not know how these addresses are generated.
+Register access can be done in one CPU clock while completing a memory access may take many cycles of the CPU clock.
+In this case the processor needs to \textbf{stall} since it does not have the data required to complete the instruction it is execution.
+(In reality not 100\% true because modern CPUs use techniques such as \emph{out-of-order execution}.
+
+The \textbf{Cache} sits between the main memory and CPU registers to mitigate the \emph{stall issue}.
+Protection of memory is required to ensure correct operation.
+User processes should not be able to access OS memory and one user should not be able to access the memory of another user process.
+
+\subsubsection{Address Spaces}
+\label{sec:org3535c17}
+A logical address space is a range of addresses that an operating system makes available to a process.
+It is up to the OS to enforce \textbf{memory protection}.
+Address space endpoints are a \textbf{base} register (holding the smallest legal physical address of the process in the memory) and a \textbf{limit} register (specifies the size of the address space).
+The CPU must check that every memory access generated in user mode is between the \textbf{\texttt{base}} and \textbf{\texttt{base + limit}} for that process.
+
+A program residing on the disk needs to be brought into memory in order to execute.
+In general, we do not know a priori where the program is going to reside in memory.
+
+\begin{itemize}
+\item Addresses  in the source program are generally symbolic
+\begin{itemize}
+\item e.g \texttt{count}
+\end{itemize}
+\item A compiler typically binds these symbolic addresses to relocatable addresses
+\begin{itemize}
+\item e.g "14 bytes from the beggining of this module"
+\end{itemize}
+\item \textbf{Linker} or \textbf{loader} will bind relocatable addresses to absolute addresses
+\end{itemize}
+Addresses are represented in different ways at different stages of a programs life:
 \begin{description}
-\item[{Knowledge base}] Set of \textbf{sentences} in a \textbf{formal} language.
+\item[{Compile Time}] If memory location known a priori, \textbf{absolute code} can be generated; must recompile code if starting location changes.
+\item[{Load Time}] If memory location is not known at compile time and no hardware support is available, \textbf{relocatable code} must be generated.
+\item[{Execution Time}] (Most common in general computing) Binding delayed until run time if the process can be moved during its exectuion from one memory segment to another. This needs hardware support for address maps (e.g base and limit registers).
 \end{description}
-The declarative approach to building an agent (or other system) is to tell it what it needs to know.
-Then it can ask itself what to do and the answers should follow from the KB.
-Agents can be viewed:
+
+\subsubsection{Logical vs. Physical Address Space}
+\label{sec:org799edcc}
+The concept of a \textbf{logical address space} that is bound to a separate \textbf{physical address space} is central to proper memory management.
+\begin{description}
+\item[{Logical Address}] Issued by the CPU, within processs address space
+\item[{Physical Address}] Address seen by the memory unit.
+\end{description}
+
+Logical and physical addresses are:
 \begin{itemize}
-\item At the knowledge level: what they know, regardless of how they are implemented
-\item At the implementation level: data structures in KB and algorithms that manipulate them
+\item The same in compile-time and load-time address-binding schemes
+\item Different in execution-time address-binding schemes.
+\end{itemize}
+In the latter case, the logical address can be referred to as the virtual address.
+\begin{description}
+\item[{Logical Address Space}] The set of all logical addresses generated by a program.
+\item[{Physical Address Space}] The set of all physical corresponding to a given logical address space.
+\end{description}
+
+\subsubsection{Memory Management}
+\label{sec:orgbf3b48d}
+A \textbf{Memory Management Unit (MMU)} is a hardware device that at runtime maps logical addresses to physical addresses.
+The user program deals with logical addresses and never sees the real physical addresses.
+Execution-time binding occurs when reference is made to location in memory.
+Logical addresses bound to physical addresses.
+
+\subsection{Contiguous Memory}
+\label{sec:org0ae368c}
+\subsubsection{Single-User Contiguous Memory}
+\label{sec:org202f26e}
+First computers: all memory assigned to a single job.
+Key points: contiguous + entirely assigned.
+Advantages:
+\begin{itemize}
+\item Very simple
+\item Address resolution: trivial (physical address = issued address)
+\end{itemize}
+Disadvantages:
+\begin{itemize}
+\item Only one job can run at a time so this cannot support multi-programming.
+\item Processor unused during I/O operations.
 \end{itemize}
 
-\section{Logic in General}
-\label{sec:org687c359}
+\subsubsection{Fixed Contiguous Partitions}
+\label{sec:org17342b3}
+OS assigns one partition per process, size of partitions defined at boot time and never changes.
+Key point is that it has protection against memory intrusion.
+The OS must be assigned its own partition.
+Upon starting a new process, the OS has to:
+\begin{enumerate}
+\item Determine the relevent partition
+\item Determine the start address within the active partition
+\item Resolve addresses: \texttt{physicalAddress = issuedAddress + fixedBaseRegister}
+\end{enumerate}
+The problem with this approach is that it is often difficult to choose the right partition sizes which can cause the following.
+\textbf{Internal fragmentation} is when a process may require less space than the available partition.
+Or process creation may fail even though there may be enough free memory due to wasted memory by small jobs.
+
+\subsubsection{Dynamic Contiguous Partitions}
+\label{sec:org7677b29}
+Partition size is selected when the job is loaded.
+Address resolution becomes: 
+
+\texttt{physicalAddress = issuedAddress + variableBaseRegister}
+
+This approach alleviated the problems of fixed contiguous partitioning but does not solve it completely.
+It is still possible to get \textbf{External Fragmentation} where the OS has to keep track of free partitions.
+
+\paragraph{Partition Allocation Problem}
+\label{sec:org0d0cc34}
+How to satisfy a request of size \emph{n} from a list of free partitions?
+\begin{description}
+\item[{First-fit}] Allocate the first partition that is big enough
+\item[{Best-fit}] Allocate the smallest partition that is big enough
 \begin{itemize}
-\item \textbf{Logics} are formal languages for representing information such that conclusions can be drawn.
-\item \textbf{Syntax} defines the sentences in the language.
-\item \textbf{Semantics} define the \emph{meaning} of the sentences; i.e define truth of a sentence in a world.
+\item Must search entire list, unless the list is ordered by size
+\item Produces the smallest leftover partition
 \end{itemize}
-
-\section{Entailment}
-\label{sec:org34b83f8}
+\item[{Worst-fit}] Allocate the largest partition
 \begin{itemize}
-\item \textbf{Entailment} means that one thing follows from another:
+\item Must also search entire list, unless the list is ordered by size
+\item Produces the largest leftover partition
 \end{itemize}
-\begin{equation}
-KB \models \alpha
-\end{equation}
-This means knowledge base \(KB\) entails sentence \(\alpha\) if and only if \(\alpha\) is true in all worlds where \(KB\) is true.
-E.g. \(x + y = 4\) entails \(4 = x + y\)
-Entailment is a relationship between sentences (i.e. syntax) that is based on semantics.
+\item[{Random}] As it sounds, take a random partition.
+\end{description}
+There is no clear winner as performance of each depends on the request patterns
 
-\section{Models}
-\label{sec:org54e56c1}
-Logicians typically think of \textbf{models}, which are formally structured worlds with respect to which truth can be evaluated.
-We say \emph{m} \textbf{is a model of} a sentence \(\alpha\) if \(\alpha\) is true in \emph{m}.
-M(\(\alpha\)) is the set of all models of \(\alpha\)
+\paragraph{Mitigation of External Fragmentation}
+\label{sec:orgba7305a}
+External fragmentation can be mitigated by a \textbf{compaction} (or defragmentation) procedure.
+This requires \textbf{relocatable partitions} where the base register needs to be changed.
+The compaction algorithm needs spare memory space to operate efficiently (i.e to move small partitions out of the way before large partitions can be relocated).
+Compaction cannot be performed while I/O is in progress involving memory that is being compacted.
+Alternatively, the CPU can latch the process in memory while it is involved in I/O, or do I/O only into OS buffers (i.e double buffering).
+\subsubsection{Swapping}
+\label{sec:org540993f}
+A process can be \textbf{swapped} temporarily out of memory to a \textbf{backing store}, and then brought back into memory for continued exectution.
+This means that the total physical memory space of the processes can exceed physical memory.
 
-\section{Inference}
-\label{sec:orgb6ce7cf}
-In logic an inference is a procedure by which you can deduce that something does follow from something else.
-\begin{itemize}
-\item \(KB \vdash_i \alpha =\) sentence \(\alpha\) can be derived form \(KB\) by procedure \emph{i}.
-\item \textbf{Soundness}: \emph{i} is sound if whenever \(KB \vdash_i \alpha\), it is also true that \(KB \models \alpha\).
-\item \textbf{Completeness}: \emph{i} is complete if whenever \(KB \models \alpha\), it is also true that \(KB \vdash_i \alpha\).
-\end{itemize}
+The \textbf{Backing Store} is a fast disk large enough to accomodate binaries of all processes.
+A major part of swap time is transfer time and the total time is directly proportional to the amount of memory swapped.
 
-\section{Propositional Logic: Syntax}
-\label{sec:orgfc5d0b1}
-Propositional logic is the simples logic.
-The proposition sumbold \emph{P\textsubscript{1}}, \emph{P\textsubscript{2}} etc are senetences.
-If \emph{S} is a sentence, ¬S is also a sentence (through negation).
-This also applies for the rules of:
-\begin{itemize}
-\item Conjuction
-\item Disjunction
-\item Implication
-\item Biconditional
-\end{itemize}
-
-\section{Logical Equivalence}
-\label{sec:org06d2780}
-Two sentences are \textbf{logically equivalent} iff true in the same models:
-\begin{itemize}
-\item \(\alpha \equiv \beta\) if and only if \(\alpha \models \beta\) and \(\beta \models \alpha\)
-\end{itemize}
-
-\section{Validity \& Satisfiability}
-\label{sec:orge996c99}
-A sentence is \textbf{valid} if it is true in all models (e.g \(True\), \(A\lor\neg A\), \(A\implies A\)).
-Validity is connected to inference via the \textbf{Deduction Theorem}:
-\begin{itemize}
-\item \(KB \models \alpha\) if and only f \((KB \implies \alpha)\) is valid.
-\end{itemize}
-A sentence is \textbf{satisfiable} if it is true in \emph{some} model (e.g. \(A\lor B\)).
-A sentence is \textbf{unsatisfiable} if it is true in \emph{no} models (e.g. \(A\land \neg A\))
-Satisfiability is connected to inference via the following:
-\begin{itemize}
-\item \(KB \models \alpha\) if and only if \((KB \land \neg \alpha)\) is unsatisfiable, i.e. prove \(\alpha\) by \emph{reductio ad absurdum}.
-\end{itemize}
-
-\section{Proof Methods}
-\label{sec:org12fc565}
-
-\section{Lecture 2: SAT Solvers \& the DPLL Algorithm}
 \maketitle
-\tableofcontents
+\section{Lecture 11: Segmented \& Paged Memory}
 
 
-\section{Why SAT Matters for AI?}
-\label{sec:org796256c}
+\subsection{Segmentation}
+\label{sec:org9dd22a9}
+\subsubsection{Introduction}
+\label{sec:org58c8edb}
+Memory-management scheme that supports user view of memory.
+A program is a collection of segments where a segment is a logical unit search as: main program, procedure, function, method, object, local variables, global variables, stack, array etc.
+Segments have variable sizes.
+This approach means that when you are in the main program, only the main program needs to be stored in memory.
+
+\subsubsection{Addressing with Segmentation}
+\label{sec:org93f22d3}
+The logical address consists of a tuple: \texttt{<segment-number, offset>}.
+The addresses are stored inside a \textbf{segment table} which maps a two-dimensional logical address to a one-dimensional physical address.
+\begin{description}
+\item[{\texttt{base}}] contains the starting physical addrss where the segments reside in memory
+\item[{\texttt{limit}}] specifies the length of the segment
+\end{description}
+Segment table is kept in memory:
+\begin{description}
+\item[{\texttt{segment-table base register} (STBR)}] points to the segment table's location in memory
+\item[{\texttt{segment-table length register} (STLR)}] indicates number of segments used by a program
 \begin{itemize}
-\item SAT is NP-Complete; it is a hard problem.
-\item Many other problems can be converted to SAT.
+\item segment number \texttt{s} is legal if \texttt{s < STLR}
+\end{itemize}
+\end{description}
+
+\subsection{Paging}
+\label{sec:org213e9a5}
+\subsubsection{Introduction}
+\label{sec:org2537079}
+Physical address space of a process can be noncontiguous: process is alllocated physical memory whenever the latter is available:
+\begin{itemize}
+\item avoids external fragmentation
+\item avoids problem of varying sized memory chunks
+\end{itemize}
+Divide physical memory into fixed-sized blocks called \textbf{frames} (size is a power of 2, between 512 bytes and 16 Mbytes).
+Then divide the logical memory into blocks of the same size called \textbf{pages} (internal fragmentation is still a minor issue).
+\subsubsection{Costs \& Implementation}
+\label{sec:org99ea956}
+The OS must:
+\begin{itemize}
+\item Keep track of all free frames in memory
+\item (to run a program of size \emph{N} pages), need to find \emph{N} free frames and load program
+\item set up a \textbf{page table} to translate logical to physical addresses --- kept in memory
+\begin{description}
+\item[{Page-table base register (PTBR)}] Points to the page table
+\item[{Page-table length register (PTLR)}] indicates size of the page table
+\end{description}
+\end{itemize}
+\subsubsection{Address Resolution}
+\label{sec:org3cc3f0f}
+Assume the logical address space is 2\textsuperscript{m} and that the page size is 2\textsuperscript{n} then the address generated by the CPU is divided into:
+\begin{description}
+\item[{page number (p)}] used as an index into a \textbf{page table} which contains base address of each page in physical memory
+\begin{itemize}
+\item size of \textbf{p} is \texttt{m - n} bits
+\end{itemize}
+\item[{page offset (d)}] combined with base address to define the physical memory address that is sent to the memory unit
+\begin{itemize}
+\item size of \textbf{d} is \texttt{n} bits
+\end{itemize}
+\end{description}
+\subsubsection{Internal Fragmentation in Paging}
+\label{sec:org56d6de9}
+Internal fragmentation happens when the process requires memory which is not a multiple of the page size, when this happens, the last page will cause internal fragmentation as it will not fill the frame.
+The worst case fragmentation would be equal to \texttt{1 frame - 1 byte} but average fragmentation is around half a frame size.
+\paragraph{Page Size Trade-Off}
+\label{sec:org4708429}
+\begin{itemize}
+\item Reducing the page size \(\rightarrow\) minimises internal fragmentation
+\item Increaseing the page size \(\rightarrow\) less pages needed, reduces page table size (faster, simpler implementation of MM)
+\end{itemize}
+\subsubsection{Performance Issues}
+\label{sec:org893b5ec}
+If the page table is kept in main memory every data/instruction access requires two memory accesses (one for the page table and one for the data/instruction).
+The two memory access problem can be solved by the use of a special fast-lookup hardware cache called \textbf{associative memory} or \textbf{translation look-aside buffers (TLBs)}.
+The TLB is typically small (64 to 1,024 entries).
+Frequently accessed pages will have their frames stored in a TLB.
+On a TLB miss, the value of the (missed page-table and frame-number), is loaded into the TLB for faster access next time that address is used (if there is no free TLB entry, replacement policies must be considered).
+Some entries can be \textbf{wired down} for permanent fast access.
+
+Address translation \texttt{(p,d)}:
+\begin{enumerate}
+\item If \texttt{p} is in associative register, get frame \# out
+\item Otherwise get frame \# from page table in memory
+\end{enumerate}
+\subsubsection{Shared Pages}
+\label{sec:org078b0a6}
+\paragraph{Shared Code}
+\label{sec:org950e62b}
+Processes that are read-only can be shared because there is no danger of modification.
+This means that only one copy is needed.
+It is similar to the idea of multiple threads sharing the same process space and is also useful for interprocess communication if sharing of read-write pages is allowed.
+\paragraph{Private Code \& Data}
+\label{sec:org88ca9e7}
+Each process keeps a separate copy of the code and data.
+The pages for the private code and data can appear anywhere in the logical space.
+\subsubsection{Page Table Structure}
+\label{sec:orgc7af461}
+Memory structures for paging can get huge using straight-forward methods:
+\begin{itemize}
+\item Consider a 32-bit logical address space
+\item Page size of 1KB (2\textsuperscript{10})
+\item Page table would have 4 million entries (2\textsuperscript{32}/2\textsuperscript{10})
+\item If each entry is 4 bytes, page table is of size 16 MB
+\begin{itemize}
+\item Can be costly
+\item Do not want to allocate that contiguously in main memory
+\end{itemize}
+\end{itemize}
+There are several approaches to this problem:
+\begin{itemize}
+\item Exploit heirarchy
+\item 64-bit address spaces require even more sophisticated solutions
+\end{itemize}
+\subsubsection{Hierarchical Page Tables}
+\label{sec:orgfed115b}
+Break up the logical address space into multiple page tables
+A simple technique is a two-level page table.
+We then page the page-table.
+
+A logical address (on a 32-bit machine with 4K page size) is divided into a page number consisting of 20 bits and a page offset consisting of 12 bits.
+Since the page table is paged, the page number is further divided into a 10-bit index \emph{p\textsubscript{1}} into the outer page table and a 10-bit displacement \emph{p\textsubscript{2}} within the page of the inner page table.
+
+\maketitle
+\section{Lecture 12: Virtual Memory}
+
+
+\subsection{Demand Paging}
+\label{sec:orge98cd7e}
+\subsubsection{Introduction}
+\label{sec:orgd11b047}
+Program is permanently stored in a backing store and is swapped in as needed.
+The backing store is also split into storage units (called \textbf{blocks}), which are the same size as the frame and pages.
+The prgram ends up with a small set of pages loaded in main memory --- a \emph{working set}.
+Programs are executed (more or less) sequentially and coverage of the program is generally small (many functions are seldom used e.g. error handling routines, mutually exclusive modules, maintenance etc.).
+\subsubsection{Advantages of Demand Paging}
+\label{sec:orgf47bba3}
+Demand paging allows to run programs which require much more memory than physically available (limited by secondary storage or addressing space).
+
+\subsubsection{Requirements of Demand Paging}
+\label{sec:orge156f17}
+\begin{itemize}
+\item Fast secondary storage device: DMA
+\item More decisions to be taken by the OS:
+\begin{itemize}
+\item What to do when all memory is full and a new page is needed? - Which page is replaced?
+\end{itemize}
+\end{itemize}
+\subsection{Virtual Memory}
+\label{sec:orgf5b4dae}
+\subsubsection{Introduction}
+\label{sec:orgd127f1a}
+Separation of user logical memory from physical memory.
+Logical address space can be much larger than physical address space since only part of the program eeds to be in memory for execution.
+More performance and resource efficiency since less I/O needed to load or swap processes and allows for more efficient process creation.
+\subsubsection{Virtual Address Space}
+\label{sec:orgbc62ddf}
+Usually design logical address space for stack to start at Max logical address and grow \emph{down} while heap grows \emph{up}.
+This maximises space use by leaving unused address space between the two, this means that no physical memory is needed until the heap or stack grows to a given new page.
+It also enables sparse address spaces with holes left for growth, dynamically linked libraries etc.
+System libraries shared via mapping into virtual address space.
+Shared memory by mapping pages read-write into virtual address space.
+Pages can be shared during \texttt{fork()}, speeding process creation.
+\subsection{Demand Paging Mechanism}
+\label{sec:org9041607}
+Similar to paging system with swapping.
+Pager is a swapper that deals with pages that only loads the needed pages.
+A page is said to be needed when there is a reference to it (read/write to its address range).
+\begin{itemize}
+\item Invalid reference \(\rightarrow\) Abort
+\item Not-in-memory \(\rightarrow\) Bring to memory
+\end{itemize}
+When a process is to be swapped in, the pager predicts which pages will be used before the process is swapped out again.
+So instead of swapping in a whole process, the pager brings into memory only its estimate of the working set.
+The OS must distinguish between the pages that are in memory and the pages that are on the disk (to do this, usually a valid-invalid scheme is used).
+If pages needed are already \textbf{memory resident} then there is no difference from regular paging.
+If the page needed is not \textbf{memory resident} then there is a \textbf{page fault} and the OS needs to detect it and load the page into memory from storage without changing the program behaviour and without the programmer needing to change code.
+\subsubsection{Handling Page Faults}
+\label{sec:orgadd5f8d}
+A page faut is an interrupt so a context switch ensues.
+This means that the process state is saved and the OS is enabled to restart the instruction that caused the page fault, as the CPU will be in exactly the same state as prior to the memory reference.
+The OS will do the following upon page fault:
+\begin{enumerate}
+\item Find a free frame
+\item Swap page into frame via scheduled I/O operation
+\item Reset tables to indicate page now in memory (set validation bit equal to valid)
+\item Restart the instruction that caused the page fault
+\end{enumerate}
+In the extreme case, a process may be started with none of its pages in memory.
+The solution is \emph{pure demand paging}.
+\begin{enumerate}
+\item OS sets instruction-pointer to the first instruction of the process, non-memory-resident.
+\item Page fault signalled and recovered
+\item Same for every other process pages on first access.
+\end{enumerate}
+A single instruction can access multiple pages and cause multiple page faults.
+For example, fetch and decode of an instruction which adds 2 numbers from memory and stores the result back to memory.
+The two numbers may reside in two different pages.
+\subsubsection{Demand Paging Mechanism Performance}
+\label{sec:org7e209f6}
+There are three major activities:
+\begin{enumerate}
+\item Service the interrupt --- few hundred instructions
+\item Read in the page --- lots of time
+\item Restart the process --- few hundred instructions
+\end{enumerate}
+
+
+\begin{description}
+\item[{Page Fault Rate}] The liklihood of a memory access to be a page fault:
+\end{description}
+
+
+\begin{itemize}
+\item If \emph{p} = 0 \(\rightarrow\) no page faults
+\item If \emph{p} = 1 \(\rightarrow\) every reference is a fault
 \end{itemize}
 
-\section{Satisfying a Clause}
-\label{sec:org0691404}
-A \textbf{literal} is a propositional symbol or the negation of one.
-For a clause to be true in a model it is enough for one of the literals to be true in that model.
 
-\section{Breaking Clauses}
-\label{sec:org30da39f}
-For a clause to be false in a model, all literals must be false in that model.
-We say the model \emph{breaks} the clause.
-
-\section{When a Model Does Not Satisfy a CNF Formula}
-\label{sec:org207bb29}
-A CNF (conjunctive normal form) is a conjuction of clauses.
-In these notes often the phrase 'a CNF' will appear in the place of 'a formula in CNF' in the interests of brevity.
-Since it is a conjunction, if a model breaks even one clause it fails to satisfy the CNF.
-If all clauses are satisfied then so is the CNF.
-
-\section{Determining Satisfiablility}
-\label{sec:orgc4e5938}
-With \emph{n} propositional symbols there are 2\textsuperscript{n} models.
-We can determine whether a CNF is satisfiable by enumerating all models.
-If we come across a satisfying model then the answer is YES, otherwise (after checking all 2\textsuperscript{n} models), the answer is NO.
-
-\textbf{Note}: We typically do not need a fully defined model to decide whether a clause is satisfied (nor if it is broken).
-
-e.g. if \(A = true\), then \((A \lor \neg B \lor C)\) is satisfied regardless of the truth-values of \(B\) and \(C\).
-or if \(A = false, B = true, C = false\) then \((A \lor \neg B \lor C)\) is broken, regardless of the truth value of \(D\).
-
-\section{SAT Solving As Search}
-\label{sec:org17630c7}
-One can view the SAT problem as a search for a satisfying model.
-The states are partially-defined models, i.e. truth assignments for some of the propositional symbols.
-We can move to a new state by assigning true/false to a variable.
-And can also backtrack to an earlier state.
-DPPL is depth-first search with simple, but effective heuristics.
-
-
-\section{Pure Symbols}
-\label{sec:org25af95f}
-Consider:
-\begin{equation}
-A \lor \neg B
-\end{equation}
-
-\begin{equation}
-\neg B \lor \neg C
-\end{equation}
-
-\begin{equation}
-A \lor C
-\end{equation}
-
-Given these three statements, we can say that \(A\) and \(B\) are both \textbf{pure}, since they have the same 'sign' in all clauses.
-\(C\), however, is impure.
-
-\textbf{Note}: If a CNF has a model, then it has one with all pure symbols set to make their literals true.
-
-All clauses containing a given pure symbol will be satisfied and other clauses won't depend on it.
-So \textbf{fix} the truth-values of pure symbols.
-
-Given the same statements, if we have \(B = false\), then \((\neg B \lor \neg C)\) is already true and therefore \(C\) \emph{becomes} pure.
-In general, when looking for pure symbols we can ignore clauses already known to be true.
-
-\section{Unit Clause Heuristic}
-\label{sec:org431c5ce}
-A \textbf{unit clause} contains a single literal.
-If \(B = true\) then \((\neg B \lor \neg C)\) simplifies to \(\neg C\) and so \(C\) must be set to \(false\).
-In general, if all literals bar one are \(false\) in a (particularly-built) modek, then \textbf{fix} the last one to satisfy the clause.
-
-\section{Unit Propogation}
-\label{sec:org17e6f87}
-Focing a variable to take a particular value may generate a \emph{cascade} of forced assigments.
-For example, suppose \(C \lor A\) is one of our clauses.
-If \(C\) is set to false then \(A\) must be set to true.
-This is called \textbf{unit propogation}.
-
-\section{Component Analysis}
-\label{sec:org55b2faa}
-As we assign variables, satisfied clauses can be removed and literals can be removed from yet-to-be-satisfied clauses.
-The resulting CNF may end up being representable as \(X \land Y\) where \(X\) and \(Y\) are both CNFs with no overlapping variables.
-\(X\) and \(Y\) are then components which can be worked on separately.
-
-\section{Variable \& Value Ordering}
-\label{sec:orgc13fba5}
-Which variable to try next? Which variable to try first?
-\emph{Degree heuristic} chooses the variable which appears most frequently over the remaining clauses.
-
-\section{Other Tricks}
-\label{sec:orgcf59b2b}
+\begin{description}
+\item[{Effective Access Time (EAT)}] \texttt{EAT = (1 - p) * memory access time + p(page fault overhead + swap page out + swap page in )}
+\end{description}
+\subsubsection{Demand Paging Mechanism Optimisation}
+\label{sec:org7cae0dd}
 \begin{itemize}
-\item Intelligent Backtracking (as opposed to chronologival backtracking in standard depth-first search).
-\item Clause learning (very important in modern SAT solvers, it is where you write clauses which weren't given explicitly at the beginning).
-\item Random restarts
-\item Good programming!
+\item Swap space I/O faster than file system I/O even if on the same device. (The swap is allocated in larger chunks so there is less management needed than file system)
+\item Copy entire process image to swap space at process load time and then page in and out of swap space. (Need to remember the big initial copy cost)
+\item Demand page from program binary on disk, but discard rather than paging out when freeing frame.
+\begin{itemize}
+\item Used in Solaris and current BSD
+\item Still need to write to swap space
 \end{itemize}
+\item Copy-On-Write (COW) allows both parent and child processes to initially share the same pages in memory (if either process modifies a shared page, only then will a page be copied). This allows for more efficient process creation.
+\item Variation on \texttt{fork()} system call has parent suspended and child using address space of parent (\texttt{vfork()} on Linux and designed to have the child make an \texttt{exec()} call). This is very efficient.
+\end{itemize}
+
+\maketitle
+\section{Lecture 13: Page Replacement}
+
+
+\subsection{Introduction}
+\label{sec:org8b10a5a}
+\subsubsection{When does Page Replacement Occur?}
+\label{sec:org6425452}
+When a page fault occurs, we need to bring the desired page into memory.
+However, sometimes there are no free frames for the page to fill.
+This is when we must replace one of the pre-existing pages to with the new one.
+
+\subsubsection{Outline of Page Replacement}
+\label{sec:org007ac98}
+Page replacement is done by finding some page in memory, but not really in use and paging it out.
+We use an algorithm to decide which frame to free.
+The performance of this algorithm is based on trying to achieve the minimum number of page faults possible.
+When replacing pages it should be noted that the same page can be brought into memory several times.
+
+\subsubsection{Optimisation of Page Replacement}
+\label{sec:orgbc35d25}
+Use a \textbf{modify*(*dirty})*bit* to reduce overhead of page transfers (then only modified pages are written back to the disk and we are not rewriting unchanged pages).
+Page replacement completes separation between logical memory and physical memory (large virtual memory can be provided on a smaller physical memory).
+
+\subsection{Replacement Mechanism}
+\label{sec:org55917b5}
+\begin{enumerate}
+\item Find the location of the desired page on disk
+\item Find a free frame
+\begin{itemize}
+\item if there is a free frame, use it
+\item if there is no free frame, use a page replacement algorithm
+\begin{itemize}
+\item select a \textbf{victim frame}
+\item write victim frame to disk if it is \emph{dirty}
+\end{itemize}
+\end{itemize}
+\item Bring the desired page into the (newly) free frame (i.e. update the page and frame tables).
+\item Continue the process by restarting the instruction that caused the trap.
+\end{enumerate}
+
+\subsection{Page Replacement Algorithms}
+\label{sec:org2388eb0}
+\textbf{Remember}: page-replacement algorithms aim for the lowest page-fault rate on both first access and re-access.
+Algorithms are evaluated by running it on a particular string of memory references and computing the number of page faults on that string.
+The string is just page numbers, not full addresses.
+Repeated access to the same page does not cause a page fault.
+Results depend on the number of frames available.
+
+\subsubsection{FIFO}
+\label{sec:orgf91c936}
+Just use a FIFO queue to keep track ages of pages.
+One would expect that the more frames are allocated to a process, the fewer page faults.
+In FIFO this is not necessarily true (see Belady's anomaly).
+
+\subsubsection{Optimal}
+\label{sec:org16609fc}
+Best possible replacement policy: replace page that will not be used for longest period of time.
+If we can see into the future (like when we have a reference string) then we can see which page will not be used for the longest period of time.
+Obviously this is really only theoretical so it is often used mainly as an upper-bound in comparative evaluation.
+
+\subsubsection{Least Recently Used (LRU)}
+\label{sec:org667c3e1}
+Use past knowledge rather than future: replace page that has not been used for the longest period of time.
+Obviously, this involves keeping track of time of last use for each page.
+Using the lecture reference string, it had 12 faults which was better than FIFO but worse than OPT.
+
+It is generally a good approach and widely used but there are implementation issues.
+
+\subsubsection{LRU Approximation Algorithms}
+\label{sec:org8743693}
+These are obviously similar to LRU but without complex timestamping.
+\begin{itemize}
+\item \textbf{Reference Bit} :
+\begin{itemize}
+\item With each page associate a hardware-provided bit; initially 0
+\item When a page is referenced the associated bit is set to 1
+\item Replace any page with reference bit = 0 (if one exists). However, we do not know the order
+\end{itemize}
+\item \textbf{Second-Chance Algorithm}:
+\begin{itemize}
+\item FIFO scheme, plus hardware-provided reference bit
+\item If page to be replaced has
+\begin{itemize}
+\item Reference bit = 0 \(\rightarrow\) Replace it
+\item Reference bit = 1 then:
+\begin{itemize}
+\item Set reference bit 0, leave page in memory
+\item Replace next page, subject to same rules
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsection{Page and Frame Locking}
+\label{sec:org93176bc}
+The OS may wish some pages to remain in physical memory frames (e.g parts of the OS code itself or I/O buffers).
+\subsubsection{Frame Locking}
+\label{sec:org1a9f31b}
+If a frame is locked, it may not be replaced.
+It requires a lock bit with each frame (usually supported by the OS rather than hardware).
+
+\subsection{Frame Allocation}
+\label{sec:orgb60ec21}
+\textbf{Frame allocation algorithms} determine how many frames to give each process and which frames to replace in case of scarcity.
+Each process needs a \textbf{minimum} number of frames.
+The \textbf{maximum} is the total frames in the system.
+There are many allocation schemes such as \emph{equal allocation}, \emph{size-proportional allocation}, \emph{priority allocation}, etc.
+It is important to keep a free frame buffer pool.
+
+\subsubsection{Global Replacement}
+\label{sec:orgfa26708}
+\begin{description}
+\item[{Global Replacement}] Process selects a replacement frame from the set of all frames.
+\begin{itemize}
+\item One process can take a frame from another
+\item In priority based allocation of frames, this may enable a high priority process to increase its allocated frames by taking a frame froom a low priority process
+\item Page fault behaviour of a process becomes dependent on the behaviour of other processes
+\item Greater overall throughput, so more common (e.g. Linux)
+\end{itemize}
+\end{description}
+\subsubsection{Local Replacement}
+\label{sec:org71f869e}
+\begin{description}
+\item[{Local Replacement}] Each process selects from only its own set of allocated frames.
+\begin{itemize}
+\item More consistent per-process performance
+\item If a process does not have sufficient number of frames allocated to it, the process will suffer many page faults (thrashing)
+\item Possibly underutilised memory
+\end{itemize}
+\end{description}
+
+\subsection{Thrashing}
+\label{sec:orgdfe0501}
+\begin{description}
+\item[{Thrashing}] When a process is busier swapping pages in and out then executing itself.
+\end{description}
+If a process does not have \emph{enough} pages, the page-fault rate is very high.
+Insufficient frames lead to page faults.
+Pages are swapped out and then needed again, so page fault so another page is swapped out which is needed again\ldots{}
+
+This can lead to:
+\begin{itemize}
+\item Low CPU utilisation
+\item Operating system thinking that it needs to increase the degree of multiprogramming
+\item Another process added to the system
+\end{itemize}
+
+\subsubsection{Solving Thrashing}
+\label{sec:org094bfeb}
+\paragraph{Locality Model}
+\label{sec:orgf97523e}
+Demand paging works well using a \textbf{locality model}.
+This is when processes migrate from one locality to another (localities may overlap).
+Thrashing occurs when:
+\begin{equation}
+\sum \text{size of locality} > \text{total memory size}
+\end{equation}
+The effects of thrashing can be limited by:
+\begin{itemize}
+\item Local page replacement
+\item Priority page replacement --- replace a page from a process with the lowest priority.
+\end{itemize}
+
+\paragraph{Working-Set Model}
+\label{sec:org1b87bdf}
+Define \(\Delta\) to be a working-set window.
+Then analyse the most recent \(\Delta\) page references.
+If a page is in use, it is in the working set but if it is no longer used then it will drop from the working set \(\Delta\) time units after its last reference.
+
+WSS\textsubscript{i}(working set of Process P\textsubscript{i}) is defined to be the total number of pages referenced in the window \(\Delta\).
+WSS\textsubscript{i} tries to approximate the size of the locality of process P\textsubscript{i}:
+\begin{itemize}
+\item If \(\Delta\) is too small will not encompass entire locality
+\item If \(\Delta\) is too large will encompass several localities
+\item If \(\Delta\) = \(\infty\) \(\rightarrow\) Will encompass the whole program
+\end{itemize}
+\begin{equation}
+D = \sum\limits_{i=0}^n WSS_i
+\end{equation}
+If \(D > m\) \(\rightarrow\) Thrashing (where \(m\) is the total number of frames).
+
+Policy: if \(D > m\), then suspend or swap out one of the processes.
+
+\paragraph{Page-Fault Frequency}
+\label{sec:orge0a5dfc}
+This is a more direct approach than WSS.
+It is done by establishing an \emph{acceptable} \textbf{page-fault frequency} (PFF) rate and use local replacement policy.
+If the actual rate is too low, process loses a frame and if the actual rate is too high, the process gains a frame.
+
+\maketitle
+\section{Lecture 14: Input/Output \& Storage Management}
+
+
+\subsection{I/O Management}
+\label{sec:orge22c6ee}
+\subsubsection{Introduction}
+\label{sec:org6d123ec}
+I/O subsystem is responsible for controlling devices connected to a computer.
+It must provide processes with a sufficiently simple interface and also take device characteristics into account to maximise performance and efficiency.
+
+There is a large variety of I/O devices:
+\begin{itemize}
+\item Storage (e.g disk drives, non-volatile memory)
+\item Communications (e.g. Ethernet, WiFi, Bluetooth, USB)
+\item User Interface (e.g. mouse, touch, keyboard, display, sound)
+\end{itemize}
+
+\subsubsection{Device Drivers}
+\label{sec:orgaf691dc}
+Device drivers are low-level sofware that interacts directly with device hardware, they hide the hardware details to the higher levels of the OS and user applications and are often developed by the hardware vendor.
+They track the status of the device and enforce access/allocation policies.
+Types of drivers:
+\begin{description}
+\item[{Dedicated}] Each device is allocated to a single process
+\item[{Shared}] Each device is shared between multiple processes
+\item[{Virtual}] Hides sharing from processes
+\end{description}
+\subsubsection{Devices}
+\label{sec:org5bb3dbe}
+Devices usually have registers where the device driver places commands, addresses and data to write or read data from registers after command execution.
+A minimum setup usually consists of the following:
+\begin{itemize}
+\item Data-In Register
+\item Data-Out Register
+\item Status Register
+\item Control Register
+\end{itemize}
+Where each register is typically 1-4 bytes and they may be contained in a FIFO buffer.
+
+Devices themselves also have addresses used by direct I/O instructions or memory-mapped I/O.
+
+\subsubsection{I/O Management}
+\label{sec:orgfc8e422}
+The I/O subsystem provides interfaces to access devices via device drivers (or access to specific devices in a family of devices hidden by the device driver).
+There are three main device communication mechanisms:
+\begin{itemize}
+\item Polling \& Interrupts
+\item Direct Memory Access (DMA)
+\item Buffering
+\end{itemize}
+
+\subsubsection{Polling}
+\label{sec:org0ec5291}
+Polling is about checking if a device is ready for communication so for each byte of I/O:
+\begin{enumerate}
+\item Read busy bit from status register until 0
+\item Host sets read or write but and if write copies data into data-out register.
+\item Host sets command-ready bit
+\item Controller sets busy bit, executes transfer
+\item Controller clears busy bit, error bit, command-ready bit when transfer done.
+\end{enumerate}
+Step 1 is a busy-wait cycle to wait for I/O from device.
+This is reasonable if the device is fast but inefficient if it is slow.
+The CPU could switch to other tasks, but if miss a cycle data could be overwritten/lost.
+
+\subsubsection{Interrrupts}
+\label{sec:org57e3c12}
+Polling can happen in 3 instruction cycles:
+\begin{enumerate}
+\item Read status
+\item Extract status bit
+\item Branch if not zero
+\end{enumerate}
+How to be more efficient if devices are seldom ready?
+
+CPU Interrupt-Request line triggered by I/O device (checked by processor after each instruction).
+The interrupt handler receives interrupts (maskable to ignore or delay some interrupts).
+Interrupt vector to dispatch interrupt to correct handler.
+This has a context switch at the start and at the end.
+We get \textbf{interrrupt chaining} if more than one device at same interrrupt number.
+
+\subsubsection{Direct Memory Access (DMA)}
+\label{sec:org31ac013}
+This is used to avoid programmed I/O (one byte at a time) for large data movement.
+This requires a DMA controller and bypasses CPU to transfer data directly between I/O device and memory.
+
+The OS writes DMA command block into memory.
+\begin{itemize}
+\item Source and destination addresses
+\item Reade or write mode
+\item Count of bytes
+\item Writes location of command block to DMA controller.
+\end{itemize}
+
+\subsection{Storage Devices}
+\label{sec:org086e042}
+\subsubsection{Introduction}
+\label{sec:orge22b44d}
+The hierarchy of storage devices is driven by performance and volatility of data.
+\textbf{Data access time} includes:
+\begin{description}
+\item[{Ready time}] Time to prepare set up storage media to read/write data at the appropriate location (e.g. wind/rewind tape, rotate disk, charge memory row)
+\item[{Transfer time}] Time to read/write data from media
+\end{description}
+Different devices may impose access latencies at different orders of magnituse and hence, the OS should manage each of them appropriatly and mediate transfers (e.g. buffering).
+\subsubsection{Tertiary Storage}
+\label{sec:org5e9bb57}
+\textbf{Tertiary storage} is usually used for backups, storage of infrequently used data and transfer between systems.
+The two main forms of tertiary storage are:
+\begin{itemize}
+\item Magnetic tapes:
+\begin{itemize}
+\item GB to TB capacity
+\item Very slow access time (must wind and rewind to position tape under read-write head but once in place, reasonable transfer rates >140 MB/s)
+\end{itemize}
+\item Optical discs:
+\begin{itemize}
+\item MB to GB capacity
+\item Read-only or read-write using high intensity laser beams
+\end{itemize}
+\end{itemize}
+\subsubsection{Secondary Storage}
+\label{sec:orgb0ff567}
+\textbf{Secondary storage} is mainly used for non-volatile storage, high-capacity storage supporting swapping/paging.
+\paragraph{Magnetic Disks (HDDs)}
+\label{sec:orgb2f056c}
+\begin{itemize}
+\item Made of \emph{n} disks (2/n/ sides), each side is divided into tracks (circular), and each track into sectors.
+\item \textbf{Cyclinder}: Set of tracks at the same position on all sides
+\item \textbf{Access Time}: Seek time (disk head movement) + Search time (rotational delay) + Transfer time
+\item Typical Avg Values: 
+\begin{itemize}
+\item Seek = 25ms
+\item Search = 4ms
+\item Transfer = 0.00094ms/MB
+\item Rotation speed = 7200rpm (120rps)
+\end{itemize}
+\end{itemize}
+
+\paragraph{Non-volatile memory (NVMs, SSDs)}
+\label{sec:orgc85df7e}
+\begin{itemize}
+\item Made of no mechanical components
+\item More reliable than HDDs (no moving parts), can be faster (no seek time or latency), consumes less power.
+\item More expensive per MB, lower capacity, may have shorter lifespan (writes wear it out).
+\end{itemize}
+
+\paragraph{Redundant Arrays of Independent (Inexpensive) Disks (RAIDs)}
+\label{sec:orga6a8005}
+\begin{itemize}
+\item Set of physical disks viewed as a single logic unit by the OS.
+\item Simultaneous access to multiple drives
+\begin{itemize}
+\item Increased I/O performance
+\item Improved data recovery in case of failure
+\end{itemize}
+\item Data is divided into segments called stripes, which are distributed across the disks in the array.
+\item RAIDs can be classified as level 0,1, \ldots , 6 (different levels denote different approaches to data redundancy and error correction methods).
+\end{itemize}
+
+\begin{enumerate}
+\item RAID 0
+\label{sec:org3ed7138}
+\begin{itemize}
+\item Block-level striping: data is divided into segments that are stored across the disks in the array.
+\item Minimum disks: 2
+\item Read speed-up is roughly proportional to the number of disks in the array, because distinct data can be read from different disks simultaneously.
+\item Write speed-up is roughly proportional to the number of disks in the array, because distinct data can be written to different disks simultaneously.
+\item No redundancy, therefore no fault tolerance.
+\item As reliability is inversely proportional to the number of disks, a RAID 0 will be more vulnerable to faults than a single hard disk.
+\end{itemize}
+Where \(MTTF\) is Mean Time To Failure:
+\begin{equation}
+MTTF_{group} \approx \frac{MTTF_{disk}}{number}
+\end{equation}
+It is possible to use disks of different capacities, but the storage space added to the array by each disk is limited to the size of the smallest disk.
+\begin{itemize}
+\item For example, if a 120GB disk is striped together with a 100GB disk, the capacity of the array will be 200GB.
+\end{itemize}
+
+\item RAID 1
+\label{sec:org971bd5c}
+\begin{itemize}
+\item Full redundancy: mirroring (data is copied in all disks of the array)
+\item Minimum disks: 2
+\item Tolerates faults on up to \(N-1\) disks
+\item Read speed-up is roughly proportional to the number of disks in the array because distinct daya can be read from different disks simultaneously.
+\item No write speed-up, as writes have to be done on all disks.
+\item Very low space efficiency: \(1/N\)
+\end{itemize}
+
+\item RAID 2,3,4
+\label{sec:orgf30365f}
+\textbf{SKIPPED IN LECTURE AND NOT ASSESSED}: SEE LECTURES/SILBERSCHATZ FOR DETAILS
+
+\item RAID 5
+\label{sec:orgf6a0085}
+\begin{itemize}
+\item Block-level striping, distributed parity. (Think of parity bits from ICAR)
+\item Minimum 3 disks, tolerates fault in one disk
+\item Writes are costly operations
+\item Widely used
+\end{itemize}
+
+\item RAID 6
+\label{sec:orge0377ca}
+\begin{itemize}
+\item Block-level striping, double distributed parity. (Think of parity bits from ICAR)
+\item Minimum disks: 4, tolerates faults in two disks.
+\item Writes are costly
+\item Widely used
+\end{itemize}
+\end{enumerate}
+
+\subsection{Storage Management}
+\label{sec:orgfae50c7}
+Multiple requests have to be handled concurrently, several programs may have requested storage operations.
+There are a number of policies for servicing disk requests.
+
+The I/O scheduler is similar to the process scheduler.
+It choses which request should be chosen next and often depends on some criteria which usually aim to reduce average response times.
+There may also be prioritised requests e.g. from OS components.
+Specific devices may require dedicated scheduling policies (e.g. to minimise seek time in magnetic disks and avoid redundant writes in non-volatile memory).
+\subsection{Disk Management}
+\label{sec:org75dc5fa}
+\subsubsection{Disk Formatting}
+\label{sec:org7e5044f}
+\begin{itemize}
+\item Low-level (physical) disk formatting is when a disk is divided into sectors (built-in error correction codes, also called checksums).
+\item Logical formatting is to do with creating a file-system - directory trees, maps of free and allocated space.
+\end{itemize}
+
+\subsubsection{Partitions}
+\label{sec:orgd17add0}
+Partitions are when there are multiple logical disks on a single physical disk.
+
+\subsubsection{Blocks}
+\label{sec:orgbbb8621}
+\begin{description}
+\item[{Boot Block}] Initial bootable code at a known sector (useful as it helps reduce power-up complexity in hardware).
+\item[{Bad Blocks}] These are blocks which have been permanently corrupted and file systems have to be able to mark them.
+\end{description}
+
+\subsubsection{Defragmentation}
+\label{sec:orgc701b5e}
+Defragmentation is when sectors which are used by files are rearranged to be contiguous.
+
+\maketitle
+\section{Lecture 15: File Management}
+
+
+\subsection{File Management Outline}
+\label{sec:org6774802}
+\begin{itemize}
+\item Permanent storage of data and programs (files and directories)
+\item File systems
+\begin{itemize}
+\item Information and mechanisms used to handle files and directories on disk.
+\item File protection
+\item Examples: FAT (win9x), NTFS (winNT), ext family, etc.
+\end{itemize}
+\end{itemize}
+
+\subsection{File Concept}
+\label{sec:org3a870a9}
+A file is a \emph{logical storage unit} where the data is non-volatile.
+Files tend to have attributes such as name, type, location, size, protection, time of creation and modification etc.
+File information is kept in the directory.
+
+\subsection{File operations}
+\label{sec:org6aaaa07}
+A file is an abstract data type that can be manipulated by the applications which can be thought of as an array of bytes.
+The OS provides an API to operate on files, including functions for:
+\begin{itemize}
+\item File creation
+\item Opening and closing files
+\item Read and writing files
+\item Repositioning within a file
+\item Deleting or resetting
+\item Appending
+\item Renaming
+\item Copying
+\item Changing privileges
+\item Memory-mapped files
+\end{itemize}
+
+\subsection{File Types}
+\label{sec:org7884c66}
+File types determine which applications can understand the contents of the file.
+In Unix and Windows, file types correspond to the file name extensions but in old MacOS it was a separate attribute.
+
+\subsection{Internal File Structure}
+\label{sec:orgee84179}
+Files are stored on devices such as HDD or SDD.
+Files are stored in physical blocks HDs without a file structure is just an array of blocks.
+No more than one file can use an individual block so this results in internal fragmentation.
+It is important to note that \textbf{BLOCK \(\ne\) SECTOR}.
+
+\subsection{Directories}
+\label{sec:org548adf4}
+A directory is a special file which holds information of other files which is owned and managed by the OS.
+It provides a name space for the file names --- all names in name space need to be unique (effectively maps names to the files themeselves).
+File operations may also update directories.
+
+\subsubsection{Tree-Based Directories}
+\label{sec:orga743f38}
+Tree-based directories contain root directories and subdirectories.
+Files can be accessed using an \textbf{absolute path} by prefixing the filename with the sequence of all directories drom the \emph{root} e.g. \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me\textbackslash{}lecturing\textbackslash{}osi.html}.
+
+They can also be accessed using a \textbf{relative path} which is similar to using the absolute path but it makes an assumption that there is a \textbf{current directory} e.g. when in \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me} (current) we can just refer to \texttt{lecturing\textbackslash{}osi.html}.
+The advantage of this is that there is improved simplicity when dealing with deep trees (normal case).
+
+\subsubsection{Non Tree-Based Directories}
+\label{sec:orge82e840}
+Non Tree-Based directories allow files to be reached from multiple directories.
+To do this we have to use aliasing where multiple names point to the same file.
+This creates extra challenge where extra care should be taken with the aliases to avoid broken links.
+
+\subsection{Access Methods}
+\label{sec:orgb36ab2d}
+Once a file is opened it can be accessed.
+During the opening of a file, a type of access method is selected: sequential or direct.
+
+\subsubsection{Sequential Access}
+\label{sec:org71aab54}
+The file is produced in order, one record after the other.
+Sequential access is used for applications needing to read files from the start to the end.
+The API for sequential access typically includes \texttt{read\_next()}, \texttt{write\_next()} and \texttt{reset()} calls.
+Writes are usually performed only at the end; data is not always deleted and is instead flagged as invalid.
+
+\subsubsection{Direct Access}
+\label{sec:orgceaf9a5}
+File is made up of fixed-length logical records.
+Records can be read and written in any order (non-sequentially).
+Therefore the API typically includes \texttt{read(n)} and \texttt{write(n)} calls.
+Before a read/write operation is performed, the current file pointer has to be moved to the desired position, \textbf{SEEK}.
+
+\subsection{Access Control}
+\label{sec:org23fbce2}
+Access control is the control over whether and how users/processes can access a file.
+Types of access: read, write, execute, travers, list, rename and delete.
+Permissions on each file are typically given at three levels of privileges:
+\begin{itemize}
+\item Owner
+\item Group (Groups of users, e.g. people in one department)
+\item Universe (Any other user)
+\end{itemize}
+
+\subsection{Access Granularity}
+\label{sec:org5d6820c}
+Read-write operations are done in units of \textbf{blocks} which are usually one or more sectors of a storage device.
+Can be from 32 bytes to 64kb but a typical value is 4kb.
+The OS does the buffering so writes are not done immediately to the disk, only when the block is full, the file is closed or when there is an explicit \textbf{flush/synch}.
+
+\subsection{File System Mounting}
+\label{sec:orgff48395}
+Before a storage device can be used, it should be \textbf{mounted} as part of a file system.
+It verifies that the information in the disk is a valid file system.
+Before a storage device can be physically removed it should be \textbf{unmounted} which involves checking that all files are closed and all information is written to the disk (no information is cached).
+
+\subsection{Allocation of Files}
+\label{sec:org258f65d}
+Files are stored in storage devices as blocks.
+There are three main mechanisms to allocate blocks to files:
+\begin{itemize}
+\item Continuous Allocation
+\item Linked Allocation
+\item Indexed Allocation
+\end{itemize}
+
+\subsubsection{Continuous Allocation}
+\label{sec:orge427d76}
+Each file occupies a set of contiguous blocks of disk.
+This means that the file handler needs to know the first block and the number of blocks.
+\begin{itemize}
+\item Number of disk seeks is minimised since the disk head does not need to move very far.
+\item Access to file is very easy
+\end{itemize}
+However
+\begin{itemize}
+\item Finding space is more difficult (similar problems as external fragmentation in dynamic partitions such as best-fit vs. first-fit policies and relocation of files).
+\item Allocating file size is also very difficult if files are allowed to grow.
+\end{itemize}
+Continuous allocation is used by the IBM VM/CMS operating system for its efficiency.
+
+\subsubsection{Linked Allocation}
+\label{sec:org0469cd3}
+Each file is a linked list of blocks (each block contains the block number of the next block in the list).
+This allows blocks scattered throughout the disk.
+The directory holds a pointer to the first and last block of the disk (this makes reading and accessing the end of the file easier).
+\begin{itemize}
+\item Very easy to accommodate growing files.
+\end{itemize}
+However
+\begin{itemize}
+\item A major problem is that access to the i\textsuperscript{th} block requires scanning all blocks from the first one this can lead to poor worst-case access times \(\implies\) especially dependent of disk scheduling.
+\end{itemize}
+A possible solution to the problem is to group the blocks continuously in clusters.
+
+There is another major problem with linked allocation, its reliability.
+If one block gets damaged then the rest of the file is lost!
+
+For example, consider FAT (File Allocation Table):
+Same idea as a linked list, but links are stored at the beginning of each partition for the whole disk rather than the next block number being stored in the current block.
+What happes if the FAT becomes corrupted?
+
+\subsubsection{Indexed Allocation}
+\label{sec:orgf51d540}
+Previous methods do not nicely support direct access.
+In indexed allocation, the first block of a file (the index block) contains a list of the blocks used by the file (similar to the paging memory allocation).
+This makes direct access easy.
+The index block is usually cached.
+Obviously this leads to some wasted space (an additional full block is used for each file).
+Index blocks can be linked for large files.
+
+\subsection{Free Block Management}
+\label{sec:orgcc68fcf}
+When a file needs additional blocks it needs to use the ones which are free.
+A good allocation policy results in improved performance.
+Methods could be:
+\begin{itemize}
+\item Bit Vector (i.e. 0001000100100111000, where 1 = free and 0 = busy)
+\item Linked list containing the free blocks
+\item Grouping to prepare for files which will never have such a small size.
+\end{itemize}
+Allocate a free block which is close to the last block on the file to minimise seek times.
+
+\subsection{Efficiency \& Performance}
+\label{sec:org0f0a1a9}
+\begin{itemize}
+\item Efficiency: How Well Available Space is Used
+\begin{itemize}
+\item Lost space due to pointer sized (12/16/32 bits)
+\item Size of index blocks and allocations tables.
+\item Internal fragmentation
+\end{itemize}
+
+\item Performance
+\begin{itemize}
+\item Access time
+\item Update time: storing \emph{last update time} requires update of directory entry.
+\item Adequate usage of cache is essential
+\item Read-ahead improves performance in sequential access.
+\end{itemize}
+\end{itemize}
+It is difficult to compare because it depends on how the files will be used.
+If accesses will be mostly sequential then continuous is best.
+While if accesses will be mostly direct access then indexed is best.
+Generally it is a combination of approaches that leads to the best performance.
+
+\subsection{Recovery}
+\label{sec:org59168cc}
+Data on disk is essential and its loss can cause great harm.
+In case of a computer failure the data on the disk may be inconsistent e.g. broken links, bad index info.
+\textbf{Consistency checking} is performed when the file system is not properly unmounted.
+Backup and restore:
+\begin{itemize}
+\item Complete backup or incremental (modified files only, \emph{diff} outputs)
+\item Using sets of backup devices (tapes, HDs)
+\item RAID Configs
+\end{itemize}
+
+\maketitle
+\section{Lecture 16: Introduction to Networking}
+
+
+\subsection{Computer Networks}
+\label{sec:orgdef3cb1}
+\begin{itemize}
+\item An \uline{interconnection} of \uline{autonomous} computers
+\end{itemize}
+They should be ableto exchange information (connected via some medium such as copper wire, microwaves etc.).
+They also lack a centralised control.
+
+Motivation for developing networks:
+\begin{itemize}
+\item Resource sharing
+\item Remote access and communication
+\item Reliability and redundancy
+\item Economic advantages
+\end{itemize}
+
+\subsection{Examples of Networks}
+\label{sec:org0270caa}
+\begin{itemize}
+\item Personal Area Network (PAN)
+\item Local Area Network (LAN)
+\item Wide Area Network (WAN)
+\item Internet
+\end{itemize}
+
+\subsection{Network Topologies}
+\label{sec:org443b66f}
+Examples:
+\begin{itemize}
+\item Bus
+\item Ring
+\item Star
+\item Mesh
+\end{itemize}
+
+\subsection{Connectivity}
+\label{sec:orgbb7b840}
+At the lowest level \textbf{nodes} are connected by some physical medium called a \textbf{link}.
+In the course, if it is not otherwise stated then it should be assumed that links are in a \textbf{duplex mode} (rather than simplex) where data can be transported in both directions.
+Physical (direct) connections can be \textbf{point-to-point} or \textbf{multiple-access}.
+
+\subsection{Indirect Connectivity}
+\label{sec:org62cd7e8}
+\begin{itemize}
+\item Physical connections are often not direct.
+\end{itemize}
+When using indirect connectivity there is usually a \textbf{switch node} involved which is a node attached to multiple point-to-point links.
+There are two main classes of indirect connectivity: circuit-switched networks and packet-switched networks.
+
+\subsubsection{Circuit-Switched Networks}
+\label{sec:org3f6c490}
+\begin{itemize}
+\item A circuit must be established before data is sent.
+\item All blocks of a large message are always sent via the same route e.g. telephone network.
+\item Advantage: Time for data to be delivered is predictable once the circuit is set.
+\end{itemize}
+SEE SLIDES FOR DEMO
+
+\subsubsection{Packet-Switched Networks}
+\label{sec:orgd794909}
+\begin{itemize}
+\item Handle blocks of data (\emph{packets})
+\item Different ways to handle packets along the way e.g. store-and-forward, wormhole etc.
+\end{itemize}
+SEE SLIDES FOR DEMO
+
+\subsection{Interconnection of Networks}
+\label{sec:org5952d75}
+\emph{An internet} is an interconnection of independent networks.
+The currently operational TCP/IP internet is called \emph{The Internet}.
+
+\subsection{Addressing, Routing \& Casting}
+\label{sec:orgdbe2976}
+\textbf{Addresses} of nodes are needed to uniquely identify recipient nodes of messages.
+Switches use addresses to describe how to forward (to \emph{route}) a message towards its destination.
+Depending on whether a source node (sender) sense a message to a single destination node (receiver), or to multiple or even all nodes, one speaks of \textbf{unicasting, multicasting} or \textbf{broadcasting}, respectively.
+
+\subsection{Reliability}
+\label{sec:orgbeeb098}
+\subsubsection{Errors At The Bit Level}
+\label{sec:orgbd5cb0c}
+Corruption of single bits is very unlikely in copper cable (1:1,000,000) and optical fibre (1:10,000,000,000,000).
+The corruption often occurs in clusters (burst errors) and are caused by power surges, lightning or microwaves.
+This kind of corruption can be detected and sometimes corrected.
+
+\subsubsection{Errors At The Packet Level}
+\label{sec:orgffac70e}
+This is when complete packets are lost and can be because of non-correctable bit errors.
+These errors also appear at congested switches because it can be difficult to distinguish between a packet that is indeed lost and one that is merely late in arriving at its destination.
+
+\subsubsection{Errors At The Node/Link Level:}
+\label{sec:org9803586}
+\begin{itemize}
+\item Due to a cut physical link
+\item Caused by hardware or software crashes
+\item Are eventually (after a \emph{long} time) corrected
+\item It is difficult to distinguish between a cut and an error-prone link, or between a failed and slow node.
+\end{itemize}
+\textbf{Note}: Packet-switched networks have the abililty to possibly route around a failed node or link.
+
+\subsection{Common Units in Networking}
+\label{sec:orgdb20f1d}
+\begin{itemize}
+\item Units in computing are commonly shown as powers of 2 e.g. GB = 2\textsuperscript{30} bytes = 2\textsuperscript{33} bits.
+\item Units of engineering are commonly shwon as powers of 10. e.g. Gbps: giga bit per second = 10\textsuperscript{9} or 2\textsuperscript{30} bits per second
+\end{itemize}
+
+\subsection{Performance}
+\label{sec:org8dc7222}
+The efficiency of applications running over the network often depends on the efficiency of the network itself.
+There are two key performance metrics:
+\begin{itemize}
+\item Bandwidth (\emph{transmission speeds}) How many bytes per second can I move
+\item Latency (\emph{transmission delays}) What is the time taken from beginning to end of a transfer
+\end{itemize}
+These can both be measured at the levels of individual links as well as end-to-end channels.
+
+\subsubsection{Bandwidth}
+\label{sec:org2ab1e60}
+Number of bits that can be transmitted over the link/channel in a certain period of time.
+Bandwidth is usually measured in bps (bits per second).
+Factors which influence bandwidth:
+\begin{itemize}
+\item The physical/electrical characteristics of links
+\item The software overhead needed for handling/transforming each bit of data (in the case of channels)
+\item The load of networks (in the case of channels)
+\end{itemize}
+
+\subsubsection{Latency (Delay)}
+\label{sec:org426f532}
+Latency in networks consists of three components:
+\begin{enumerate}
+\item Speed-of-light \textbf{propogation} delay (the speed of light is 2.3\texttimes{} 10\textsuperscript{8} m/s in cable and 2.0 \texttimes{} 10\textsuperscript{8} m/s in fibre.
+\item Time needed to \textbf{transmit} a unit of data (usually a packet).
+\item \textbf{Queuing} delays inside the network (at switches).
+\end{enumerate}
+Formula:
+\begin{equation}
+Latency = Propogation + Transmission + Queuing
+\end{equation}
+\begin{equation}
+Propogation = \frac{Distance}{SpeedOfLightInMedium}
+\end{equation}
+\begin{equation}
+Transmission = \frac{Size}{Bandwidth}
+\end{equation}
+
+\subsubsection{Latency Vs. Bandwidth}
+\label{sec:org176c629}
+To which degree latency and bandwidth dominate performance depends on the application of the program.
+For example, a digital library program that is asked to fetch a 25MB image, with a 10Mbps channel needing about 20s for transmission means that other latency which is usually in the range of ms, does not matter.
+While a transatlantic network with a bandwidth of 45Mbps will need around 0.366ms for transmission of a 2KB message but the other latency which is in the range of 100ms dominates.
+
+\subsubsection{Delay \texttimes{} Bandwidth Product}
+\label{sec:org0c5e0c8}
+How many bits can be sent before the first one arrives at the receiver?
+\begin{itemize}
+\item Answer: \#bits = dela \texttimes{} bandwidth
+\end{itemize}
+The product also indicated how many bits can be \emph{stored} in a link.
+
+\subsubsection{Application Performance Needs}
+\label{sec:org0cd8106}
+Often applications want as much bandwidth as possible but sometimes other factors are more important.
+For example, the human eye can only process about 30 fps so bandwidth more than this is not useful.
+What matters is controlling jitter, i.e. the variation in latency (buffers storing incoming packets should not underflow or overflow).
+Lower and upper bounds on delays are needed.
+
+\maketitle
+\section{Lecture 17: Network Stack}
+
+
+\subsection{Network Requirements}
+\label{sec:orgba87a1e}
+A computer network must:
+\begin{itemize}
+\item Provide general, cost-effectivem, fair, robust and high-performance, connectivity among a large set of computers.
+\item Accommodate changes in the underlying technologies and in the demands of application programs. (e.g. developments in the ability to produce fibre-optic cable)
+\end{itemize}
+To cope with complexity, the principle of \textbf{abstraction} is usually applied in the sciences.
+In network design, abstraction is reflected in the concept of a \textbf{network architecture}.
+
+\subsection{The Principle of Abstraction}
+\label{sec:orgc94e795}
+Identify a \textbf{model} capturing some important system aspect.
+Then encapsulate this model in an object such that is is \textbf{accessible} to other system components via its interface and its implementation details are hidden.
+
+\subsection{End-to-End Communication}
+\label{sec:orgdffa641}
+Providing cost-effective connectivity among hosts is a necessary but too weak requirement to networks.
+What is needed is a means for application processes running on different hosts to communicate over the network.
+
+Services for setting up, maintaining and using end-to-end connections are common for many application programs (implemented as part of the OS).
+Services should support commonly used communication patters such as:
+\begin{itemize}
+\item \textbf{Request-reply}: (For reliable exchange of messages between a client and a server e.g. a download).
+\item \textbf{Message Stream}: Potentially unreliable ordered sequence of messages (e.g. video on demand).
+\end{itemize}
+
+\subsection{Network API}
+\label{sec:org3b1104b}
+Interface that the OS (running on some node) provides to its networking subsystem.
+It is a piece of software that provides abstract routines for invoking common services of the network in a particular OS.
+Its implementation maps the offered abstract routines to the \textbf{services} provided by the network.
+For example, take UNIX sockets.
+
+\subsection{Network Architecture: Layering}
+\label{sec:org7e37983}
+Several steps of abstraction leads to \textbf{layering}.
+The services provided at the high-level (the more abstract) layers are implemented in terms of the services of the lower-level (the less abstract and more concrete) layers.
+There might be \textbf{multiple abstractions at a given layer} which is the case when considering different types of chennels.
+
+\subsubsection{Advantages \& Disadvantages of Layering}
+\label{sec:org049ee96}
+Advantages:
+\begin{itemize}
+\item Obtaining manageable tasks by splitting a complex problem into multiple, simpler sub-problems.
+\item Achieving a modular design such that adding or altering a service affects only one layer, thus reusing the functionality of all other layers.
+\end{itemize}
+Disadvantages:
+\begin{itemize}
+\item Implementing a layered design might induce overheads and, thereby, reduce efficiency.
+\end{itemize}
+However the advantages by far outweigh this disadvantage which can usually be dealt with.
+\begin{itemize}
+\item \textbf{Note}: In network design, the objects making up the layers are the \emph{protocols}.
+\end{itemize}
+
+\subsection{Protocols: The Networking Software}
+\label{sec:orgcbf23a8}
+The role of protocols in a layered architecture:
+\begin{itemize}
+\item Each layer \emph{n} of some host may carry a conversation with layer \emph{n} on some other host.
+\item The layer \emph{n} protocol defines the rules used in this conversation.
+\end{itemize}
+Several layers of protocols build a \textbf{protocol stack}.
+
+\subsection{Services and Protocols}
+\label{sec:org6bf551b}
+\begin{description}
+\item[{Service}] Interface on the other objects on the same host that want to use its communication services (such as send and receive primitives).
+\item[{Protocol}] Interface to the counterparts (peers) on other machines, which defines a set of rules governing the messages that the protocol exchanges with its peers to implement the services.
+\end{description}
+
+\subsection{Protocol Graphs}
+\label{sec:org2f7025e}
+Protocol graphs visualise the dependencies between protocols at different layers (see slides for example).
+
+\subsection{OSI Reference Model (OSI Architecture)}
+\label{sec:orge552cb3}
+The 7-layer \textbf{Open Systems Interconnection (OSI)} architecture is standardised by the International Standards Organisation (ISO).
+There are two sets of layers; one for end-hosts and another for switch nodes.
+The end host stack contains the following:
+\begin{itemize}
+\item Application
+\item Presentation
+\item Session
+\item Transport
+\item Network
+\item Data Link
+\item Physical
+\end{itemize}
+While the switch node stack only contains:
+\begin{itemize}
+\item Network
+\item Data Link
+\item Physical
+\end{itemize}
+
+\subsection{Basic Purpose of ISO Layer}
+\label{sec:org7ebcd69}
+\begin{description}
+\item[{Physical Layer}] Handles transmission of raw bits over a physical link.
+\item[{Data Link Layer}] Collects a stream of bits into a \textbf{frame} i.e. frames, not raw bits, are delivered to hosts. (It is usually implemented in network adaptors and in device drivers running on the node's OS.
+\item[{Network Layer}] Deals with routing in packet-switched networks and employs the term \textbf{packet} rather than frame.
+\item[{Transport Layer}] Implements process-to-process channels and employs the term \textbf{message} rather than packet or frame.
+\item[{Session Layer}] Ties togethr different ttransport streams e.g. audio and video for video conferencing.
+\item[{Presentation Layer}] Coodrinates the format of data exchanged between peers e.g. the length of integer represenations.
+\item[{Application Layer}] Includes application protocols e.g. HTTP.
+\end{description}
+
+\subsection{Internet Architecture (TCP/IP Architecture)}
+\label{sec:orgf072e28}
+The Internet architecture only considers 4 layers of the OSI model; specifically, it leaves out the presentation and session layer and says that these should be dealt with in the application layer.
+The data link and physical layer are also replaced with a \textbf{host-to-network} layer which is what made it so popular since it expects so little of these layers.
+
+\subsection{Overview of the Internet Protocols}
+\label{sec:org36fe112}
+The Internet Protocol (IP) supports the interconnection of multiple network technologies into a single, logical network.
+There are two main rtansport protocols (end-to-end protocols):
+\begin{itemize}
+\item The \textbf{Transmission Control Protocol TCP} provides a reliably byte-stream channel.
+\item The \textbf{User Datagram Protocol (UDP)} provides an unreliable message delivery channel.
+\end{itemize}
+The Internet comes with many application protocols such as:
+\begin{itemize}
+\item File Transfer Protocol (FTP)
+\item HyperText Transfer Protocol (HTTP)
+\item Directory Name Service (DNS)
+\item Real-time Transfer Protocol (RTP)
+\end{itemize}
+
+\subsection{OSI vs. Internet Architecture}
+\label{sec:org78c91c8}
+The Internet protocols were invented before the OSI model, and the Internet architecture was just a result of an existing implementation.
+The Internet protocols became the de-facto standard since they were shipped with the popular Berkeley distribution of UNIX, which also helped their further development.
+The conceptual OSI reference model, however, is a great use for conceptually discussing and teaching about computer networks.
+
+\subsection{Network Standardisation}
+\label{sec:org4c1c95d}
+\begin{itemize}
+\item International Telecommunication Union (ITU): Telecom sector includes data communications systems.
+\item International Standards Organisation (ISO): Member of the ITU.
+\item Institute of Electrical and Electronics Engineers (IEEE): Standards are occasionally adapted by ISO.
+\item Internet Society:
+\begin{itemize}
+\item Internet Engineering Task Force (IETF)
+\item Internet Research Task Force (IRTF)
+\end{itemize}
+\end{itemize}
+Generally protocols are submitted to different organisations depending on their level in the stack.
+They are submitted by engineers (often funded by their employer) who try to create vendor-independent and non-ambiguous rules.
+
+\maketitle
+\section{Lecture 18: Physical \& Data Link Layers}
+
+
+\subsection{Physical Layer}
+\label{sec:org454d4f9}
+Deals with the transmission of bits over physical medium (twisted pair/coaxial cables, fibre optics, wireless etc.).
+The layers usually have a standardised interface to transmission media (e.g. how 1/0 signals are carried over a link).
+
+Requirements of the physical layer include both \textbf{synchronisation} and \textbf{flow control} as well as multiplexing (FDM (frequency division multiplexing), TDM (time division multiplexing) and CDM (code division multiplexing)).
+Multiplexing is where you use the same connection for multiple transmissions.
+
+\subsection{Data Link Layer}
+\label{sec:org3fb3528}
+Deals with the framing of raw data, as well as flow control and error correction (i.e. if they cannot be solved at the physical level).
+The data linke layer is often divided into two sublayers:
+\begin{itemize}
+\item \textbf{Logical Link Control (LLC)}: Multiplex protocols running over the data link layer, error and flow control.
+\item \textbf{Media Access Control (MAC)}: Control channel access, append and check FCS (frame chack sequence), discard malformed frames, addressing.
+\end{itemize}
+
+\subsubsection{Example: Ethernet}
+\label{sec:orgbca43ec}
+\begin{itemize}
+\item Standard: IEEE 802.3
+\end{itemize}
+
+Uses CSMA/CD local area network technology:
+\begin{itemize}
+\item Multiple-Access (MA): Several nodes are connected to the same cable (cf. data bus).
+\item Carrier Sense (CS): A node can distinguish between a busy and an idle link.
+\item Collision Detect (CD): A node listens when it transmits a frame in order to detect whether the frame interferes (collides) with a frame transmitted by another node.
+\end{itemize}
+Multiple Ethernet segments are joined by \textbf{repeaters} that forward the signals.
+In an Ethernet, every signal is propagated in all directions over the entire network, even crossing repeater boundaries.
+\begin{itemize}
+\item Problem: All hosts compete for access to the same link; they are said to be in the same \textbf{collision detection}.
+\end{itemize}
+The problem is solved by intelligently partitioning the \textbf{collision domain} using the following:
+\begin{description}
+\item[{Hub}] Multiway repeater supporting several point-to-point segments - still only one collision domain.
+\item[{Bridge}] Each port is connected to a different collision domain. Transmissions within separate domains are allowed to happen in parallel.
+\item[{Switch}] Frames are sent only to their destinations --- no collisions.
+\end{description}
+How can we know that a frame is going between certain nodes?
+
+Each Ethernet adaptor has a unique Ethernet (MAC) address, which is 6 bytes long and read as a sequence of six numbers, each given as a pair of hexadecimal digits (e.g. 08:00:2B:E4:B1:02).
+Each connected adaptor receives all frames transmitted over an Ethernet, but passes to the upper protocol layers only those matching:
+\begin{itemize}
+\item The adaptor's own address (unicase)
+\item The Ethernet broadcast address (FF:FF:FF:FF:FF:FF).
+\item Multicase addresses (not used in practice just in the standard) (least significant bit of the first byte set).
+\end{itemize}
+See lecture for frame format example.
+
+Other Data Link Layer protocols include:
+\begin{itemize}
+\item IEEE 802.11 - Wireless Lan
+\item IEEE 802.16 - Wireless Broadband (e.g. WiMax)
+\item IEEE 802.15.4 - Low-rate Personal Area Networks (e.g. ZigBee, WirelessHart)
+\end{itemize}
+
+\subsection{Learning Bridges}
+\label{sec:org7a0c83d}
+How does a bridge know to which port to forward a packet, i.e. on which port a destination host resides?
+
+A bridge inspects the source address of each received frame and notes the number of the incoming port.
+The pair </port number/, /source address/> is added to the bridge's forwarding table.
+If there exists no entry for a destination address (yet), the packet is forwarded to all ports, except the packet's incoming port.
+
+Learning algorithm:
+\begin{enumerate}
+\item The forwarding table is empty when the bridge boots.
+\item The forwarding table it updated according to the above scheme.
+\item Table entries are discarded after some amount of time to protect against the possibility of LAN addresses changing segments.
+\end{enumerate}
+The table is updated when messages are sent as even though they cannot know which domain the receiver is in, they can know which the sender is.
+
+
+\subsection{Problems with Loops in Extended LANs}
+\label{sec:org9a55d1c}
+Loops in extended LANs:
+\begin{itemize}
+\item Provide \textbf{redundancy} in case of failures of links/bridges.
+\item Potentially enable frames to \textbf{loop forever}.
+\end{itemize}
+To stop them looping forever, a \textbf{distributed spanning tree algorithm} is run, which selects, for each bridge, the ports over which it should forward frames such that loops are avoided.
+
+\subsubsection{Spanning Tree}
+\label{sec:org8489571}
+Think of an extended LAN (with loops) as a graph (with cycles).
+The \textbf{spanning tree} of a graph is a \textbf{subgraph} that emerges from the original graph by leaving out edges such that no cycles/loops remain.
+There is a spanning tree algorithm included in the IEEE 802.1 specification for LAN bridges.
+Each bridge decides the ports over which it is (not) willing to forward frames.
+
+\subsubsection{Distributed Spanning Tree Algorithm}
+\label{sec:org34e4572}
+\paragraph{Basic Idea}
+\label{sec:org6efdf2e}
+\begin{enumerate}
+\item The algorithm first elects the bridge with the smallest id (address) as the \textbf{root} of the spanning tree.
+\item Each bridge computes the \textbf{shortest path} to the root and notes its ports that lie on this path (\emph{preferred port towards root})/
+\item Each LAN elects a single designated bridge (one of the closest to the root --- smallest id wins in tie) which is made responsible for forwarding frames towards the root bridge.
+\end{enumerate}
+Afterwards each bridge just forwards frames over those ports (i.e. to those LANs) for which it is the designated bridge.
+
+Implemented by bridges exchanging configuration messages with each other; these messages include:
+\begin{description}
+\item[{id}] For the bridge that the sending bridge believes to be the \textbf{root}.
+\item[{distance}] (measured in hops) from the sending to the root bridge.
+\item[{id}] for the bridge sending the message.
+\end{description}
+Each bridge:
+\begin{itemize}
+\item Initially thinks that it is the root and sends over all of its ports the message (id,0,id), where id is the bridge's identifier.
+\item May receive a message over one of its ports and checks whether:
+\begin{itemize}
+\item It identifies a root with a smaller id.
+\item It identifies a root with an equal id but with shorter distance.
+\item Root id and distance are equal but the sending bridge has a smaller id.
+\end{itemize}
+\item If so, it adds 1 to the distance, saves this info \& discards old info.
+\end{itemize}
+See slides ror example.
+
+\maketitle
+\section{Lecture 19: Network Layer \& Internet Protocol}
+
+
+\subsection{Network Layer Outline}
+\label{sec:org7bc5dd6}
+The network layer is responsible for packet forwarding and routing through intermediate routers.
+
+\subsection{Packet Forwarding}
+\label{sec:org8fb40f2}
+Send an incoming or previously buffered packet to the appropriate output port.
+Consult an identifier in the packet header and interpret it with respect to the:
+\begin{itemize}
+\item Connectionless (datagram) Approach
+\item Connection-Oriented Approach
+\item Source-Routed Approach
+\end{itemize}
+We will make a couple of assumptions:
+\begin{itemize}
+\item We identify nodes via globally unique addresses (such as Ethernet addresses).
+\item Each input and output port of a switch is given a unique number (relative to the considered switch).
+\end{itemize}
+
+\subsubsection{Connectionless (Datagram) Approach}
+\label{sec:org5f9c020}
+Every packet contains the full destination address.
+The decision of how to forward packets is made by a \textbf{forwarding table} (\textbf{routing table}).
+\paragraph{Advantages:}
+\label{sec:org00c1d97}
+\begin{itemize}
+\item A host can send a packet anywhere anytime, i.e. all packets can immediately be forwarded by consulting the forwarding table.
+\item A switch or link failure must not have serious consequences as long as one may route around the failure (by modifying forwarding tables accordingly).
+\end{itemize}
+\paragraph{Disadvantages:}
+\label{sec:org6fa6423}
+\begin{itemize}
+\item A sending host does not know whether the network is capable of delivering a packet or whether the destination host is even up.
+\item Each packet is forwarded independently of other packets means that packets may be sent via different routs and, thus may reach the destination out of order.
+\end{itemize}
+
+\subsection{Connection-Oriented Approach}
+\label{sec:orgcf792ed}
+Uses the concept of a *virtual circuit(VC), which requires that first a virtual connection from the source to the host is set up before any data can be transferred.
+Virtual circuits can be set up in different ways:
+\begin{itemize}
+\item Permanently/statically by the system administrator, leading to \textbf{permanent virtual circuits (PVC)}.
+\item Temporarily/dynamically by the sending host via sending appropriate messages into the network (signalling); this leads to \textbf{switched virtual circuits (SVC)}.
+\end{itemize}
+The second option is by far the most widely used out of the two.
+
+\subsubsection{Establishing VCs}
+\label{sec:org03a67ce}
+Each switch needs to keep the following information \textbf{for each VC} (connection) in a \textbf{virtual circuit table}:
+\begin{itemize}
+\item An \textbf{incoming interface} (port) on which packets for this VC arrive.
+\item A \textbf{virtual circuit identifier (VCI)} that will be carried in the header of arriving packets.
+\item An \textbf{outgoing interface} on which packets for this VC leave.
+\item A VCI that will be used for outgoing packets.
+\end{itemize}
+Important remarks:
+\begin{itemize}
+\item The VCI is \textbf{not global}; it has significance only on a given link.
+\item When setting up a VC, the network administrator picks VCI that are currently unused.
+\end{itemize}
+Disadvantages:
+\begin{itemize}
+\item There is at least 1 RTT (round-trip delay) of delay before any data can be sent.
+\item A switch/link failure leads to a broken connection.
+\item Released/broken virtual circuits need to be torn down.
+\end{itemize}
+Advantages:
+\begin{itemize}
+\item Each data packet does not need to include the full address of the receiver, but just a small identifier (a VCI) that is unique relative to each link (the overhead caused by headers is reduced).
+\item When a virtual circuit is established, the sender knows that there is a route to the receiver, the receiver is willing and able to receive and there are enough resources along the route.
+\end{itemize}
+See slide 15 for very useful comparison table.
+
+\subsubsection{Source Routing}
+\label{sec:org1cb87b4}
+All information about network topology that is required to switch a packet across the network is provided by the source host.
+\begin{enumerate}
+\item Include an \textbf{ordered list of port numbers} in a packet's header.
+\item Each switch forwards the packet to the port determined by the number at the front of the list.
+\item Before forwarding, a switch must:
+\begin{itemize}
+\item \textbf{Strip} the front number from the packet, or
+\item \textbf{Rotate} the ordered list such that the next port number comes to the front. (At the last switch, the received list is then identical to the list originally sent by the sending host).
+\end{itemize}
+\end{enumerate}
+Disadvantages:
+\begin{itemize}
+\item Every host needs to know many details of the network's topology in order to be able to construct a packet header.
+\begin{itemize}
+\item Similar to the problem of building forwarding tables in a datagram network, or determining how to route a setup messsage in a VC network.
+\item Suffers from a scaling problem since getting complete path information is very hard in reasonably large networks.
+\end{itemize}
+\item Headers have a variable size, probably with no upper bound.
+\end{itemize}
+Source routing is used in:
+\begin{itemize}
+\item Virtual circuit networks as a means for getting the initial request from the sending host to the destination host.
+\item Embedded systems and PANs (Personal Area Networks) where the topology is simple and unlikely to change.
+\item In the Internet protocol as an option (a \emph{datagram} protocol).
+\end{itemize}
+
+\subsection{Internetworking}
+\label{sec:org8c2d194}
+\begin{description}
+\item[{Internetwork}] An arbitrary \textbf{collection of networks} using different technologies, which are interconnected via \textbf{routers} (\textbf{gateways}) to provide a host-to-host packet delivery service, i.e. an internetwork is a \textbf{logical network}.
+\item The underlying networks, each based on a single technology, are often called \textbf{physical networks}, which might contain collections of Ethernets connects by bridges or switches.
+\item \emph{Simply put, an \textbf{internetwork} is a network of networks.}
+\item The Internet Protocol glues the single network together, yielding a large, logical and heterogeneous network.
+\end{description}
+
+\subsection{IP Service Model}
+\label{sec:org521e7ba}
+The IP \textbf{service model} defines the host-to-host services which an internetwork should provide.
+Philosphy:
+\begin{itemize}
+\item The model is \textbf{undemanding} enough such that any existing and hopefully any future network technology is able to provide the services.
+\item The protocol assumes a \textbf{best-effort, connectionless service} of the underlying physical networks.
+\item Therefore it runs on virtually any network.
+\end{itemize}
+
+\subsection{IP Addressing}
+\label{sec:orgce6f7f2}
+To identify all hosts in an internetwork, a global addressing scheme is needed, giving each node a unique address.
+Problem:
+\begin{itemize}
+\item Ethernet addresses are flat, i.e. they have no structure that provides forwarding information to routing protocols.
+\end{itemize}
+Solution:
+\begin{itemize}
+\item IP addresses are hierarchical, reflecting the hierarchy of an internetwork.
+\begin{itemize}
+\item \texttt{IP Address = <network part, host part>}
+\end{itemize}
+\end{itemize}
+Each host is assigned an IP address; similary, every interface/port of a router is assigned an IP address.
+
+\maketitle
+\section{Lecture 20: Network Layer \& Internet Protocol Continued}
+
+
+\subsection{Intra-Domain Routing}
+\label{sec:orgc3bc4c0}
+Routing is needed for forwarding packets in a datagram (connectionless) network, or for establishing virtual circuits in a VC (connection oriented) network.
+Routing algorithms or protocols create routing tables from which one may derive the neccesary forwarding tables.
+These in turn, define the output port through which a packet will be forwarded.
+
+Most routing protocols work only for 10s or 100s of nodes and hence they are referred to as \textbf{interior gateway protocols (IGPs)} or (\textbf{intra-domain routing protocols}).
+To make them scale, internetworks employ a hierarchical routing structure based on \textbf{domains}.
+\begin{itemize}
+\item A \textbf{domain} is an internetwork where all routers are under a single administritative entity (e.g. university campus).
+\item Each domain uses IGPs to route packages within its boundaries and uses gateway routes to forward packets to other domains (inter-domain routing).
+\end{itemize}
+
+\subsubsection{Graph Representation of Routing}
+\label{sec:org055c70c}
+Routing is a graph-theoretic problem and requires one to calculate the lowest-cost path between two nodes.
+\begin{itemize}
+\item Nodes are hosts, switches, routers or networks
+\item Edges are network links, each associated with a cost.
+\item Cost of a path is the sum of the costs of all traversed edges.
+\end{itemize}
+There are two main types of algorithms for solving the problem:
+\begin{itemize}
+\item Global routing: all routers have complete topology and link cost info --- "link state" algorithms.
+\item Decentralised routing: router knows link costs to neighbours --- "distance vector" algorithms.
+\end{itemize}
+
+\subsubsection{Link State Routing Algorithm}
+\label{sec:orgc9863c3}
+Dijkstra's Shortest Path Algorithm is based on a link state broadcast, aiming to provide all nodes with the same information.
+After k iterations, the algorithm knows the least cost path to k destinations.
+Notation is as follows:
+\begin{description}
+\item[{c(x,y)}] Link cost from node x to y, c = \(\infty\) if not direct neighbours
+\item[{D(V)}] Current value of cost of path from source to destination v.
+\item[{p(v)}] Predecessor node along path from source to v.
+\item[{N'}] Set of nodes whose least cost path is definitively known.
+\end{description}
+
+\subsubsection{Distance-Vector Routing Algorithm}
+\label{sec:orgeede7e1}
+One classic example is the \textbf{Bellman-Ford routing algorithm} (1957) and \textbf{Ford-Fulkerson algorithm} (1962).
+It is a \textbf{dynamic routing algorithm} and was used in the Internet Protocol under the name RIP (Routing Information Protocol).
+
+Each node stores an array (a \textbf{vector}) containing the currently believed distances to all other nodes.
+Initially this distance is \(\infty\) for all nodes except the considered node's immediate neighbours.
+Vectors are distributed to a node's immediate neigbours.
+
+
+
+
+\subsubsection{Dimension-Order Routing}
+\label{sec:org650a32b}
+Some network configurations can be vulnerable to deadlock.
+Deadlock arises when a cyclic resources dependency occurs and the messages become blocked forever.
+Dimension-order routing can avoid deadlock by removing one of the conditions: circular dependency.
+\begin{itemize}
+\item XY Routing:
+\begin{itemize}
+\item Forbid any Y to X turn
+\item It is deterministic
+\end{itemize}
+\item West-first Routing:
+\begin{itemize}
+\item Forbid the west turns only
+\item Partially adaptive
+\end{itemize}
+\end{itemize}
+\subsection{Inter-Domain Routing}
+\label{sec:org735079c}
+\subsubsection{Border Gateway Protocol (BGP)}
+\label{sec:org4186e5c}
+BGP is the de facto inter-domain routing protocol for the Internet.
+It supports route coordination across domains, referred as \textbf{``autonomous systems'' (AS)}.
+BGP provides routers a means to:
+\begin{description}
+\item[{e(xternal)BGP}] Obtain subnet reachability information from neighbouring ASs.
+\item[{i(nternal)BGP}] Propogate reachability information to all AS-internal routers.
+\item Determine \emph{good} routes to other networks based on reachability information and policy.
+\end{description}
+See lecture slides for example.
+
+\maketitle
+\section{Lecture 21: Transport Layer}
+
+
+\subsection{Introduction}
+\label{sec:orgb58c24f}
+The transport layer provides \textbf{end-to-end connectivity} in terms of a \textbf{transport protocol} (end-to-end protocol).
+The underlying network layer usually only provides a \textbf{best-effort host-to-host service} (e.g. IP):
+\begin{itemize}
+\item messages are dropped (due to congestion)
+\item messages are re-ordered
+\item messages are delivered several times (problem of duplicates)
+\item messages are limited to some finite size
+\item messages are delivered after some long delay
+\end{itemize}
+Different transport protocols address (some of) these limitations by offering different services:
+\begin{itemize}
+\item Simple (application) demultiplexing service (\textbf{User Datagram Protocol})
+\item Reliable Byte-Stream Service (\textbf{Transmission Control Protocol})
+\end{itemize}
+
+\maketitle
+\section{Lecture 3: Processes}
+\subsection{Processes and Programs}
+
+\begin{itemize}
+	\item A \textbf{program} is an ordered set of specific operations for a computer to perform.
+	\item A \textbf{process} is an abstraction of a running program.
+\end{itemize}
+A program is a passive entity stored on the disk including an executable file while a process is active and loaded into memory.
+
+\subsection{Process Management}
+Process management is one of the key functions of the OS, it includes:
+\begin{itemize}
+	\item Creating and deleting both user and system processes
+	\item Suspending and resuming processes
+	\item Deciding which process should run
+	\item Providing mechanisms for process synchronisation
+	\item Providing mechanisms for process communication
+	\item Provising mechanisms for deadlock handling
+\end{itemize}
+
+\subsection{Process Structure}
+A process is more than the program code, which is sometimes known as the text section.
+It also includes the current activity such as the calue of the program counter and contents of the processor's registers.
+It also includes the process stack, which contains temporary data (such as function parameters, return addresses and local variables) and a data section which contains global variables.
+It may also include a heap, which is memory that is dynamically allocated during process run time.
+
+See lecture slides for the process layout in memory.
+In particular, slide 9 on the \textbf{Process Control Block}
+
+\subsection{Process States}
+One thing stored in the PCB is the process state.
+Most OSs contain states which are similar or equivilent to the following:
+\begin{itemize}
+	\item \textbf{Ready (or Runnable)} --- scheduled to run but not currently using the processor
+	\item \textbf{Running} --- currently using the processor
+	\item \textbf{Waiting (or Blocked)} --- suspended waiting for some event to occur (such as a periodic clock tick or printer device to complete printing)
+	\item \textbf{Terminated} --- the process has finished execution (and will be removed from the system ASAP
+\end{itemize}
+
+See slide 11 for a useful flow diagram of states.
+
+\subsection{Process Lifecycle}
+\begin{itemize}
+	\item Processes are created
+		\begin{itemize}
+			\item at system initialisation
+			\item by another process
+			\item by a user (e.g double clicking an icon)
+			\item batch job
+		\end{itemize}
+	\item On creation, OS will:
+		\begin{itemize}
+			\item allocate memory
+			\item create PCB
+			\item load program from disk to memory
+			\item copy arguments to program's stack and itialise registers
+		\end{itemize}
+\end{itemize}
+
+There are resource sharing options such as:
+\begin{itemize}
+	\item Parent and children process share all resources
+	\item Children share subset of parent's resources
+	\item Parent and child share no resources
+\end{itemize}
+
+And execution options:
+\begin{itemize}
+	\item Parent and children execute concurrently
+	\item Parent waits until children terminate
+\end{itemize}
+
+\subsubsection{Ready and Running}
+When a process is created it is places into a ready queue.
+The scheduler decides which process to put into running state.
+The \textbf{policy} makes the decision itself and the \textbf{mechanism} uses the information in the PCB to return to the selected process.
+
+\subsubsection{Waiting/Blocked}
+Processes issuing I/O requests are placed in a waiting state.
+When the I/O completes, the process returns to the ready state.
+If all processes are waiting, then the processor is idle until one of the processes becomes unblocked and ready.
+This should be avoided at all costs.
+
+\subsubsection{Terminated}
+There are several different reasons a process can be moved into a terminated state:
+\begin{itemize}
+	\item Normal exit (voluntary)
+	\item Error exit (voluntary)
+	\item Fatal error (involuntary)
+	\item Killed by another process (involuntary)
+\end{itemize}
+
+\subsubsection{Context Switch}
+When CPU switches to another process, the system must save the state of the old process and load the saved state for the new process via a context switch.
+Context of a process is represented in the PCB.
+
+Context-switch time is pure overhead.
+The system does no useful work while switching.
+The more complex the OS and the PCB, the longer the context switch.
+
+Switching is also dependent on hardware support.
+Some hardware proved multiple sets of registers per CPU which means that there can be multiple contexts loaded at once.
+
+See slide 18 for a context switch diagram
+
+\maketitle
+\section{Lecture 4: Threads \& Concurrency}
+\newpage
+
+\subsection{Concurrency}
+\subsubsection{Multiple Processes}
+Applications are often constructed from multiple co-operating programs.
+
+For example, web browsers used to run as a single process, therefore if oone site causes trouble, the entire browser can hang or crash.
+Google Chrome is multi-process with 3 different types of processes:
+\begin{itemize}
+	\item Browser process manages user interface, disk and network I/O
+	\item Renderer process renders web pages, deals with HTML and js (with a new renderer created for each open website)
+	\item Each type of plugin has a separate process
+\end{itemize}
+
+\subsubsection{Motivation}
+\begin{itemize}
+	\item \textbf{Responsiveness} --- program may continue execution even if a process if blocked, especially important for user interfaces.
+	\item \textbf{Modularity} --- it may be easier to create a program as a set of interacting processes. 
+	\item \textbf{Scalability} --- process can take advantage of multiprocesssor architectures.
+\end{itemize}
+
+\subsubsection{Multiprocessor Systems}
+\textbf{Multi-CPU Systems} --- Multiple CPUs are placed in the computer to provide more computing performance.
+
+\textbf{Multicore Systems} --- Multiple computing cores are places on a single processing chip where each core appears as a separate CPU to the operating system.
+
+Concurrent programming provides a mechanism for more efficient use of these multiple computing cores and improved concurrency.
+On a system with a sigle computing core, concurrency means that the execution of the processes will be interleaved over time.
+But on a system with multiplr cores, concurrency means that some processes can run in parallel, because the system can assign a separate process to each core.
+
+\subsubsection{Concurrency vs. Parallelism}
+There is a fine but clear distinction between concurrency and parallelism.
+A \textbf{concurrent} system supports more than one task by allowing all the tasks to make progress.
+In contrast, a system is \textbf{parallel} if it can perform more than one task simultaneously.
+Thus, it is possible to have concurrency without parallelism.
+Concurrency within a program is an opportunity for parallelism if there is parallel hardware to exploit.
+
+Types of parallelism:
+\begin{itemize}
+	\item Data parallelism --- distributes subsets of the same data across multiple cores, same operation on each.
+	\item Task parallellism --- distributing threads across cores, each thread performing unique operation.
+\end{itemize}
+
+\subsubsection{Amdahl's Law}
+Amdahl's law indentifies performance gains from adding additional cores to an application that has both serial and parallel components:
+
+\medskip
+Where $N$ is the number of processing cores and $S$ is the serial portion:
+\begin{align*}
+	speedup \le \frac{1}{S+\frac{1-S}{N}}
+\end{align*}
+
+That is, if an application is 75\% parallel and 25\% serial, moving from 1 to 2 cores results in speedup of 1.6 times.
+As $N$ approaches infinity, speedup approaches $\frac{1}{S}$.
+As $S$ approaches 0, speedup approaches $N$.
+Serial portion of an application has disproportionate effect on performance gained by adding additional cores.
+
+\subsection{Threads}
+\subsubsection{Intro}
+Multiple concurrent processes are conceptually equivalent to multiple independent programs (each has a separate address space and requires inter-process communications).
+\textbf{Threads} are concurrent units within a process.
+All threads of a process share the same address space, low overhead in thread creation.
+Benefits from shared-memory processors, low-inter thread communication overhead.
+
+\subsubsection{User \& Kernel Threads}
+Support for threads may be provided at two different levels:
+\begin{itemize}
+	\item \textbf{User threads} --- are supported above the kernel and are managed without kernel support, primarily by user-level threads library.
+	\item \textbf{Kernel threads} --- are supported and managed directly by the operating system.
+\end{itemize}
+Virtually all contempory systems support kernel threads.
+
+\paragraph{Many-to-One Relationship}
+\label{sec:manytoone}
+
+Many user-level threads mapped to single kernel thread.
+One thread blocking causes all to block.
+Multiple threads may not run in parallel on multicore system because only one may be in kernel at a time.
+Few systems still use this model.
+
+\paragraph{One-to-One Relationship}
+Each user-level thread maps to a single kernel thread.
+Creating a user-level thread creates a kernel thread.
+More concurrency than \hyperref[sec:manytoone]{many-to-one}.
+Number of threads per process sometimes restricted due to overhead.
+Examples:
+\begin{itemize}
+	\item Windows 95-XP
+	\item Linux
+\end{itemize}
+
+\paragraph{Many-to-Many Relationship}
+Allows many user level threads to be mapped to many kernel threads.
+Allows the operating system to create a sufficient number of kernel threads.
+Examples:
+\begin{itemize}
+	\item Solaris prior to version 9
+	\item Windows with the \textit{ThreadFiber} package
+\end{itemize}
+
+\subsubsection{Thread Libraries}
+Thread library provides programmer with an API for creating and managing threads.
+Two primary ways of implementing:
+\begin{itemize}
+	\item Library entirely in user space
+	\item Kernel-level library supported by the OS
+\end{itemize}
+Widely used thread libraries:
+\begin{itemize}
+	\item POSIX Pthreads
+	\item Windows threads
+	\item Java threads
+\end{itemize}
+
+\subsection{Threading Issues}
+\subsubsection{Thread Cancellation}
+Thread cancellation means terminating a thread before it has finished working.
+There can be two approaches to this:
+\begin{itemize}
+	\item \textbf{Asynchronous cancellation} --- terminates the target thread immediately. (Immediate and responsive but more dangerous)
+	\item \textbf{Deferred cancellation} --- allows the target thread to periodically check if it should be cancelled.
+\end{itemize}
+
+\subsubsection{Signal Handling}
+Signals are used in UNIX systms to notify a process that a particular event has occured.
+When a multithreaded process receives a signal, OS can be set to deliver it to all or to specific thread(s).
+
+\subsubsection{fork() System Call}
+If one thread of a process calls {\tt fork()}, will the entire process be duplicated, or only the calling thread?
+
+Some versions of UNIX have two versions of {\tt fork()} and the choice between them often depends on whether {\tt exec()} will be called afterwards.
+
+{\tt exec()} usually works as normal --- replace the running process including all threads.
+
+\subsubsection{Security and Integrity Issues}
+There are many security and integrity isuues because of the sharing of resources between multiple threads.
+This will be covered in greater detail later in the module.
+
+
+\maketitle
+\section{Lecture 5: CPU Scheduling}
+\newpage
+
+\subsection{Introduction}
+Most processes exhibit the following behaviour:
+\begin{itemize}
+	\item CPU burst followed by I/O burst.
+	\item Process execution consists of a cycle of CPU execution and I/O wait.
+\end{itemize}
+Maximum CPU utilisation obtained with multiprogramming.
+This is where one process uses the CPU while the other waits for I/O.
+The CPU burst usually takes less than 8ms.
+
+Whenever the CPU becomes idle, OS selects one of the processes in the ready queue to be executed.
+The selection process is carried out by the CPU scheduler.
+The ready queue may be ordered in various ways.
+CPU scheduling decisions may take place when a process:
+\begin{itemize}
+	\item switches from running state to waiting state
+	\item switches from running state to ready state
+	\item switches from waiting state to ready state
+	\item terminates
+\end{itemize}
+
+\subsection{Dispatcher}
+The dispatcher switches context, switches to user mode, jumps to the proper location in the user program to restart that progmram.
+This brings \textbf{dispatch latency} (overhead) --- the time it takes for the dispatcher to stop one process and start another running.
+This latency needs to be minimised as occurs frequently.
+
+\subsection{Scheduling Algorithms}
+Existing algorithms aim to satisfy the following criteria:
+\begin{itemize}
+	\item \textbf{Max CPU utilisation} --- keep the CPU as busy as possible.
+	\item \textbf{Max throughput} --- number of processesthat complete their execution per time unit.
+	\item \textbf{Min turnaround time} --- amount of time to execute a particular process.
+	\item \textbf{Min waiting time} --- total amount of time a process has been waiting in the ready queue.
+	\item \textbf{Min response time} --- amount of time it takes from when a requestwas submitted until the first response is produced (for time-sharing environment).
+	\item \textbf{Fairness} --- each process should get its fair share of the CPU.
+\end{itemize}
+
+There are three main families of scheduling algorithms:
+\begin{itemize}
+	\item \textbf{Non-preemptive} --- Process runs to completion, OS schedules next process upon termination.
+	\item \textbf{Preemptive} --- Process runs until suspended by OS. Preemption can be time or event triggered.
+	\item \textbf{Cooperative} --- Process explicitly relinquishes control and allows OS to make a scheduling decision.
+\end{itemize}
+
+\subsection{Classic Scheduling Algorithms}
+The three classic sheduling algorithms are:
+\begin{itemize}
+	\item FCFS (or FIFO) --- first come, first served. \textbf{Non-Preemptive}
+	\item Round-Robin (RR) --- aims for fairness. \textbf{Preemptive}
+	\item Priority Scheduling --- \textbf{Preemptive or Non-Preemptive}
+\end{itemize}
+Or it is possible to have combinations of the above.
+
+\subsubsection{FCFS}
+Easy to implement and maintain but can give a wide variety of average wait times.
+
+\subsubsection{RR}
+Each process is assigned a \textit{quantum} when it enters the CPU (a quantum is a time slot using the CPU).
+If the process is still running at the end of the quantum then preempt it:
+\begin{itemize}
+	\item Start a context switch
+	\item The process is put at the back of the ``runnable queue''
+\end{itemize}
+Process may become no longer runnable \textbf{before} the end of the quantum e.g I/O operation.
+In which case, do as though it was the end of the quantum.
+
+Overall Round-Robin ensures fairness, but does not reflect relative importance of processes.
+
+\subsubsection{Priority Scheduling}
+Not all processes are equally important, so priority scheduling assigns a priority for each of them.
+
+\medskip
+\textbf{Note:} Priority values vary between books, courses etc.
+In this course, higher priority processes have lower priority numbers (e.g 1 or 0 = highest priority).
+
+\medskip
+In the preemptive version, the runnable process with the highest priority is allowed to run immediately.
+Otherwise, the highest priority process may have to wait for an ongoing process to finish.
+This algorithm has one large problem and that is that the highest priority process may run indefinitely or to completion and hence, may lead to starvation for other processes.
+Therefore the OS should have a way of identifying and recovering from such scenarios (e.g aging --- increase the priority of the process as time progresses).
+
+\subsubsection{Comparison of Classic Algorithms}
+\begin{center}
+	\begin{tabular}{|m{5em}|m{12em}|m{12em}|}
+\hline
+& Pros & Cons \\
+\hline
+\textbf{FCFS} & Simple \& Low overheads & Bad turnaround for short processes \\
+\hline
+\textbf{Round-Robin} &
+Good turnaround for short processes & High Overhead \\
+\hline
+\textbf{Priorities} & Predictability for high priority tasks & May delay lower priority tasks for long periods \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Bonus Algorithm SJF}
+Shortest-Job-First associates the length of each process' next CPU burst with the process itself.
+Then we use these lengths to schedule the process with the shortest time.
+This is non-preemptive.
+SJF is optimal in that it gives the minimum average waiting time for a given set of processes (assuming that the estimation of the next CPU burst time is correct.
+
+Why don't we always use SJF?
+The burst sizes can be unpredictable, they may be dependent on input sizes.
+
+
+\maketitle
+\section{Lecture 6: CPU Scheduling Continued}
+\newpage
+
+\subsection{More algorithms...}
+\subsubsection{Shortest-Remaining-Time-First}
+Preemptive version of SJF.
+
+\subsubsection{Earliest Deadline First (EDF)}
+Each process must declare a deadline, the algorithm then runs the most urgent process first.
+Implemented as a variable priority scheduling algorithm.
+
+\subsection{Multilevel Queue}
+In most operating systems, more than one algorithm is used at one time.
+To enable this, \textbf{multilevel queues} are used.
+Often they are separated into \textbf{foreground}(interactive) and \textbf{background} (batch).
+For example:
+\begin{itemize}
+	\item Foreground: RR
+	\item Background: FCFS
+\end{itemize}
+This example means that the user will see the snappiest responses to the foreground services.
+
+Scheduling has to be done between the queues.
+Fixed priority scheduling could be used (i.e serve all from the foreground then from the background).
+Or \textit{time slice}, where each queue gets a certain amount of CPU time, e.g. 80\% to forground and 20\% to background.
+
+\subsection{Multilevel Feedback Queue}
+A more complicated version of the multilevel queue.
+In a \textbf{multilevel feedback queue} a process can move between the various queues.
+This can be used to control the \textit{aging} of processes.
+Multilevel feedback queue schedulers are defined by the following parameters:
+\begin{itemize}
+	\item Number of queues
+	\item Scheduling algorithms for each queue
+	\item Method used to determine when to upgrade a process
+	\item Method used to determine when to demote a process
+	\item Method used to determine which queue a process will enter when that process needs service
+\end{itemize}
+
+\subsection{Thread Scheduling}
+\subsubsection{Kernel Threads}
+OS knows about all processes and threads, so makes scheduling decision across all processes and threads.
+
+\subsubsection{User Threads}
+OS decides which process to run.
+OS doesn't know whether a process contains threads (if that process contains a user threads implementatin, decisions regarding scheduling of the user threads are taken there).
+Essentially hierarchical scheduling: when a process is run, the thread scheduler within the process (managing the user threads) willl decide which thread to run.
+
+\subsection{Multiprocessor Scheduling}
+CPU scheduling is more complex when there are multiple processors (cores) available).
+\subsubsection{Homogenous processors}
+\begin{itemize}
+	\item \textbf{Asymmetric multiprocessing}: only one processor accesses the system data structures, alleviating the need for data sharing.
+	\item \textbf{Symmetric multiprocessing (SMP)}: each processor is self-scheduling, all processes in common ready queue, or each has its own private queue of ready processes.
+\end{itemize}
+Given a set of runnable processes, now it has to be decided which process to dispatch and which CPU should run it.
+Some processes may have a \textbf{processor affinity} meaning they have an affinity for the processor on which it will run.
+\begin{itemize}
+	\item Soft affinity $\implies$ preference
+	\item Hard affinity $\implies$ requirement
+	\item Variations including processor sets (e.g with affinity masks where a process will use a bitmask  to show which sets of processes it will run on).
+\end{itemize}
+
+\subsubsection{Non-Uniform Memory Access (NUMA)}
+NUMA is one of the reasons for implementing processor affinity.
+Sometimes certain processors will have faster access to certain memory blocks than other processors. 
+Naturally if a process uses data within one of the processor-specific blocks, it would have a greate affinity for the respective processor.
+
+\subsubsection{Load Balancing in Multiprocessors}
+If SMP, need to keep all CPUs loaded for efficiency.
+
+\begin{itemize}
+	\item \textbf{Load balancing} attempts to keep workload evenly distributed.
+	\item \textbf{Push migration} is a periodic task which checks the load on each processor and if it finds the processor is overloaded, it pushes tasks from the overloaded CPU to other CPUs.
+	\item \textbf{Pull migration} is when idle processors pull waiting tasks from busy processors.
+\end{itemize}
+
+
+
+
+\maketitle
+\section{Lecture 7: Synchronisation}
+
+
+\subsection{Coordination}
+\label{sec:org991f479}
+The OS must support multiple applications/processes (threads working together).
+This is formally known as \textbf{Inter-Process Communication} (IPC).
+It is achieved through two main concepts: shared memory and message passing.
+
+Shared memory requires synchronisation to ensure data is consistent.
+For example, if a data structure is being updated then a reader will read a consistent view of that data (i.e. doesn't read partial updates).
+
+Some programming lanuages make synchronisation primitives available to programmers.
+Languages rely on atomic operations when accessing shared data.
+However, atomic operations at the language level are often implemented at multiple instruction at the CPU level and interrupts can occur between instructions.
+
+\subsubsection{Concurrent Access to Shared Data}
+\label{sec:org4ec3ec6}
+Race conditions are when many processes access and manipulate shared data concurrently.
+The final value of the shared data depends upon which process finishes last.
+This can mean that data may become inconsistent.
+Therefore, the ability to execute an instruction, or a number of instructions atomically is crucial for the correct operation of synchronisation primitives provided by programming languages.
+
+\subsubsection{Critical Section Problem}
+\label{sec:orgcff50db}
+Every process which could have a race condition has a \textbf{critical section}.
+To overcome the problem, one general approach is to only allow one process into the critical section at a time.
+
+One general protocol for solving the problem is outlined as follows:
+\begin{itemize}
+\item Each process must ask permission to enter the critical section in what is known as \textbf{entry section} code.
+\item It then executes in the critical section.
+\item Once it finishes executing in the critical section it enters the \textbf{exit section} code.
+\item The process then enters the \textbf{remainder section} code.
+\end{itemize}
+\begin{verbatim}
+do {
+    entrySection
+        criticalSection
+    exitSection
+        remainderSection
+};
+\end{verbatim}
+
+\subsubsection{Solutions to the Critical Section Problem}
+\label{sec:orgd7d86a1}
+\paragraph{Requirements to Fulfill}
+\label{sec:orgc6815db}
+Solutions to the critical section problem must satisfy the following three requirements:
+\begin{description}
+\item[{\textbf{Mutual Exclusion}}] If process \textbf{P\textsubscript{i}} is executing in its critical section, then no other processes can be executing in their critical sectinos.
+\item[{\textbf{Progress}}] Processes waiting to enter a critical section cannot block processes inside; only those processes that are not executing in their remainder sections can participate in making the decision as to which process will enter its critical section next.
+\item[{\textbf{Bounded Waiting}}] A bound must exist on the number of times that other processes are allowed to enter their critical sections after a process has made a request to enter its critical section and before that request is granted.
+\end{description}
+
+\paragraph{Disabling Interrupts}
+\label{sec:orgb5b55c8}
+One way to satisfy these requirements is to disable interrupts when a process is in the entry section and reenable them when it is in the exit secton.
+However this is very impractical if the critical section code takes a long time to execute as it becomes impossible to preempt.
+This means that any part of a preemptive scheduling algorithm becomes redundant. 
+
+\paragraph{Peterson's Algorithm}
+\label{sec:orge47fe28}
+\begin{verbatim}
+int turn; // indicates whose turn it is to enter the critical section if both are ready
+bool flag[2]; // indicates if a process is ready to enter the critical section
+do {
+    flag[i] = true;
+    turn = j;
+    while (flag[j] && turn == j);
+        criticalSection
+    flag[i] = false;
+        remainderSection
+};
+\end{verbatim}
+This algorithm assumes read and store operations are atomic (in checking the conditions of the while loop).
+It also loops while waiting to enter the critical section (also called \textbf{spin lock}) - busy waiting, wastes CPU.
+This implementation works for two processes only, even though it is extendable.
+
+\paragraph{Mutual Exclusion - Hardware Support}
+\label{sec:org3cf128a}
+Modern CPUs provide special instructions to support exclusive access to shared variables.
+e.g test-and-set instruction:
+\begin{verbatim}
+bool test_and_set (bool *target)
+    {
+        bool rv = *target;
+        *target = TRUE;
+        return rv;
+    }
+\end{verbatim}
+
+With this we can use the instruction to enforce mutual exclusion.
+We have a shared boolean variable \texttt{lock}, initialised to FALSE.
+Then each process wishing to execute critical section code does the following:
+\begin{verbatim}
+do {
+    while (test_and_set(&lock)); //do nothing
+        criticalSection;
+    lock = false;
+        remainderSection;
+}
+\end{verbatim}
+The process keeps looping unless \texttt{lock == false}.
+This still uses a spin lock which is still wasteful.
+Actual implementations put the process in a waiting queue.
+
+\subsection{Semaphores}
+\label{sec:org8d48254}
+A semaphore is a programming mechanism used to achieve synchronisation and mutual exclusion.
+They are based on mutual exclusion services provided by the OS.
+They ensure atomic execution and rely on hardware support (e.g the \texttt{test\_and\_set} instruction).
+Semaphores are accessed through system calls.
+They are integer variables used as a \emph{flag} and the atomic code that increments or decrements it.
+There are two types of semaphore:
+\begin{description}
+\item[{\textbf{Binary Semaphores} (mutex)}] Integer values can range only between 0 and 1.
+\item \textbf{Counting Semaphores}:: Integer value can range over an unrestriceted domain.
+\end{description}
+
+\subsubsection{Semaphore Operations}
+\label{sec:org347484f}
+Semaphores have two indivisible operations: \textbf{wait} (\textbf{P}) and \textbf{signal} (\textbf{V}).
+\paragraph{\texttt{wait}}
+\label{sec:org4cdc875}
+\begin{enumerate}
+\item Decrement semaphore
+\item If semaphore value is (or became) negative, block the process and add it to a waiting queue.
+\end{enumerate}
+
+\paragraph{\texttt{signal}}
+\label{sec:orgf3aea07}
+\begin{enumerate}
+\item Increment semaphore
+\item If semaphore is less than or equal to zero, process waiting at the head of the queue is awakened.
+\item If semaphore is greater than zero, it means that no process is waiting, no immediate action needed.
+\end{enumerate}
+
+\maketitle
+\section{Lecture 8: Deadlock}
+
+
+\subsection{Introduction}
+\label{sec:org56b1e3d}
+Systems consist of resources:
+\begin{itemize}
+\item Resource types R\textsubscript{1}, R\textsubscript{2}, \ldots{}, R\textsubscript{m}
+\item CPU cycles, memory space, I/O devices
+\end{itemize}
+Each resource type R\textsubscript{i} has W\textsubscript{i} instances.
+Each process utilises a resource using the following actions:
+\begin{itemize}
+\item Request
+\item Use
+\item Release
+\end{itemize}
+A set of processes is deadlocked if each process in the set is waiting for an action that only another process in the set can cause.
+
+\textbf{Note}: A resource is considered \textbf{preemptable} if it can be taken away from the process owning it (at any time) with no ill effects.
+
+\subsection{Conditions for Deadlock}
+\label{sec:org1b9ae0b}
+Deadlock can arise if the following four conditions hold simultaneously:
+\begin{enumerate}
+\item \textbf{Mutual Exclusion}: Only one process at a time can use a resource.
+\item \textbf{Hold and Wait}: A process holding at least one resource is waiting to acquire additional resources held by other processes.
+\item \textbf{No Preemption}: A resource can be released only voluntarily by the process holding it, after that process has completed its task.
+\item \textbf{Circular Wait}: Circular chain of two or more processes, each of which is waiting for a resource held by the next member of the chain.
+\end{enumerate}
+
+If one of these conditions is absent, no deadlock is possible.
+
+\subsection{Resource Allocation Graphs}
+\label{sec:orge126f67}
+In resource allocation graphs we have nodes to represent processes as well as nodes to represent resources.
+See lecture slides for examples.
+
+\subsection{Methods for Handling Deadlocks}
+\label{sec:orgeb5a494}
+Ensuring that the system will never enter a deadlock state is usually done using one of two methods:
+\begin{itemize}
+\item \textbf{Deadlock Prevention} (\ref{sec:org7b91dfe})
+\item \textbf{Deadlock Avoidance} (\ref{sec:org90395a0})
+\end{itemize}
+Or we can allow the system to enter a deadlock state and then recover afterwards using \textbf{Deadlock Recovery}.
+The final method is to ignore the problem and pretend that deadlocks never occur in the system (used by most OSs, including UNIX, Linux \& Windows).
+
+\subsubsection{Deadlock Prevention}
+\label{sec:org7b91dfe}
+Ensure that at least one of the necessary conditions for deadlocks does not hold.
+This can be accomplished by restraining the ways a request can be made:
+\begin{description}
+\item[{\textbf{Mutual Exclusion}}] Avoid mutually-exclusive access to resources. This is impractical as most systems have inherently non-sharable resources that cannot be accessed simultaneously by various processes.
+\item[{\textbf{Hold and Wait}}] Must guarantee that whenever a process requests a resource, it does not hold any other resources. This requires processes to request and be allocated all its resources only when the process has none allocated to it. This may result in low resource utilisation and possibly starvation.
+\end{description}
+Therefore, both of these are impractical to try and prevent. 
+\begin{description}
+\item[{\textbf{No Preemption}}] While also impractical, resource preemption may be imposed as follows:
+\begin{itemize}
+\item If a process that is holding some resources requests another resource than cannot be immediately allocated to it, then all resources currently being held are released.
+\item Preempted resources are added to the list of resources for which the process is waiting.
+\item Process will be restarted only when it can regain its old resources, as well as the new ones that it is requesting.
+\end{itemize}
+\item[{\textbf{Circular Wait}}] Impose a total ordering of all types.
+\begin{itemize}
+\item Require that each process requests resources in an increasing order of enumeration.
+\end{itemize}
+\end{description}
+
+\subsubsection{Deadlock Avoidance}
+\label{sec:org90395a0}
+   Deadlock avoidance is when you ensure that the system will never enter a deadlock state. 
+This requires that the system has some additional \textbf{a priori} information available on possible requests.
+
+The simplest and most useful model requires that each process declare the \textbf{maximum number} of resources of each type that it may need.
+Deadlock-aoidance algorithms dynamixally examie the resource-allocation state to ensure that there cam never be a circular-wait condition.
+Resource-allocation state is defined by the number of available and allocated resources, and the maximum demands of the processes.
+
+\paragraph{Safe States}
+\label{sec:orgba7a8cb}
+Safe states are the foundation of every deadlock-avoidance algorithm.
+The system is said to be in a \textbf{safe state} if there exists a sequence <P\textsubscript{1}, P\textsubscript{2}, \ldots{}, P\textsubscript{n}> of all of the processes in the systems such that for each P\textsubscript{i} the resources that P\textsubscript{i} can still request can be satisfied by currently available resources and resources held by all the P\textsubscript{j}, with j<i.
+
+That is:
+\begin{enumerate}
+\item If a P\textsubscript{i} resource needs are not immediately available, then P\textsubscript{i} can wait until all processes P\textsubscript{j} (j<i) have finished executing.
+\item When they have finished executing they release all their resources and then P\textsubscript{i} can obtain the needed resources, execute, return allocated resources and terminate.
+\item When P\textsubscript{i} terminates, P\textsubscript{(i+1)} can obtain its needed resources and so on.
+\end{enumerate}
+
+
+\begin{itemize}
+\item If a system is in a \textbf{safe} state \(\Rightarrow\) no deadlocks
+\item If a system is in an \textbf{unsafe} state \(\Rightarrow\) possibility of deadlocks
+\end{itemize}
+
+\paragraph{Deadlock Avoidance Algorithms}
+\label{sec:org2e58b47}
+If we have a single instance of a resource type; we can use a variant of the resource-allocation graph. (\ref{sec:org17d9637})
+Or if we have multiple instances of a resource type: we can use the \emph{banker's algorithm} (\ref{sec:org895e8a5})
+
+\begin{enumerate}
+\item Resource-Allocation Graph Algorithm
+\label{sec:org17d9637}
+Single instance of a resource type.
+Each process must a priori claim maximum resource use.
+Use a variant of the resource-allocation graph with claim edges.
+\textbf{Claim edge} P\textsubscript{i} \(\rightarrow\) R\textsubscript{j} indicated that process P\textsubscript{i} \textbf{may} request resource R\textsubscript{j}, represented by a dashed line.
+Claim edge converts to request edge when a process requests a resource.
+Request edge converted to an assignment edge when tthe resource is allocated the process.
+When a resource is released by a process, assignment edge reconverts to a claim edge.
+Resources must be a claimed a priori in the system.
+A cycle in the graph implies that the system is in an unsafe state.
+
+\item Banker's Algorithm
+\label{sec:org895e8a5}
+Multiple instances of a resource type.
+(Created by Edsger Dijkstra)
+Each process must a priori claim maximum use.
+When a process requests a resource it may have to wait.
+When a process gets all of its resources it must return them in a finite amount of time.
+The algorithm uses the analogy of an interest-free bank where:
+\begin{itemize}
+\item A customer establishes a line of credit.
+\item Borrows money in chunks that together never exceed the total line of credit.
+\item Once it reaches the maximum, the customer must pay back in a finite amount of time.
+\end{itemize}
+
+To implement the Banker's Algorithm, we use the following data structures where n = number of processes and m = number of resource types:
+\begin{description}
+\item[{Available}] Vector of length m
+\begin{itemize}
+\item If \texttt{Available[j] = k}, then there are k instances of resource type R\textsubscript{j} available.
+\end{itemize}
+\item[{Max}] nm matrix
+\begin{itemize}
+\item If \texttt{Max[i,j] = k}, then process P\textsubscript{i} may request at most k instances of resource type R\textsubscript{j}.
+\end{itemize}
+\item[{Allocation}] nm matrix:
+\begin{itemize}
+\item If \texttt{Allocation[i,j] = k}, then P\textsubscript{i} is currently allocated k instances of R\textsubscript{j}.
+\end{itemize}
+\item[{Need}] nm matrix:
+\begin{itemize}
+\item If \texttt{Need[i,j] = k}, then P\textsubscript{i} may need at most k more instances of R\textsubscript{j} to complete its task
+\end{itemize}
+\end{description}
+
+\textbf{Therefore}: \texttt{Need[i,j] = Max[i,j] - Allocation[i,j]}
+
+The \textbf{safety algorithm} is part of the Banker's Algorithm.
+It involves the following:
+\begin{enumerate}
+\item Let \textbf{Work} and \textbf{Finish} be vectors of length m and n, respectively.
+Initialise:
+\begin{itemize}
+\item \texttt{Work = Available}
+\item \texttt{Finish[i] = false for i = 0, 1, ..., n-1}
+\end{itemize}
+\item Find an \textbf{i} such that both:
+\begin{itemize}
+\item \texttt{Finish[i] = false}
+\item \texttt{Need\_i <= Work}
+\end{itemize}
+If no such \textbf{i} exists, go to step 4.
+\item \texttt{Work = Work + Allocation\_i}
+\texttt{Finish[i] = true}
+Go to step 2.
+\item If \texttt{Finish[i] == true} for all \textbf{i}, then the system is in a safe state. Otherwise it is in an unsafe state.
+\end{enumerate}
+\end{enumerate}
+
+\maketitle
+\section{Lecture 9: Deadlock Pt.2}
+
+
+\subsection{Resource-Request Algorithm for Process P\textsubscript{i}}
+\label{sec:org81dc827}
+Let \texttt{Request\_i[...]} be the request vector for process \textbf{P\textsubscript{i}}.
+\begin{description}
+\item[{\texttt{Request\_i[j] = k}}] Process \textbf{P\textsubscript{i}} wants \textbf{k} instances of resource type \textbf{R\textsubscript{j}}.
+\end{description}
+
+
+\begin{enumerate}
+\item If \texttt{Request\_i} \(\le\) \texttt{Need\_i} go to step 2, otherwise raise error condition since process has exceeded its maximum claim.
+\item If \texttt{Request\_i} \(\le\) \texttt{Available}, go to step 3, otherwise \textbf{P\textsubscript{i}} must wait since resources are not available.
+\item Pretend to allocate requested resources to \textbf{P\textsubscript{i}} by modifying the state as follows:
+\end{enumerate}
+
+\begin{verbatim}
+Available = Available - Request;
+Allocation_i = Allocation_i + Request_i;
+Need_i = Need_i - Request_i;
+\end{verbatim}
+
+\begin{itemize}
+\item \texttt{If safe} \(\Rightarrow\) the resources are allocated to \textbf{P\textsubscript{i}}
+\item \texttt{If unsafe} \(\Rightarrow\) \textbf{P\textsubscript{i}} must wait, and the old resource-allocation state is restored.
+\end{itemize}
+
+\subsection{Deadlock Detection}
+\label{sec:org0a58a4c}
+\begin{itemize}
+\item Allow system to enter deadlock state
+\item Detection algorithm
+\begin{itemize}
+\item Single Instance of a Resource Type
+\item Multiple Instances of a Resource Type
+\end{itemize}
+\item Recovery Scheme
+\end{itemize}
+\subsubsection{Detection Algorithm for Single Instances of a Resource Type}
+\label{sec:org7c77c54}
+Maintain a \textbf{wait-for} graph.
+In a \textbf{wait-for} graph, nodes are only processes, there are no resources.
+
+\begin{itemize}
+\item \textbf{P\textsubscript{i}} \(\rightarrow\) \textbf{P\textsubscript{j}} if \textbf{P\textsubscript{i}} is waiting for \textbf{P\textsubscript{j}}
+\end{itemize}
+
+To convert between a resource-allocation graph and a wait-for graph, just join processes where one is holding a resource that the other needs.
+Cycles in a wait-for diagram show deadlock.
+
+Periodically invoke an algorithm that searches for a cycle in the graph.
+An algorithm to detect a cycle in a graph requires an order of \textbf{n\textsuperscript{2}} operations, where \textbf{n} is the number of vertices in a graph, this is why this algorithm is only invoked periodically.
+
+\subsubsection{Detection Algorithm for Multiple Instances of a Resource Type}
+\label{sec:orgf38b62c}
+Where \emph{n} = number of processes and \emph{m} = number of resource types:
+
+\begin{description}
+\item[{Available}] Vector of length \emph{m}. If \texttt{Available[j] == k}, then there are \emph{k} instances of resource type \textbf{R\textsubscript{j}} available.
+\item[{Allocation}] \emph{n} x \emph{m} matrix. If \texttt{Allocation[i,j] == k}, then \textbf{P\textsubscript{i}} is currently allocated \emph{k} instances of \textbf{R\textsubscript{j}}.
+\item[{Request}] \emph{n} x \emph{m} matrix that indicates the current request of each process. If \texttt{Request[i,j] == k}, then process \textbf{P\textsubscript{i}} is requesting \emph{k} additional instances of resource type \textbf{R\textsubscript{j}}.
+\end{description}
+
+See lecture 8 for details of algorithm. 
+
+\subsubsection{Outlining the Detection Algorithm Stage}
+\label{sec:org2b2a75d}
+If a deadlock is  detected, we must abort (rollback) some of the processes involved in the deadlock.
+Need to decide when and how often to invoke the deadlock detection algorthm which depends on the following:
+\begin{itemize}
+\item How often a deadlock is likely to occur?
+\item How many processes will need to be rolled back?
+\begin{itemize}
+\item (One for each disjoint cycle)
+\end{itemize}
+\end{itemize}
+
+If a detection algorithm is invoked arbitrarily, there may be many cycles in the resource graph and so we would not be able to tell which of the many deadlocked processes \emph{caused} the deadlock.
+
+\subsection{Deadlock Recovery}
+\label{sec:org39ec003}
+\subsubsection{Process Termination}
+\label{sec:orge38a333}
+\begin{itemize}
+\item Abort all deadlocked processes
+\item Abort one process at at time until the deadlock cycle is eliminated.
+\end{itemize}
+
+In which order should we choose to abort?
+\begin{itemize}
+\item Priority of the process
+\item How long process has computed, and how much longer to completion
+\item Resources the process has used
+\item Resources process needs to complete
+\item How many processes will need to be terminated
+\item Is the process interactive or batch?
+\end{itemize}
+
+\subsubsection{Resource Preemption}
+\label{sec:orgee2757c}
+\begin{description}
+\item[{Selecting a victim}] Minimise cost
+\item[{Rollback}] Return to some safe state, restart process for that state
+\item[{Starvation}] If the same process is always picked as a victim then it could suffer from starvation. To avoid this, we can include the number of rollbacks in cost factor.
+\end{description}
+
+
+
+\subsection{Process Management - Conclusion}
+\label{sec:org8fdf03f}
+What we have covered:
+\begin{itemize}
+\item Processes, threads and their life cycle
+\item Scheduling
+\item Synchronising
+\item Deadlock
+\item Hardware Support
+\end{itemize}
+In the next section: memory management.
 \end{document}
