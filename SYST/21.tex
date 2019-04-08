@@ -1,0 +1,49 @@
+% Created 2019-04-08 Mon 15:48
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 21: Transport Layer}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 21: Transport Layer},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:orgb58c24f}
+The transport layer provides \textbf{end-to-end connectivity} in terms of a \textbf{transport protocol} (end-to-end protocol).
+The underlying network layer usually only provides a \textbf{best-effort host-to-host service} (e.g. IP):
+\begin{itemize}
+\item messages are dropped (due to congestion)
+\item messages are re-ordered
+\item messages are delivered several times (problem of duplicates)
+\item messages are limited to some finite size
+\item messages are delivered after some long delay
+\end{itemize}
+Different transport protocols address (some of) these limitations by offering different services:
+\begin{itemize}
+\item Simple (application) demultiplexing service (\textbf{User Datagram Protocol})
+\item Reliable Byte-Stream Service (\textbf{Transmission Control Protocol})
+\end{itemize}
+\end{document}

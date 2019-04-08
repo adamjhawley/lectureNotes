@@ -1,0 +1,24 @@
+#+TITLE: Lecture 21: Transport Layer
+#+AUTHOR: Adam Hawley
+
+* Introduction
+The transport layer provides *end-to-end connectivity* in terms of a *transport protocol* (end-to-end protocol).
+The underlying network layer usually only provides a *best-effort host-to-host service* (e.g. IP):
+- messages are dropped (due to congestion)
+- messages are re-ordered
+- messages are delivered several times (problem of duplicates)
+- messages are limited to some finite size
+- messages are delivered after some long delay
+Different transport protocols address (some of) these limitations by offering different services:
+- Simple (application) demultiplexing service (*User Datagram Protocol*)
+- Reliable Byte-Stream Service (*Transmission Control Protocol*)
+
+* User Datagram Protocol (UDP)
+UDP is a simple extension of the host-to-host delivery service to a process-to-process communication service.
+It lets multiple application processes share the same network.
+Using an *abstract locator*, a process and a *port* are identified.
+The network delivers messages to the port and a destination receives messages from the port.
+UDP uses a 16-bit numbering scheme to identify ports.
+Processes are identified by a *demultiplexing key* of the form ~<port,host>~.
+
+Continue @8:05
