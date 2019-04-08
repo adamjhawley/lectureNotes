@@ -7,6 +7,7 @@ from collect_files import filter_tex_files
 
 def extract_preamble(tex_paths):
     preamble = []
+    titles = []
     contents = ['\\begin{document}\n']
     exceptions = ['\\hypersetup{\n']
     for path in tex_paths:
@@ -14,20 +15,36 @@ def extract_preamble(tex_paths):
         lines = f.readlines()
         
         for index, line in enumerate(lines):
+            #Check for the end of the preamble
             if line == "\\begin{document}\n":
                 doc_start = index + 1
                 break
+            #Check for titles to add to sections
+            elif line[:7] == "\\title{":
+                titles.append(line[7:-2])
+            #Add any new packages/lines to the preamble that aren't already in it
             elif line not in preamble:
                 if (line not in exceptions) and (line[1:4] != 'pdf'):
                     preamble.append(line)
-                else:
-                    print("pdf in line")
 
         for line in lines[doc_start:-1]:
                 contents.append(line)
 
     contents.append('\\end{document}\n')
-    return preamble, contents
+    return titles, preamble, contents
+
+def insert_titles_as_sections(contents, titles):
+    insertAtIndex = 0
+    titleIndexes = []
+    for lineNumber, line in enumerate(contents):
+        if line == '\\tableofcontents\n':
+            titleIndexes.append(lineNumber)
+
+    for i, title in enumerate(titles):
+        contents.insert(titleIndexes[i], ("\\section{" + title + "}\n"))
+
+    return contents
+
 
 def main():
     try:
@@ -43,10 +60,13 @@ def main():
         copies.append(copy_path)
         shutil.copyfile(path, copy_path)
 
-    preamble, file_contents = extract_preamble(copies)
+    titles, preamble, file_contents = extract_preamble(copies)
+
+    file_contents = insert_titles_as_sections(file_contents, titles)
 
     output = open('output.tex', 'w')
     output.writelines(preamble)
+    output.writelines("\\title{TEST}\n")
     output.writelines(file_contents)
     
     #Remove copied files
