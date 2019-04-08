@@ -8,6 +8,7 @@ from collect_files import filter_tex_files
 def extract_preamble(tex_paths):
     preamble = []
     contents = ['\\begin{document}\n']
+    exceptions = ['\\hypersetup{\n']
     for path in tex_paths:
         f = open(path, "r")
         lines = f.readlines()
@@ -17,10 +18,13 @@ def extract_preamble(tex_paths):
                 doc_start = index + 1
                 break
             elif line not in preamble:
-                preamble.append(line)
+                if (line not in exceptions) and (line[1:4] != 'pdf'):
+                    preamble.append(line)
+                else:
+                    print("pdf in line")
 
         for line in lines[doc_start:-1]:
-            contents.append(line)
+                contents.append(line)
 
     contents.append('\\end{document}\n')
     return preamble, contents

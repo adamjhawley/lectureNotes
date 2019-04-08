@@ -1,12 +1,12 @@
 import os
 
-def filter_files(path, extension):
+def filter_files(path, extension, exception_paths):
     files = os.listdir(path) 
     paths = []
     to_be_removed = []
 
     for f in files:
-        if f[-4:] != extension:
+        if f[-4:] != extension or f in exception_paths:
             to_be_removed.append(f)
 
     for f in to_be_removed:
@@ -23,4 +23,4 @@ def filter_files(path, extension):
 def filter_tex_files(path):
     if path == None:
         path = "."
-    return filter_files(path, ".tex")
+    return filter_files(path, ".tex", ["output.tex"])

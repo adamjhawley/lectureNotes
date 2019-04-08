@@ -1,0 +1,22 @@
+\BOOKMARK [1][-]{section.1}{Intro}{}% 1
+\BOOKMARK [1][-]{section.2}{Knowledge Bases}{}% 2
+\BOOKMARK [1][-]{section.3}{Logic in General}{}% 3
+\BOOKMARK [1][-]{section.4}{Entailment}{}% 4
+\BOOKMARK [1][-]{section.5}{Models}{}% 5
+\BOOKMARK [1][-]{section.6}{Inference}{}% 6
+\BOOKMARK [1][-]{section.7}{Propositional Logic: Syntax}{}% 7
+\BOOKMARK [1][-]{section.8}{Logical Equivalence}{}% 8
+\BOOKMARK [1][-]{section.9}{Validity \046 Satisfiability}{}% 9
+\BOOKMARK [1][-]{section.10}{Proof Methods}{}% 10
+\BOOKMARK [1][-]{section.11}{Why SAT Matters for AI?}{}% 11
+\BOOKMARK [1][-]{section.12}{Satisfying a Clause}{}% 12
+\BOOKMARK [1][-]{section.13}{Breaking Clauses}{}% 13
+\BOOKMARK [1][-]{section.14}{When a Model Does Not Satisfy a CNF Formula}{}% 14
+\BOOKMARK [1][-]{section.15}{Determining Satisfiablility}{}% 15
+\BOOKMARK [1][-]{section.16}{SAT Solving As Search}{}% 16
+\BOOKMARK [1][-]{section.17}{Pure Symbols}{}% 17
+\BOOKMARK [1][-]{section.18}{Unit Clause Heuristic}{}% 18
+\BOOKMARK [1][-]{section.19}{Unit Propogation}{}% 19
+\BOOKMARK [1][-]{section.20}{Component Analysis}{}% 20
+\BOOKMARK [1][-]{section.21}{Variable \046 Value Ordering}{}% 21
+\BOOKMARK [1][-]{section.22}{Other Tricks}{}% 22
