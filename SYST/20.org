@@ -1,7 +1,7 @@
 #+TITLE: Lecture 20: Network Layer & Internet Protocol Continued
 #+AUTHOR: Adam Hawley
 
-* Routing
+* Intra-Domain Routing
 Routing is needed for forwarding packets in a datagram (connectionless) network, or for establishing virtual circuits in a VC (connection oriented) network.
 Routing algorithms or protocols create routing tables from which one may derive the neccesary forwarding tables.
 These in turn, define the output port through which a packet will be forwarded.
@@ -21,6 +21,41 @@ There are two main types of algorithms for solving the problem:
 - Decentralised routing: router knows link costs to neighbours --- "distance vector" algorithms.
 
 ** Link State Routing Algorithm
-Dijkstra's Shortest Path Algorithm
+Dijkstra's Shortest Path Algorithm is based on a link state broadcast, aiming to provide all nodes with the same information.
+After k iterations, the algorithm knows the least cost path to k destinations.
+Notation is as follows:
+- c(x,y) :: Link cost from node x to y, c = \infty if not direct neighbours
+- D(V) :: Current value of cost of path from source to destination v.
+- p(v) :: Predecessor node along path from source to v.
+- N' :: Set of nodes whose least cost path is definitively known.
 
-Continue @11:20
+** Distance-Vector Routing Algorithm 
+One classic example is the *Bellman-Ford routing algorithm* (1957) and *Ford-Fulkerson algorithm* (1962).
+It is a *dynamic routing algorithm* and was used in the Internet Protocol under the name RIP (Routing Information Protocol).
+
+Each node stores an array (a *vector*) containing the currently believed distances to all other nodes.
+Initially this distance is \infty for all nodes except the considered node's immediate neighbours.
+Vectors are distributed to a node's immediate neigbours.
+
+
+
+
+** Dimension-Order Routing
+Some network configurations can be vulnerable to deadlock.
+Deadlock arises when a cyclic resources dependency occurs and the messages become blocked forever.
+Dimension-order routing can avoid deadlock by removing one of the conditions: circular dependency.
+- XY Routing:
+  + Forbid any Y to X turn
+  + It is deterministic
+- West-first Routing:
+  + Forbid the west turns only
+  + Partially adaptive
+* Inter-Domain Routing
+** Border Gateway Protocol (BGP)
+BGP is the de facto inter-domain routing protocol for the Internet.
+It supports route coordination across domains, referred as *``autonomous systems'' (AS)*.
+BGP provides routers a means to:
+- e(xternal)BGP :: Obtain subnet reachability information from neighbouring ASs.
+- i(nternal)BGP :: Propogate reachability information to all AS-internal routers.
++ Determine /good/ routes to other networks based on reachability information and policy.
+See lecture slides for example.

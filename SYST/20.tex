@@ -1,4 +1,4 @@
-% Created 2019-04-07 Sun 11:01
+% Created 2019-04-08 Mon 12:46
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \tableofcontents
 
 
-\section{Routing}
-\label{sec:org8b89bfd}
+\section{Intra-Domain Routing}
+\label{sec:orgc3bc4c0}
 Routing is needed for forwarding packets in a datagram (connectionless) network, or for establishing virtual circuits in a VC (connection oriented) network.
 Routing algorithms or protocols create routing tables from which one may derive the neccesary forwarding tables.
 These in turn, define the output port through which a packet will be forwarded.
@@ -44,7 +44,7 @@ To make them scale, internetworks employ a hierarchical routing structure based 
 \end{itemize}
 
 \subsection{Graph Representation of Routing}
-\label{sec:org5234b52}
+\label{sec:org055c70c}
 Routing is a graph-theoretic problem and requires one to calculate the lowest-cost path between two nodes.
 \begin{itemize}
 \item Nodes are hosts, switches, routers or networks
@@ -56,4 +56,59 @@ There are two main types of algorithms for solving the problem:
 \item Global routing: all routers have complete topology and link cost info --- "link state" algorithms.
 \item Decentralised routing: router knows link costs to neighbours --- "distance vector" algorithms.
 \end{itemize}
+
+\subsection{Link State Routing Algorithm}
+\label{sec:orgc9863c3}
+Dijkstra's Shortest Path Algorithm is based on a link state broadcast, aiming to provide all nodes with the same information.
+After k iterations, the algorithm knows the least cost path to k destinations.
+Notation is as follows:
+\begin{description}
+\item[{c(x,y)}] Link cost from node x to y, c = \(\infty\) if not direct neighbours
+\item[{D(V)}] Current value of cost of path from source to destination v.
+\item[{p(v)}] Predecessor node along path from source to v.
+\item[{N'}] Set of nodes whose least cost path is definitively known.
+\end{description}
+
+\subsection{Distance-Vector Routing Algorithm}
+\label{sec:orgeede7e1}
+One classic example is the \textbf{Bellman-Ford routing algorithm} (1957) and \textbf{Ford-Fulkerson algorithm} (1962).
+It is a \textbf{dynamic routing algorithm} and was used in the Internet Protocol under the name RIP (Routing Information Protocol).
+
+Each node stores an array (a \textbf{vector}) containing the currently believed distances to all other nodes.
+Initially this distance is \(\infty\) for all nodes except the considered node's immediate neighbours.
+Vectors are distributed to a node's immediate neigbours.
+
+
+
+
+\subsection{Dimension-Order Routing}
+\label{sec:org650a32b}
+Some network configurations can be vulnerable to deadlock.
+Deadlock arises when a cyclic resources dependency occurs and the messages become blocked forever.
+Dimension-order routing can avoid deadlock by removing one of the conditions: circular dependency.
+\begin{itemize}
+\item XY Routing:
+\begin{itemize}
+\item Forbid any Y to X turn
+\item It is deterministic
+\end{itemize}
+\item West-first Routing:
+\begin{itemize}
+\item Forbid the west turns only
+\item Partially adaptive
+\end{itemize}
+\end{itemize}
+\section{Inter-Domain Routing}
+\label{sec:org735079c}
+\subsection{Border Gateway Protocol (BGP)}
+\label{sec:org4186e5c}
+BGP is the de facto inter-domain routing protocol for the Internet.
+It supports route coordination across domains, referred as \textbf{``autonomous systems'' (AS)}.
+BGP provides routers a means to:
+\begin{description}
+\item[{e(xternal)BGP}] Obtain subnet reachability information from neighbouring ASs.
+\item[{i(nternal)BGP}] Propogate reachability information to all AS-internal routers.
+\item Determine \emph{good} routes to other networks based on reachability information and policy.
+\end{description}
+See lecture slides for example.
 \end{document}
