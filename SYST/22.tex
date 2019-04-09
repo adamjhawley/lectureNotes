@@ -1,0 +1,150 @@
+% Created 2019-04-09 Tue 15:35
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 22: Application Layer}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 22: Application Layer},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:orgbfa55ca}
+Applications, ranging from browsers to videoconferencing tools that run on computer networks are part:
+\begin{itemize}
+\item \textbf{Network protocols}, since they exchange messages with their peers on other hosts.
+\item \textbf{Traditional application programs} that interact with a host's window and file systems as well as with the user.
+\end{itemize}
+We will discuss three main examples:
+\begin{description}
+\item[{DHCP (Dynamic Host Configuration Protocol)}] Dynamically assigns IP addresses to devices (over UDP).
+\item[{DNS (Domain Name System)}] Translates host names into IP addresses (over UDP, TCP for zone transfers between servers).
+\item[{WWW (World Wide Web)}] (Over TCP)
+\end{description}
+
+\section{Dynamic Host Configuration Protocol}
+\label{sec:org206e1ec}
+DHCP assigns an IP address to a host.
+This cannot be done by the host manufacturer as hosts on the same networkmust have the same network IP address.
+IP addresses need to be re-configurable, in case hosts are moved between networks or if network topologies change.
+This avoids placing the burden onto a system administrator to assign IP addresses uniquely and correctly.
+
+Within each collision domain there should be a DHCP server so that the IP can be given to the host even though the host does not have a full address yet.
+Because this is not very practical, often DHCP relays are used (see slide 6 for diagram of DHCP connections).
+
+Four step handshake:
+\begin{enumerate}
+\item Client sends broadcast (Ethernet and IP) discovery packet (claims IP source = 0.0.0.0)
+\item DHCP server or relay receives and responds to discovery packet over broadcast (IP) of that collision domain and sender's MAC address for Ethernet. Payload includes:
+\begin{itemize}
+\item Offered IP address
+\item Subnet mask
+\item Gateway IP address
+\item Lease time
+\item DNS servers
+\end{itemize}
+\item Client sends request to the DHCP server (this stage means that if there is more than one DHCP server within the collision domain then the client will only respond to one).
+\item DHCP server sends acknowledgement to the IP offered.
+\end{enumerate}
+
+\section{Domain Name System}
+\label{sec:orgc99ba1c}
+DNS is a naming system that allows one to assign names (variable length, mnemonic but providing almost no routing information) to nodes.
+A name service translates between user-friendly names and router-friendly addresses.
+Name spaces can be flat but are often hierarchical (cf. the name www.cs.york.ac.uk).
+DNS maintains a collection of bindings of names to values (usually addresses).
+A \textbf{name server} implements a \textbf{resolution mechanism} for mapping names to values, that can be queried on a network.
+The Internet's naming system is called \textbf{Domain Name System}, is based on hierarchical names and distributes the \textbf{binding table} throughout the Internet.
+
+\subsection{Name Servers}
+\label{sec:orge63a050}
+Name servers store \textbf{resource records}:
+\begin{itemize}
+\item \texttt{<Name, Value, Type, Class, TTL>}
+\begin{itemize}
+\item Name, Value: As expected
+\item Type: States how to interpret Value (e.g. IPv4 or IPv6 or Name Server which is a server which does know how to deal with a given name).
+\item Class: Only the Internet class ("IN") is in use today.
+\item TTL (time-to-live): Used for sensibly caching resource records.
+\end{itemize}
+\end{itemize}
+
+\subsection{Hierarchy of Name Servers}
+\label{sec:org0a08db8}
+The domain name hierarchy is implemented by partitioning the domain name tree into \textbf{\emph{zones}}.
+Each zone operates a name server (and a backup server) which is accessible via the Internet.
+In order to ease the load on networks and servers, \textbf{name servers cache resource records} until the TTL field for each record under consideration expires.
+
+\section{World Wide Web}
+\label{sec:org9485c2f}
+The WWW is the main driver for making the Internet accessible.
+It consists of sets of cooperating clients and servers.
+It is important to distinguish between application programs and protocols:
+\begin{itemize}
+\item The Hyper Text Transfer Protocol (HTTP) is used for retrieving web pages from remote servers over the Internet.
+\item Web clients (such as Firefox and IE) are \textbf{browser} programs with different looks and feels but all employ HTTP.
+\end{itemize}
+Steps that occur when a link is selected:
+\begin{enumerate}
+\item Browser determines URL
+\item Browser asks DNS for the IP address of the server
+\item DNS replies
+\item The browser makes a TCP connection
+\item Sends HTTP request for the page
+\item Server sends the page as HTTP response
+\item Browser fetches other URLs as needed
+\item The browser displays the page
+\item The TCP connections are released
+\end{enumerate}
+
+\subsection{Hyper Text Transfer Protocol (HTTP)}
+\label{sec:org2e25f84}
+When a user asks a web client to open a web page specified by a \textbf{uniform resource locator (URL)}, the browser fetches the HTML file from the web server and then displays the encoded page.
+HTTP is a \textbf{text-oriented protocol} where messages are of the form:
+\begin{verbatim}
+START_LINE <CRLF>
+MESSAGE_HEADER <CRLF>
+<CRLF>
+MESSAGE_BODY <CRLF>
+\end{verbatim}
+See slides 21 and 22 for examples of HTTP requests and responses.
+
+\subsection{Persistent TCP Connections}
+\label{sec:org90cd72e}
+HTTP/1.1 uses \textbf{persistent TCP connections}, i.e. client and server can exchange multiple messages over the same TCP connection.
+Advantages include:
+\begin{itemize}
+\item Eliminates the \textbf{connection setup overhead} (reduce the load on the server and on the network).
+\item Allows TCPs \textbf{congestion window mechanism} to work properly.
+\end{itemize}
+Disadvantage:
+\begin{itemize}
+\item Who decides when a connection should be closed?
+\begin{itemize}
+\item Server times out and tears down its part of the TCP connection if a client does not use the server for some time.
+\item Client has to watch out for such behaviour and tear down its direction of the TCP connection too.
+\end{itemize}
+\end{itemize}
+\end{document}
