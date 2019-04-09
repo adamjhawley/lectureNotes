@@ -1,4 +1,4 @@
-% Created 2019-04-08 Mon 15:48
+% Created 2019-04-09 Tue 11:46
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 
 
 \section{Introduction}
-\label{sec:orgb58c24f}
+\label{sec:org41c3064}
 The transport layer provides \textbf{end-to-end connectivity} in terms of a \textbf{transport protocol} (end-to-end protocol).
 The underlying network layer usually only provides a \textbf{best-effort host-to-host service} (e.g. IP):
 \begin{itemize}
@@ -46,4 +46,172 @@ Different transport protocols address (some of) these limitations by offering di
 \item Simple (application) demultiplexing service (\textbf{User Datagram Protocol})
 \item Reliable Byte-Stream Service (\textbf{Transmission Control Protocol})
 \end{itemize}
+
+\section{User Datagram Protocol (UDP)}
+\label{sec:org7f3376c}
+UDP is a simple extension of the host-to-host delivery service to a process-to-process communication service.
+It lets multiple application processes share the same network.
+Using an \textbf{abstract locator}, a process and a \textbf{port} are identified.
+The network delivers messages to the port and a destination receives messages from the port.
+UDP uses a 16-bit numbering scheme to identify ports.
+Processes are identified by a \textbf{demultiplexing key} of the form \texttt{<port,host>}.
+However, UDP does not support any other mechanisms such as flow control or reliable/ordered delivery.
+
+\subsection{Implementation of UDP}
+\label{sec:orgc00e1bf}
+\subsubsection{How to learn of ports?}
+\label{sec:org686f5f0}
+\begin{itemize}
+\item Clients send initial messages to specific servers via some \emph{well-known} (published) ports, e.g. port 80 for HTTP.
+\item A well-known port is used to agree on some other port that will be used subsequently.
+\end{itemize}
+\subsubsection{How are ports implemented?}
+\label{sec:org3420aa9}
+\begin{itemize}
+\item Via message queues.
+\end{itemize}
+
+\section{Transmission Control Protocol (TCP)}
+\label{sec:org69efa5b}
+TCP implements a reliable, connection-oriented byte-stream service with guaranteed in-order delivery, flow control and network congestion control.
+It supports full-duplex connectivity, i.e. pairs of byte streams between two processes, one stream in each direction.
+It also offers a \textbf{demultiplexing} mechanism, similar to UDP.
+
+\subsection{The Segment Format of TCP}
+\label{sec:org1e8fa1b}
+While TCP allows senders to write bytes \emph{into a connection} and receivers to read bytes \emph{out of a connection}, it transmits byte sequences in reasonably sized packets, called \textbf{segments}.
+
+\subsection{When to Send A Segment?}
+\label{sec:org23e9dd1}
+\begin{itemize}
+\item When the \textbf{maximum segment size is reached}.
+\begin{itemize}
+\item Typically set to about the MTU (maximum transmission unit) of the directly connected network, such that the local IP does not need to fragment segments.
+\end{itemize}
+\item When the process explicity invokes a \textbf{push operation} to flush the TCP buffer of unsent bytes.
+\item When some \textbf{periodic timer} fires (and flushes the TCP buffer).
+\end{itemize}
+
+\subsection{How Are TCP Connections Uniquely Identified?}
+\label{sec:org79e9abc}
+Via a demultiplexingkey that is of the form:
+\begin{itemize}
+\item \textasciitilde{}<SrcPort, SrcIPAddr, DstPort, DstIPAddr>
+\end{itemize}
+But different incarnations of a connection are possible since connections are established and torn down.
+
+\section{Connection Establishment \& Termination}
+\label{sec:orgb4e581a}
+\begin{itemize}
+\item Connection Establishment (\textbf{asymmetric Activity}):
+\begin{enumerate}
+\item Server performs a \textbf{passive open} (create buffer to read from).
+\item Client does an \textbf{active open} to the server.
+\item Two sides echange messages to establish the connection.
+\end{enumerate}
+\item Connection Termination (\textbf{Symmetric Activity}):
+\begin{enumerate}
+\item Participant closes one direction of the connection.
+\item Connection termination messages are exchanged.
+\item Other participant might leave the other direction open.
+\end{enumerate}
+\end{itemize}
+See slide 13 for \textbf{TCP State Diagram}.
+
+\subsection{Three-Way Handshake Algorithm for Connection Establishment}
+\label{sec:org7000e40}
+The goal of the three-way handshake is to agree on some parameters, such as starting sequence number (for each direction).
+
+Notes:
+\begin{itemize}
+\item Due to different incarnations, it is a good idea to start with \emph{random} sequence numbers instad of 0. Otherwise an acknowledgement from a previous incarnation may be taken as an acknowledgement for the current incarnation.
+\item The acknowledgement field actually identifies the \textbf{next expected sequence number}.
+\end{itemize}
+
+\section{Flow Control \& Congestion Control}
+\label{sec:orgff0065f}
+Two different factors can limit the rate at which a source sends data:
+\begin{itemize}
+\item The inability of the destination to accept new data.
+\begin{itemize}
+\item Techniques that address this are referred to as \textbf{flow control}.
+\end{itemize}
+\item The number of packets within the subnet.
+\begin{itemize}
+\item Techniques that address this are referred to as \textbf{congestion control}.
+\end{itemize}
+\end{itemize}
+TCP standard includes both techniques.
+Some protocol stacks also apply such technique at lower layers (e.g. flow control at the data link level, congestion control at the network level.
+
+\subsection{Flow Control}
+\label{sec:org05f055d}
+The key functionality of a flow control algorithm is that the sender and receiver have finite buffer space and process data at different rates.
+Rather than waiting for acknowledgement on every message (which would impact performance greatly) we can send several segments at once.
+However, the segments should not be removed from the buffer until the acknowledgement is received.
+This is called a sliding window protocol because there is an upper-bound on \emph{un-ACKed} segments, called a window which limits the amount of buffer space required at sender and receiver.
+A bigger window means more flexibility but also a greater risk that failures remain undected.
+
+The sender knows:
+\begin{itemize}
+\item Which data has been sent and acknowledged
+\item The receivers buffer size
+\item Its own buffer size
+\end{itemize}
+The sender creates a window stretching from:
+\begin{itemize}
+\item Last data acknowledged (X), to
+\item X + send buffer size
+\end{itemize}
+If the sender sends data beyond this it can't re-send in case of failure.
+By a similar process the receiver calculates its available window (\textbf{AdvertisedWindow}) and informs the sender of it.
+The sender does not send information that the receiver cannot handle, i.e. buffer.
+
+\subsection{Congestion Control}
+\label{sec:org8dade4a}
+Typical congestion control techniques at the transport layer.
+\begin{itemize}
+\item Rate Control: Source injection rate is explicitly controlled based on feedback from either the network and/or the receiver (e.g. keep increasing injection rate until packets are dropped / ACKs are not received).
+\item Admission Control/ Traffic Policing: Only allow connections in if the network can handle them and make sure that admitted sessions do not send them at too high of a rate.
+\end{itemize}
+
+\section{Retransmission}
+\label{sec:orgeb37643}
+Retransmission (from sender) of unacknowledged segments after some timeout has expired.
+This requires a timer but there are two main ways of choosing the value of said timer:
+\begin{itemize}
+\item Fixed value needs knowledge of network behaviour
+\begin{itemize}
+\item Does not respond to changing network conditions
+\item Too small, network flooded with retransmissions
+\item Too large and the receiver stalls
+\end{itemize}
+\item Adaptive timer
+\begin{itemize}
+\item Difficult to monitor \textbf{Re-Transmission Timer (RTT)} with cumulative acknowledgements.
+\item Network conditions may change faster than we can adapt.
+\end{itemize}
+\end{itemize}
+
+\subsection{Weighted (Moving) Average}
+\label{sec:org8828f22}
+\begin{equation}
+\label{eq:estrtt}
+EstRTT = \alpha \times EstRTT + \beta \times SampleRTT
+\end{equation}
+Where:
+\begin{itemize}
+\item \(\alpha + \beta = 1\)
+\item \(0.8 \le \alpha \le 0.9\)
+\item \(0.1 \le \beta \le 0.2\)
+\end{itemize}
+The weighted average is calculated with the following steps:
+\begin{enumerate}
+\item Measure \texttt{SampleRTT} for each segment/ACK pair.
+\item Compute weighted average of RTT (see equation \eqref{eq:estrtt})
+\item Set timeout based on \texttt{EstRTT}
+\begin{itemize}
+\item \(TimeOut = 2 \times EstRTT\)
+\end{itemize}
+\end{enumerate}
 \end{document}

@@ -2,7 +2,7 @@ Keybind reminder:
 C-c C-c : Toggle Checkbox
 TODO Next: ARIN Prac
 * SYST
-** TODO Lectures [14/17]
+** TODO Lectures [15/17]
   - [X] 7
   - [X] 8 Deadlock pt 1
   - [X] 9 Deadlock pt 2
@@ -17,7 +17,7 @@ TODO Next: ARIN Prac
   - [X] 18
   - [X] 19
   - [X] 20
-  - [ ] 21
+  - [X] 21
   - [ ] 22
   - [ ] 23
    
