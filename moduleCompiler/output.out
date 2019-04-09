@@ -1,233 +1,47 @@
-\BOOKMARK [1][-]{section.1}{Lecture 10: Introduction to Memory Management}{}% 1
-\BOOKMARK [2][-]{subsection.1.1}{Background}{section.1}% 2
-\BOOKMARK [3][-]{subsubsection.1.1.1}{Introduction}{subsection.1.1}% 3
-\BOOKMARK [3][-]{subsubsection.1.1.2}{Address Spaces}{subsection.1.1}% 4
-\BOOKMARK [3][-]{subsubsection.1.1.3}{Logical vs. Physical Address Space}{subsection.1.1}% 5
-\BOOKMARK [3][-]{subsubsection.1.1.4}{Memory Management}{subsection.1.1}% 6
-\BOOKMARK [2][-]{subsection.1.2}{Contiguous Memory}{section.1}% 7
-\BOOKMARK [3][-]{subsubsection.1.2.1}{Single-User Contiguous Memory}{subsection.1.2}% 8
-\BOOKMARK [3][-]{subsubsection.1.2.2}{Fixed Contiguous Partitions}{subsection.1.2}% 9
-\BOOKMARK [3][-]{subsubsection.1.2.3}{Dynamic Contiguous Partitions}{subsection.1.2}% 10
-\BOOKMARK [3][-]{subsubsection.1.2.4}{Swapping}{subsection.1.2}% 11
-\BOOKMARK [1][-]{section.2}{Lecture 11: Segmented \046 Paged Memory}{}% 12
-\BOOKMARK [2][-]{subsection.2.1}{Segmentation}{section.2}% 13
-\BOOKMARK [3][-]{subsubsection.2.1.1}{Introduction}{subsection.2.1}% 14
-\BOOKMARK [3][-]{subsubsection.2.1.2}{Addressing with Segmentation}{subsection.2.1}% 15
-\BOOKMARK [2][-]{subsection.2.2}{Paging}{section.2}% 16
-\BOOKMARK [3][-]{subsubsection.2.2.1}{Introduction}{subsection.2.2}% 17
-\BOOKMARK [3][-]{subsubsection.2.2.2}{Costs \046 Implementation}{subsection.2.2}% 18
-\BOOKMARK [3][-]{subsubsection.2.2.3}{Address Resolution}{subsection.2.2}% 19
-\BOOKMARK [3][-]{subsubsection.2.2.4}{Internal Fragmentation in Paging}{subsection.2.2}% 20
-\BOOKMARK [3][-]{subsubsection.2.2.5}{Performance Issues}{subsection.2.2}% 21
-\BOOKMARK [3][-]{subsubsection.2.2.6}{Shared Pages}{subsection.2.2}% 22
-\BOOKMARK [3][-]{subsubsection.2.2.7}{Page Table Structure}{subsection.2.2}% 23
-\BOOKMARK [3][-]{subsubsection.2.2.8}{Hierarchical Page Tables}{subsection.2.2}% 24
-\BOOKMARK [1][-]{section.3}{Lecture 12: Virtual Memory}{}% 25
-\BOOKMARK [2][-]{subsection.3.1}{Demand Paging}{section.3}% 26
-\BOOKMARK [3][-]{subsubsection.3.1.1}{Introduction}{subsection.3.1}% 27
-\BOOKMARK [3][-]{subsubsection.3.1.2}{Advantages of Demand Paging}{subsection.3.1}% 28
-\BOOKMARK [3][-]{subsubsection.3.1.3}{Requirements of Demand Paging}{subsection.3.1}% 29
-\BOOKMARK [2][-]{subsection.3.2}{Virtual Memory}{section.3}% 30
-\BOOKMARK [3][-]{subsubsection.3.2.1}{Introduction}{subsection.3.2}% 31
-\BOOKMARK [3][-]{subsubsection.3.2.2}{Virtual Address Space}{subsection.3.2}% 32
-\BOOKMARK [2][-]{subsection.3.3}{Demand Paging Mechanism}{section.3}% 33
-\BOOKMARK [3][-]{subsubsection.3.3.1}{Handling Page Faults}{subsection.3.3}% 34
-\BOOKMARK [3][-]{subsubsection.3.3.2}{Demand Paging Mechanism Performance}{subsection.3.3}% 35
-\BOOKMARK [3][-]{subsubsection.3.3.3}{Demand Paging Mechanism Optimisation}{subsection.3.3}% 36
-\BOOKMARK [1][-]{section.4}{Lecture 13: Page Replacement}{}% 37
-\BOOKMARK [2][-]{subsection.4.1}{Introduction}{section.4}% 38
-\BOOKMARK [3][-]{subsubsection.4.1.1}{When does Page Replacement Occur?}{subsection.4.1}% 39
-\BOOKMARK [3][-]{subsubsection.4.1.2}{Outline of Page Replacement}{subsection.4.1}% 40
-\BOOKMARK [3][-]{subsubsection.4.1.3}{Optimisation of Page Replacement}{subsection.4.1}% 41
-\BOOKMARK [2][-]{subsection.4.2}{Replacement Mechanism}{section.4}% 42
-\BOOKMARK [2][-]{subsection.4.3}{Page Replacement Algorithms}{section.4}% 43
-\BOOKMARK [3][-]{subsubsection.4.3.1}{FIFO}{subsection.4.3}% 44
-\BOOKMARK [3][-]{subsubsection.4.3.2}{Optimal}{subsection.4.3}% 45
-\BOOKMARK [3][-]{subsubsection.4.3.3}{Least Recently Used \(LRU\)}{subsection.4.3}% 46
-\BOOKMARK [3][-]{subsubsection.4.3.4}{LRU Approximation Algorithms}{subsection.4.3}% 47
-\BOOKMARK [2][-]{subsection.4.4}{Page and Frame Locking}{section.4}% 48
-\BOOKMARK [3][-]{subsubsection.4.4.1}{Frame Locking}{subsection.4.4}% 49
-\BOOKMARK [2][-]{subsection.4.5}{Frame Allocation}{section.4}% 50
-\BOOKMARK [3][-]{subsubsection.4.5.1}{Global Replacement}{subsection.4.5}% 51
-\BOOKMARK [3][-]{subsubsection.4.5.2}{Local Replacement}{subsection.4.5}% 52
-\BOOKMARK [2][-]{subsection.4.6}{Thrashing}{section.4}% 53
-\BOOKMARK [3][-]{subsubsection.4.6.1}{Solving Thrashing}{subsection.4.6}% 54
-\BOOKMARK [1][-]{section.5}{Lecture 14: Input/Output \046 Storage Management}{}% 55
-\BOOKMARK [2][-]{subsection.5.1}{I/O Management}{section.5}% 56
-\BOOKMARK [3][-]{subsubsection.5.1.1}{Introduction}{subsection.5.1}% 57
-\BOOKMARK [3][-]{subsubsection.5.1.2}{Device Drivers}{subsection.5.1}% 58
-\BOOKMARK [3][-]{subsubsection.5.1.3}{Devices}{subsection.5.1}% 59
-\BOOKMARK [3][-]{subsubsection.5.1.4}{I/O Management}{subsection.5.1}% 60
-\BOOKMARK [3][-]{subsubsection.5.1.5}{Polling}{subsection.5.1}% 61
-\BOOKMARK [3][-]{subsubsection.5.1.6}{Interrrupts}{subsection.5.1}% 62
-\BOOKMARK [3][-]{subsubsection.5.1.7}{Direct Memory Access \(DMA\)}{subsection.5.1}% 63
-\BOOKMARK [2][-]{subsection.5.2}{Storage Devices}{section.5}% 64
-\BOOKMARK [3][-]{subsubsection.5.2.1}{Introduction}{subsection.5.2}% 65
-\BOOKMARK [3][-]{subsubsection.5.2.2}{Tertiary Storage}{subsection.5.2}% 66
-\BOOKMARK [3][-]{subsubsection.5.2.3}{Secondary Storage}{subsection.5.2}% 67
-\BOOKMARK [2][-]{subsection.5.3}{Storage Management}{section.5}% 68
-\BOOKMARK [2][-]{subsection.5.4}{Disk Management}{section.5}% 69
-\BOOKMARK [3][-]{subsubsection.5.4.1}{Disk Formatting}{subsection.5.4}% 70
-\BOOKMARK [3][-]{subsubsection.5.4.2}{Partitions}{subsection.5.4}% 71
-\BOOKMARK [3][-]{subsubsection.5.4.3}{Blocks}{subsection.5.4}% 72
-\BOOKMARK [3][-]{subsubsection.5.4.4}{Defragmentation}{subsection.5.4}% 73
-\BOOKMARK [1][-]{section.6}{Lecture 15: File Management}{}% 74
-\BOOKMARK [2][-]{subsection.6.1}{File Management Outline}{section.6}% 75
-\BOOKMARK [2][-]{subsection.6.2}{File Concept}{section.6}% 76
-\BOOKMARK [2][-]{subsection.6.3}{File operations}{section.6}% 77
-\BOOKMARK [2][-]{subsection.6.4}{File Types}{section.6}% 78
-\BOOKMARK [2][-]{subsection.6.5}{Internal File Structure}{section.6}% 79
-\BOOKMARK [2][-]{subsection.6.6}{Directories}{section.6}% 80
-\BOOKMARK [3][-]{subsubsection.6.6.1}{Tree-Based Directories}{subsection.6.6}% 81
-\BOOKMARK [3][-]{subsubsection.6.6.2}{Non Tree-Based Directories}{subsection.6.6}% 82
-\BOOKMARK [2][-]{subsection.6.7}{Access Methods}{section.6}% 83
-\BOOKMARK [3][-]{subsubsection.6.7.1}{Sequential Access}{subsection.6.7}% 84
-\BOOKMARK [3][-]{subsubsection.6.7.2}{Direct Access}{subsection.6.7}% 85
-\BOOKMARK [2][-]{subsection.6.8}{Access Control}{section.6}% 86
-\BOOKMARK [2][-]{subsection.6.9}{Access Granularity}{section.6}% 87
-\BOOKMARK [2][-]{subsection.6.10}{File System Mounting}{section.6}% 88
-\BOOKMARK [2][-]{subsection.6.11}{Allocation of Files}{section.6}% 89
-\BOOKMARK [3][-]{subsubsection.6.11.1}{Continuous Allocation}{subsection.6.11}% 90
-\BOOKMARK [3][-]{subsubsection.6.11.2}{Linked Allocation}{subsection.6.11}% 91
-\BOOKMARK [3][-]{subsubsection.6.11.3}{Indexed Allocation}{subsection.6.11}% 92
-\BOOKMARK [2][-]{subsection.6.12}{Free Block Management}{section.6}% 93
-\BOOKMARK [2][-]{subsection.6.13}{Efficiency \046 Performance}{section.6}% 94
-\BOOKMARK [2][-]{subsection.6.14}{Recovery}{section.6}% 95
-\BOOKMARK [1][-]{section.7}{Lecture 16: Introduction to Networking}{}% 96
-\BOOKMARK [2][-]{subsection.7.1}{Computer Networks}{section.7}% 97
-\BOOKMARK [2][-]{subsection.7.2}{Examples of Networks}{section.7}% 98
-\BOOKMARK [2][-]{subsection.7.3}{Network Topologies}{section.7}% 99
-\BOOKMARK [2][-]{subsection.7.4}{Connectivity}{section.7}% 100
-\BOOKMARK [2][-]{subsection.7.5}{Indirect Connectivity}{section.7}% 101
-\BOOKMARK [3][-]{subsubsection.7.5.1}{Circuit-Switched Networks}{subsection.7.5}% 102
-\BOOKMARK [3][-]{subsubsection.7.5.2}{Packet-Switched Networks}{subsection.7.5}% 103
-\BOOKMARK [2][-]{subsection.7.6}{Interconnection of Networks}{section.7}% 104
-\BOOKMARK [2][-]{subsection.7.7}{Addressing, Routing \046 Casting}{section.7}% 105
-\BOOKMARK [2][-]{subsection.7.8}{Reliability}{section.7}% 106
-\BOOKMARK [3][-]{subsubsection.7.8.1}{Errors At The Bit Level}{subsection.7.8}% 107
-\BOOKMARK [3][-]{subsubsection.7.8.2}{Errors At The Packet Level}{subsection.7.8}% 108
-\BOOKMARK [3][-]{subsubsection.7.8.3}{Errors At The Node/Link Level:}{subsection.7.8}% 109
-\BOOKMARK [2][-]{subsection.7.9}{Common Units in Networking}{section.7}% 110
-\BOOKMARK [2][-]{subsection.7.10}{Performance}{section.7}% 111
-\BOOKMARK [3][-]{subsubsection.7.10.1}{Bandwidth}{subsection.7.10}% 112
-\BOOKMARK [3][-]{subsubsection.7.10.2}{Latency \(Delay\)}{subsection.7.10}% 113
-\BOOKMARK [3][-]{subsubsection.7.10.3}{Latency Vs. Bandwidth}{subsection.7.10}% 114
-\BOOKMARK [3][-]{subsubsection.7.10.4}{Delay \327 Bandwidth Product}{subsection.7.10}% 115
-\BOOKMARK [3][-]{subsubsection.7.10.5}{Application Performance Needs}{subsection.7.10}% 116
-\BOOKMARK [1][-]{section.8}{Lecture 17: Network Stack}{}% 117
-\BOOKMARK [2][-]{subsection.8.1}{Network Requirements}{section.8}% 118
-\BOOKMARK [2][-]{subsection.8.2}{The Principle of Abstraction}{section.8}% 119
-\BOOKMARK [2][-]{subsection.8.3}{End-to-End Communication}{section.8}% 120
-\BOOKMARK [2][-]{subsection.8.4}{Network API}{section.8}% 121
-\BOOKMARK [2][-]{subsection.8.5}{Network Architecture: Layering}{section.8}% 122
-\BOOKMARK [3][-]{subsubsection.8.5.1}{Advantages \046 Disadvantages of Layering}{subsection.8.5}% 123
-\BOOKMARK [2][-]{subsection.8.6}{Protocols: The Networking Software}{section.8}% 124
-\BOOKMARK [2][-]{subsection.8.7}{Services and Protocols}{section.8}% 125
-\BOOKMARK [2][-]{subsection.8.8}{Protocol Graphs}{section.8}% 126
-\BOOKMARK [2][-]{subsection.8.9}{OSI Reference Model \(OSI Architecture\)}{section.8}% 127
-\BOOKMARK [2][-]{subsection.8.10}{Basic Purpose of ISO Layer}{section.8}% 128
-\BOOKMARK [2][-]{subsection.8.11}{Internet Architecture \(TCP/IP Architecture\)}{section.8}% 129
-\BOOKMARK [2][-]{subsection.8.12}{Overview of the Internet Protocols}{section.8}% 130
-\BOOKMARK [2][-]{subsection.8.13}{OSI vs. Internet Architecture}{section.8}% 131
-\BOOKMARK [2][-]{subsection.8.14}{Network Standardisation}{section.8}% 132
-\BOOKMARK [1][-]{section.9}{Lecture 18: Physical \046 Data Link Layers}{}% 133
-\BOOKMARK [2][-]{subsection.9.1}{Physical Layer}{section.9}% 134
-\BOOKMARK [2][-]{subsection.9.2}{Data Link Layer}{section.9}% 135
-\BOOKMARK [3][-]{subsubsection.9.2.1}{Example: Ethernet}{subsection.9.2}% 136
-\BOOKMARK [2][-]{subsection.9.3}{Learning Bridges}{section.9}% 137
-\BOOKMARK [2][-]{subsection.9.4}{Problems with Loops in Extended LANs}{section.9}% 138
-\BOOKMARK [3][-]{subsubsection.9.4.1}{Spanning Tree}{subsection.9.4}% 139
-\BOOKMARK [3][-]{subsubsection.9.4.2}{Distributed Spanning Tree Algorithm}{subsection.9.4}% 140
-\BOOKMARK [1][-]{section.10}{Lecture 19: Network Layer \046 Internet Protocol}{}% 141
-\BOOKMARK [2][-]{subsection.10.1}{Network Layer Outline}{section.10}% 142
-\BOOKMARK [2][-]{subsection.10.2}{Packet Forwarding}{section.10}% 143
-\BOOKMARK [3][-]{subsubsection.10.2.1}{Connectionless \(Datagram\) Approach}{subsection.10.2}% 144
-\BOOKMARK [2][-]{subsection.10.3}{Connection-Oriented Approach}{section.10}% 145
-\BOOKMARK [3][-]{subsubsection.10.3.1}{Establishing VCs}{subsection.10.3}% 146
-\BOOKMARK [3][-]{subsubsection.10.3.2}{Source Routing}{subsection.10.3}% 147
-\BOOKMARK [2][-]{subsection.10.4}{Internetworking}{section.10}% 148
-\BOOKMARK [2][-]{subsection.10.5}{IP Service Model}{section.10}% 149
-\BOOKMARK [2][-]{subsection.10.6}{IP Addressing}{section.10}% 150
-\BOOKMARK [1][-]{section.11}{Lecture 20: Network Layer \046 Internet Protocol Continued}{}% 151
-\BOOKMARK [2][-]{subsection.11.1}{Intra-Domain Routing}{section.11}% 152
-\BOOKMARK [3][-]{subsubsection.11.1.1}{Graph Representation of Routing}{subsection.11.1}% 153
-\BOOKMARK [3][-]{subsubsection.11.1.2}{Link State Routing Algorithm}{subsection.11.1}% 154
-\BOOKMARK [3][-]{subsubsection.11.1.3}{Distance-Vector Routing Algorithm}{subsection.11.1}% 155
-\BOOKMARK [3][-]{subsubsection.11.1.4}{Dimension-Order Routing}{subsection.11.1}% 156
-\BOOKMARK [2][-]{subsection.11.2}{Inter-Domain Routing}{section.11}% 157
-\BOOKMARK [3][-]{subsubsection.11.2.1}{Border Gateway Protocol \(BGP\)}{subsection.11.2}% 158
-\BOOKMARK [1][-]{section.12}{Lecture 21: Transport Layer}{}% 159
-\BOOKMARK [2][-]{subsection.12.1}{Introduction}{section.12}% 160
-\BOOKMARK [1][-]{section.13}{Lecture 3: Processes}{}% 161
-\BOOKMARK [2][-]{subsection.13.1}{Processes and Programs}{section.13}% 162
-\BOOKMARK [2][-]{subsection.13.2}{Process Management}{section.13}% 163
-\BOOKMARK [2][-]{subsection.13.3}{Process Structure}{section.13}% 164
-\BOOKMARK [2][-]{subsection.13.4}{Process States}{section.13}% 165
-\BOOKMARK [2][-]{subsection.13.5}{Process Lifecycle}{section.13}% 166
-\BOOKMARK [3][-]{subsubsection.13.5.1}{Ready and Running}{subsection.13.5}% 167
-\BOOKMARK [3][-]{subsubsection.13.5.2}{Waiting/Blocked}{subsection.13.5}% 168
-\BOOKMARK [3][-]{subsubsection.13.5.3}{Terminated}{subsection.13.5}% 169
-\BOOKMARK [3][-]{subsubsection.13.5.4}{Context Switch}{subsection.13.5}% 170
-\BOOKMARK [1][-]{section.14}{Lecture 4: Threads \046 Concurrency}{}% 171
-\BOOKMARK [2][-]{subsection.14.1}{Concurrency}{section.14}% 172
-\BOOKMARK [3][-]{subsubsection.14.1.1}{Multiple Processes}{subsection.14.1}% 173
-\BOOKMARK [3][-]{subsubsection.14.1.2}{Motivation}{subsection.14.1}% 174
-\BOOKMARK [3][-]{subsubsection.14.1.3}{Multiprocessor Systems}{subsection.14.1}% 175
-\BOOKMARK [3][-]{subsubsection.14.1.4}{Concurrency vs. Parallelism}{subsection.14.1}% 176
-\BOOKMARK [3][-]{subsubsection.14.1.5}{Amdahl's Law}{subsection.14.1}% 177
-\BOOKMARK [2][-]{subsection.14.2}{Threads}{section.14}% 178
-\BOOKMARK [3][-]{subsubsection.14.2.1}{Intro}{subsection.14.2}% 179
-\BOOKMARK [3][-]{subsubsection.14.2.2}{User \046 Kernel Threads}{subsection.14.2}% 180
-\BOOKMARK [3][-]{subsubsection.14.2.3}{Thread Libraries}{subsection.14.2}% 181
-\BOOKMARK [2][-]{subsection.14.3}{Threading Issues}{section.14}% 182
-\BOOKMARK [3][-]{subsubsection.14.3.1}{Thread Cancellation}{subsection.14.3}% 183
-\BOOKMARK [3][-]{subsubsection.14.3.2}{Signal Handling}{subsection.14.3}% 184
-\BOOKMARK [3][-]{subsubsection.14.3.3}{fork\(\) System Call}{subsection.14.3}% 185
-\BOOKMARK [3][-]{subsubsection.14.3.4}{Security and Integrity Issues}{subsection.14.3}% 186
-\BOOKMARK [1][-]{section.15}{Lecture 5: CPU Scheduling}{}% 187
-\BOOKMARK [2][-]{subsection.15.1}{Introduction}{section.15}% 188
-\BOOKMARK [2][-]{subsection.15.2}{Dispatcher}{section.15}% 189
-\BOOKMARK [2][-]{subsection.15.3}{Scheduling Algorithms}{section.15}% 190
-\BOOKMARK [2][-]{subsection.15.4}{Classic Scheduling Algorithms}{section.15}% 191
-\BOOKMARK [3][-]{subsubsection.15.4.1}{FCFS}{subsection.15.4}% 192
-\BOOKMARK [3][-]{subsubsection.15.4.2}{RR}{subsection.15.4}% 193
-\BOOKMARK [3][-]{subsubsection.15.4.3}{Priority Scheduling}{subsection.15.4}% 194
-\BOOKMARK [3][-]{subsubsection.15.4.4}{Comparison of Classic Algorithms}{subsection.15.4}% 195
-\BOOKMARK [3][-]{subsubsection.15.4.5}{Bonus Algorithm SJF}{subsection.15.4}% 196
-\BOOKMARK [1][-]{section.16}{Lecture 6: CPU Scheduling Continued}{}% 197
-\BOOKMARK [2][-]{subsection.16.1}{More algorithms...}{section.16}% 198
-\BOOKMARK [3][-]{subsubsection.16.1.1}{Shortest-Remaining-Time-First}{subsection.16.1}% 199
-\BOOKMARK [3][-]{subsubsection.16.1.2}{Earliest Deadline First \(EDF\)}{subsection.16.1}% 200
-\BOOKMARK [2][-]{subsection.16.2}{Multilevel Queue}{section.16}% 201
-\BOOKMARK [2][-]{subsection.16.3}{Multilevel Feedback Queue}{section.16}% 202
-\BOOKMARK [2][-]{subsection.16.4}{Thread Scheduling}{section.16}% 203
-\BOOKMARK [3][-]{subsubsection.16.4.1}{Kernel Threads}{subsection.16.4}% 204
-\BOOKMARK [3][-]{subsubsection.16.4.2}{User Threads}{subsection.16.4}% 205
-\BOOKMARK [2][-]{subsection.16.5}{Multiprocessor Scheduling}{section.16}% 206
-\BOOKMARK [3][-]{subsubsection.16.5.1}{Homogenous processors}{subsection.16.5}% 207
-\BOOKMARK [3][-]{subsubsection.16.5.2}{Non-Uniform Memory Access \(NUMA\)}{subsection.16.5}% 208
-\BOOKMARK [3][-]{subsubsection.16.5.3}{Load Balancing in Multiprocessors}{subsection.16.5}% 209
-\BOOKMARK [1][-]{section.17}{Lecture 7: Synchronisation}{}% 210
-\BOOKMARK [2][-]{subsection.17.1}{Coordination}{section.17}% 211
-\BOOKMARK [3][-]{subsubsection.17.1.1}{Concurrent Access to Shared Data}{subsection.17.1}% 212
-\BOOKMARK [3][-]{subsubsection.17.1.2}{Critical Section Problem}{subsection.17.1}% 213
-\BOOKMARK [3][-]{subsubsection.17.1.3}{Solutions to the Critical Section Problem}{subsection.17.1}% 214
-\BOOKMARK [2][-]{subsection.17.2}{Semaphores}{section.17}% 215
-\BOOKMARK [3][-]{subsubsection.17.2.1}{Semaphore Operations}{subsection.17.2}% 216
-\BOOKMARK [1][-]{section.18}{Lecture 8: Deadlock}{}% 217
-\BOOKMARK [2][-]{subsection.18.1}{Introduction}{section.18}% 218
-\BOOKMARK [2][-]{subsection.18.2}{Conditions for Deadlock}{section.18}% 219
-\BOOKMARK [2][-]{subsection.18.3}{Resource Allocation Graphs}{section.18}% 220
-\BOOKMARK [2][-]{subsection.18.4}{Methods for Handling Deadlocks}{section.18}% 221
-\BOOKMARK [3][-]{subsubsection.18.4.1}{Deadlock Prevention}{subsection.18.4}% 222
-\BOOKMARK [3][-]{subsubsection.18.4.2}{Deadlock Avoidance}{subsection.18.4}% 223
-\BOOKMARK [1][-]{section.19}{Lecture 9: Deadlock Pt.2}{}% 224
-\BOOKMARK [2][-]{subsection.19.1}{Resource-Request Algorithm for Process Pi}{section.19}% 225
-\BOOKMARK [2][-]{subsection.19.2}{Deadlock Detection}{section.19}% 226
-\BOOKMARK [3][-]{subsubsection.19.2.1}{Detection Algorithm for Single Instances of a Resource Type}{subsection.19.2}% 227
-\BOOKMARK [3][-]{subsubsection.19.2.2}{Detection Algorithm for Multiple Instances of a Resource Type}{subsection.19.2}% 228
-\BOOKMARK [3][-]{subsubsection.19.2.3}{Outlining the Detection Algorithm Stage}{subsection.19.2}% 229
-\BOOKMARK [2][-]{subsection.19.3}{Deadlock Recovery}{section.19}% 230
-\BOOKMARK [3][-]{subsubsection.19.3.1}{Process Termination}{subsection.19.3}% 231
-\BOOKMARK [3][-]{subsubsection.19.3.2}{Resource Preemption}{subsection.19.3}% 232
-\BOOKMARK [2][-]{subsection.19.4}{Process Management - Conclusion}{section.19}% 233
+\BOOKMARK [1][-]{section.1}{Lecture 3: Witness Languages Pt.1}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Atomicity}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Race Condition}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Interleaving}{section.1}% 4
+\BOOKMARK [1][-]{section.2}{Lecture 4: Witness Languages Pt.2}{}% 5
+\BOOKMARK [1][-]{section.3}{Lecture 5: Coordination 1}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Interacting Processes}{section.3}% 7
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Mutual Exlusion \204 Mutex}{subsection.3.1}% 8
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Levels of Support}{subsection.3.1}% 9
+\BOOKMARK [1][-]{section.4}{Lecture 6: Coordination Pt.2}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Shared Variable Coordination}{section.4}% 11
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Monitors}{subsection.4.1}% 12
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Pascal-FC Implementation of Monitors}{subsection.4.1}% 13
+\BOOKMARK [3][-]{subsubsection.4.1.3}{Ada Implementation of Monitors}{subsection.4.1}% 14
+\BOOKMARK [1][-]{section.5}{Lecture 7: Coordination 3}{}% 15
+\BOOKMARK [2][-]{subsection.5.1}{Recapping Java}{section.5}% 16
+\BOOKMARK [3][-]{subsubsection.5.1.1}{Shared Variable Coordination}{subsection.5.1}% 17
+\BOOKMARK [2][-]{subsection.5.2}{Readers/Writers Problem}{section.5}% 18
+\BOOKMARK [1][-]{section.6}{Lecture 8: Coordination Recap}{}% 19
+\BOOKMARK [2][-]{subsection.6.1}{Shared Variables}{section.6}% 20
+\BOOKMARK [3][-]{subsubsection.6.1.1}{Communication}{subsection.6.1}% 21
+\BOOKMARK [3][-]{subsubsection.6.1.2}{Synchronisation}{subsection.6.1}% 22
+\BOOKMARK [1][-]{section.7}{Lecture 9: Message Passing 1}{}% 23
+\BOOKMARK [2][-]{subsection.7.1}{Message-Based Coordination}{section.7}% 24
+\BOOKMARK [2][-]{subsection.7.2}{Evaluating Message-Based Coordination}{section.7}% 25
+\BOOKMARK [2][-]{subsection.7.3}{Possible Models for Sending}{section.7}% 26
+\BOOKMARK [3][-]{subsubsection.7.3.1}{Aynchronous}{subsection.7.3}% 27
+\BOOKMARK [3][-]{subsubsection.7.3.2}{Synchronous}{subsection.7.3}% 28
+\BOOKMARK [3][-]{subsubsection.7.3.3}{Remote Invocation}{subsection.7.3}% 29
+\BOOKMARK [2][-]{subsection.7.4}{Task Naming}{section.7}% 30
+\BOOKMARK [3][-]{subsubsection.7.4.1}{Direct}{subsection.7.4}% 31
+\BOOKMARK [3][-]{subsubsection.7.4.2}{Indirect}{subsection.7.4}% 32
+\BOOKMARK [3][-]{subsubsection.7.4.3}{Symmetric}{subsection.7.4}% 33
+\BOOKMARK [3][-]{subsubsection.7.4.4}{Asymmetric}{subsection.7.4}% 34
+\BOOKMARK [2][-]{subsection.7.5}{Task Relationships}{section.7}% 35
+\BOOKMARK [2][-]{subsection.7.6}{Message Types}{section.7}% 36
+\BOOKMARK [1][-]{section.8}{Lecture 10: Message Passing 2}{}% 37
+\BOOKMARK [2][-]{subsection.8.1}{Pascal-FC}{section.8}% 38
+\BOOKMARK [2][-]{subsection.8.2}{Ada}{section.8}% 39
+\BOOKMARK [3][-]{subsubsection.8.2.1}{Ada Communication Model}{subsection.8.2}% 40
+\BOOKMARK [3][-]{subsubsection.8.2.2}{Other Facilities}{subsection.8.2}% 41
+\BOOKMARK [3][-]{subsubsection.8.2.3}{select}{subsection.8.2}% 42
+\BOOKMARK [2][-]{subsection.8.3}{Synchronisation}{section.8}% 43
+\BOOKMARK [1][-]{section.9}{Lecture 11: Message Passing 3}{}% 44
+\BOOKMARK [2][-]{subsection.9.1}{Erlang}{section.9}% 45
+\BOOKMARK [3][-]{subsubsection.9.1.1}{Send !}{subsection.9.1}% 46
+\BOOKMARK [3][-]{subsubsection.9.1.2}{receive}{subsection.9.1}% 47

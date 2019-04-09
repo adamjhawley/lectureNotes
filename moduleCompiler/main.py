@@ -78,6 +78,33 @@ def filter_toc_title(contents):
     return contents
 """
 
+def sort_file_paths(paths, path):
+    croppedPaths = []
+    sortedPaths = []
+    for p in paths:
+        cropped = p[::-1]
+        cropped = cropped[9:]
+        slash_index = 0
+        for index, char in enumerate(cropped):
+            if char == "/":
+                slash_index = index
+                break
+        if slash_index != 0:
+            cropped = cropped[:slash_index]
+        cropped = int(cropped[::-1])
+        croppedPaths.append(cropped)
+
+    croppedPaths.sort()
+
+    if path != None:
+        for p in croppedPaths:
+            sortedPaths.append(path + str(p) + "_COPY.tex")
+    else:
+        for p in croppedPaths:
+            sortedPaths.append(str(p) + "_COPY.tex")
+
+    return sortedPaths
+
 def main():
     try:
         path = sys.argv[1]
@@ -87,13 +114,12 @@ def main():
     tex_files = filter_tex_files(path)
     copies = []
 
-    for path in tex_files:
-        copy_path = path[:-4] + "_COPY.tex"
+    for p in tex_files:
+        copy_path = p[:-4] + "_COPY.tex"
         copies.append(copy_path)
-        shutil.copyfile(path, copy_path)
+        shutil.copyfile(p, copy_path)
 
-    copies.sort()
-    print(copies)
+    copies = sort_file_paths(copies, path)
 
     titles, preamble, file_contents = extract_preamble(copies)
 
