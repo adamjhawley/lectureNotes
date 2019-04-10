@@ -1,0 +1,126 @@
+% Created 2019-04-10 Wed 10:35
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 23: System \& Network Security}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 23: System \& Network Security},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{System Security \& Protection}
+\label{sec:orgd9af8d1}
+A computer consists of a collection of objects, hardware or software.
+Each object has a unique name and can be accessed through a well-defined set of operations.
+A \textbf{security policy} defines what it means to be secure for a particular system.
+The \textbf{protection problem} is to ensure that each object is accessed correctly and only by those processes that are allowed to do so.
+
+\section{Principles of Protection}
+\label{sec:org93acc78}
+\begin{itemize}
+\item A \textbf{privilege} is the right to execute a particular operation on a given object.
+\end{itemize}
+One guiding principle is named the \textbf{principle of least privilege}, where:
+\begin{itemize}
+\item Programs, users and systems should be given just enough \textbf{privileges} to perform their tasks (this limits damage if the entity has a bug or gets abused).
+\end{itemize}
+Privileges can be one of:
+\begin{itemize}
+\item \textbf{Static} (During life of system, during life of process)
+\item \textbf{Dynamic} (Changed by process as needed): \textbf{Domain switching privilege escalation}
+\end{itemize}
+\emph{``Need to know''} is a similar concept regarding access to data.
+
+It is important to consider the \textbf{grain} aspect.
+\begin{itemize}
+\item \textbf{Rough-Grained}: Management is easier,simpler but least privilege is now done in large chunks.
+\begin{itemize}
+\item For example, traditional Unix processes either have abilities of the associated user or of the root.
+\end{itemize}
+\item \textbf{Fine-Grained}: More complex, more overhead but more protective.
+\begin{itemize}
+\item For examlpe, ACL (Access Control List) or RBAC (Role Based Access Control).
+\end{itemize}
+\end{itemize}
+Privilege management is commonly supported  by the notion of domains which can be user, process, procedure etc.
+
+\section{Domain Structure}
+\label{sec:orgd318d31}
+\begin{itemize}
+\item Access-Right = \texttt{<object-name, rights-set>}
+\begin{itemize}
+\item \texttt{rights-set} is a subset of all valid operations that can be performed on the object.
+\end{itemize}
+\item Domain = set of access-rights.
+\end{itemize}
+A process, at any point in time, is associated with one domain but can switch domains in a controlled way.
+Domains can overlap.
+
+See slide 7 for Unix example.
+
+\section{Security}
+\label{sec:org18a8e74}
+A system is said to be secure if resources are used and accessed as intended under all circumstances.
+\begin{description}
+\item[{Intruders}] Attempt to breach security
+\item[{Threat}] Potential security violations
+\item[{Attack}] Attempt to breach security (can be accidental or malicious but easier to protect against accidental).
+\end{description}
+
+\subsection{Security Violation Categories}
+\label{sec:org5c5aee5}
+\begin{description}
+\item[{Breach of Confidentiality}] Unauthorised reading of data.
+\item[{Breach of Integrity}] Unauthorised modification of data.
+\item[{Breach of Availability}] Unauthorised destruction of data.
+\item[{Theft of Service}] Unauthorised use of resources.
+\item[{Denial of Service (DoS)}] Prevention of legitimate use.
+\end{description}
+
+\subsection{Security Violation Methods}
+\label{sec:orgfcdb3ac}
+\begin{description}
+\item[{Masquerading (breach authentication)}] Pretending to be an authorised user to escalate privileges.
+\item[{Replay Attack}] As is or with \textbf{message modification}.
+\item[{Man-in-the-middle Attack}] Intruder sits in data flow, masquerading as sender to receiver and vice versa.
+\item[{Interception}] Intercept an already-established session to bypass authentication (e.g. sniffing, hijacking, covert channel).
+\end{description}
+
+\subsection{Security Measure Levels}
+\label{sec:org4542934}
+It is impossible too have absolute security, but make cost to perpetrator sufficiently high to deter most intruders.
+Security must occur at four levels to be effective:
+\begin{description}
+\item[{Physical}] Control access to data ceters, servers, connected terminals
+\item[{Human}] Avoid social engineering, phishing, dumpster diving
+\item[{Operating System}] Protection mechanisms
+\item[{Network}] Encryption, firewalls, blacklisting
+\end{description}
+Security is as weak as the weakest link in the chain.
+
+\section{Examples}
+\label{sec:orgd3bb893}
+See lecture for examples on \textbf{Meltdown} and \textbf{DNS Spoofing}.
+\end{document}
