@@ -1,0 +1,37 @@
+#+TITLE: Lecture 4: First-Order Logic
+#+AUTHOR: Adam Hawley
+
+* Pros & Cons of Propositional Logic
+** Pros
+- Propositional logic is *declarative*: pieces of syntax correspond to facts.
+- Propositional logic allows partial/disjunctive/negated information (unlike most data structures and databases).
+- Propositional logic is *compositional* (i.e. meaning of $B_{1.1}\land P_{1.2}$ is derived from meaning of $B_{1.1}$ and of $P_{1.2}$).
+- Meaning in propositional logic is *context-independent*.
+
+** Cons
+Propositional logic has very limited expressive power (e.g. cannot say "pits cause breezes in adjacent squares" except by writing one sentence for each square).
+
+* First-Order Logic
+Whereas propositional logic assumes world contains facts, first-order logic assumes the world contains:
+- Objects :: People, houses, numbers, theories etc.
+- Relations :: Red, round, bogus, prime, etc.
+- Functions :: Father of, best friend, one more than etc.
+
+* Atomic Sentences
+The simplest form of first-order logic is in *atomic sentences*.
+- Atomic Sentence :: $predicate(term_1, ..., term_n)$ or $term_1=term_2$.
+- Term :: $function(term_1, ..., term_n) or $constant$ or $variable$.
+
+* Complex Sentences
+Complex sentences are made from atomic sentences using connectives.
+
+* Truth in First-Order Logic
+Sentences are true with respect to a model and an interpretation.
+Models contain \ge 1 objects (*domain elements*) and relations among them.
+
+Interpretation specifies referents for:
+- constant symbols $\implies$ objects
+- predicate symbols $\implies$ relations
+- function symbols $\implies$ functional relations
+
+Continue @ 33:11

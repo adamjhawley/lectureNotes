@@ -1,0 +1,80 @@
+% Created 2019-04-10 Wed 14:50
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{Lecture 4: First-Order Logic}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={Lecture 4: First-Order Logic},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Pros \& Cons of Propositional Logic}
+\label{sec:orgb833c97}
+\subsection{Pros}
+\label{sec:org49ce882}
+\begin{itemize}
+\item Propositional logic is \textbf{declarative}: pieces of syntax correspond to facts.
+\item Propositional logic allows partial/disjunctive/negated information (unlike most data structures and databases).
+\item Propositional logic is \textbf{compositional} (i.e. meaning of \(B_{1.1}\land P_{1.2}\) is derived from meaning of \(B_{1.1}\) and of \(P_{1.2}\)).
+\item Meaning in propositional logic is \textbf{context-independent}.
+\end{itemize}
+
+\subsection{Cons}
+\label{sec:org33bb263}
+Propositional logic has very limited expressive power (e.g. cannot say "pits cause breezes in adjacent squares" except by writing one sentence for each square).
+
+\section{First-Order Logic}
+\label{sec:org5eef4ee}
+Whereas propositional logic assumes world contains facts, first-order logic assumes the world contains:
+\begin{description}
+\item[{Objects}] People, houses, numbers, theories etc.
+\item[{Relations}] Red, round, bogus, prime, etc.
+\item[{Functions}] Father of, best friend, one more than etc.
+\end{description}
+
+\section{Atomic Sentences}
+\label{sec:org39f2483}
+The simplest form of first-order logic is in \textbf{atomic sentences}.
+\begin{description}
+\item[{Atomic Sentence}] \(predicate(term_1, ..., term_n)\) or \(term_1=term_2\).
+\item[{Term}] \$function(term\textsubscript{1}, \ldots{}, term\textsubscript{n}) or \(constant\) or \(variable\).
+\end{description}
+
+\section{Complex Sentences}
+\label{sec:orgc1fd98a}
+Complex sentences are made from atomic sentences using connectives.
+
+\section{Truth in First-Order Logic}
+\label{sec:org4d31ee1}
+Sentences are true with respect to a model and an interpretation.
+Models contain \(\ge\) 1 objects (\textbf{domain elements}) and relations among them.
+
+Interpretation specifies referents for:
+\begin{itemize}
+\item constant symbols \(\implies\) objects
+\item predicate symbols \(\implies\) relations
+\item function symbols \(\implies\) functional relations
+\end{itemize}
+\end{document}
