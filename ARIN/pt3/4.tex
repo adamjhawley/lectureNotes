@@ -1,4 +1,4 @@
-% Created 2019-04-10 Wed 14:50
+% Created 2019-04-14 Sun 13:50
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,9 +31,9 @@
 
 
 \section{Pros \& Cons of Propositional Logic}
-\label{sec:orgb833c97}
+\label{sec:org86d6434}
 \subsection{Pros}
-\label{sec:org49ce882}
+\label{sec:org748b300}
 \begin{itemize}
 \item Propositional logic is \textbf{declarative}: pieces of syntax correspond to facts.
 \item Propositional logic allows partial/disjunctive/negated information (unlike most data structures and databases).
@@ -42,11 +42,11 @@
 \end{itemize}
 
 \subsection{Cons}
-\label{sec:org33bb263}
+\label{sec:orgea65499}
 Propositional logic has very limited expressive power (e.g. cannot say "pits cause breezes in adjacent squares" except by writing one sentence for each square).
 
 \section{First-Order Logic}
-\label{sec:org5eef4ee}
+\label{sec:orge97c7be}
 Whereas propositional logic assumes world contains facts, first-order logic assumes the world contains:
 \begin{description}
 \item[{Objects}] People, houses, numbers, theories etc.
@@ -55,7 +55,7 @@ Whereas propositional logic assumes world contains facts, first-order logic assu
 \end{description}
 
 \section{Atomic Sentences}
-\label{sec:org39f2483}
+\label{sec:org408033b}
 The simplest form of first-order logic is in \textbf{atomic sentences}.
 \begin{description}
 \item[{Atomic Sentence}] \(predicate(term_1, ..., term_n)\) or \(term_1=term_2\).
@@ -63,11 +63,11 @@ The simplest form of first-order logic is in \textbf{atomic sentences}.
 \end{description}
 
 \section{Complex Sentences}
-\label{sec:orgc1fd98a}
+\label{sec:org3588f15}
 Complex sentences are made from atomic sentences using connectives.
 
 \section{Truth in First-Order Logic}
-\label{sec:org4d31ee1}
+\label{sec:org4974a21}
 Sentences are true with respect to a model and an interpretation.
 Models contain \(\ge\) 1 objects (\textbf{domain elements}) and relations among them.
 
@@ -77,4 +77,18 @@ Interpretation specifies referents for:
 \item predicate symbols \(\implies\) relations
 \item function symbols \(\implies\) functional relations
 \end{itemize}
+
+\section{Problems with FOL}
+\label{sec:org577f47b}
+\subsection{Frame Problem}
+\label{sec:org0414a7a}
+Finding an elegant way to handle non-change rather than repeated frame axioms.
+
+\subsection{Qualification Problem}
+\label{sec:orgf0b48af}
+True descriptions of real actionss require endless caveats--- what if gold is slippery or nailed down or\ldots{}
+
+\subsection{Ramification Problem}
+\label{sec:org76e5a39}
+Real actions have many secondary consequences--- what about dust on the gold, war and tear on gloves, etc.
 \end{document}

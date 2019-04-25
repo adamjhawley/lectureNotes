@@ -34,4 +34,12 @@ Interpretation specifies referents for:
 - predicate symbols $\implies$ relations
 - function symbols $\implies$ functional relations
 
-Continue @ 33:11
+* Problems with FOL
+** Frame Problem
+Finding an elegant way to handle non-change rather than repeated frame axioms.
+
+** Qualification Problem
+True descriptions of real actionss require endless caveats--- what if gold is slippery or nailed down or...
+
+** Ramification Problem
+Real actions have many secondary consequences--- what about dust on the gold, war and tear on gloves, etc.

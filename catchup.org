@@ -74,6 +74,13 @@ TODO Next: ARIN Prac
    - [ ] Guest lecture: Safety Critical Software
 * IMPL
 ** Lectures
+   - [ ] 2
+   - [ ] 3
+   - [ ] 4
+   - [ ] 5
+   - [ ] 6
+   - [ ] 7
+
 ** TODO Practicals [0/5]
    - [ ] Chapter 2
    - [ ] Chapter 3
