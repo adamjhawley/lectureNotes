@@ -1,0 +1,141 @@
+% Created 2019-02-27 Wed 12:22
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{ML Section 1.2: Decision Tree Learning}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={ML Section 1.2: Decision Tree Learning},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Intro}
+\label{sec:org1083861}
+\begin{itemize}
+\item Training examples are represented as feature-value vectors.
+\item Each feature denotes some property of an example.
+\item Feature values can be continuous, but will be discretised beforehand.
+\end{itemize}
+
+\section{Decision Tree Learning Algorithm}
+\label{sec:orgddb84e6}
+\begin{enumerate}
+\item If training examples at the root node are perfectly classified, then stop.
+\item Choose feature to test at root node.
+\item A child of the root node is created for each value of the root feature.
+\item Training examples are sorted to the children according to feature test.
+\item Repeat steps 1-5 for each child (viewing it as the root of the new subtree).
+\end{enumerate}
+
+\subsection{Feature Choice}
+\label{sec:orgab22f61}
+Choose the feature which is most useful for classifying examples.
+The quality measure for choosing a feature is the \emph{information gain} --- measuring how well a given feature separates the training examples to their categories.
+
+When deciding which feature is best we do the following:
+
+\begin{itemize}
+\item Let S be the set of training examples, p\^{}+ be the proportion of examples of class C1 and p\^{}- be the proportion of examples of class C2.
+\item \textbf{Entropy} measures the \emph{impurity} of S:
+\begin{itemize}
+\item \texttt{E(S) = (-p\textasciicircum{}+*log(p\textasciicircum{}+)) + (-p\textasciicircum{}-*log(p\textasciicircum{}-))}
+\end{itemize}
+\item Let F be a feature, and let S\textsubscript{v} be the elements in S with F = v.
+\item Gain(S,F) is expected reduction in entropy due to sorting on F:
+\begin{itemize}
+\item \texttt{Gain(S,F) = E(S) - \textbackslash{}Sigma\_(V\textbackslash{}subset Values(F) ((|S\_v|/|S|)E(S\_v)}
+\item \emph{Best} feature is the feature F with the highest Gain(S,F)
+\end{itemize}
+\end{itemize}
+
+\textbf{SEE LECTURE FOR (HELPFUL EXAMPLE)}
+
+\subsection{Furter Remarks}
+\label{sec:orgcf37b85}
+\begin{itemize}
+\item Numerical features are discretised, i.e.feature values are denoted by intervals.
+\item After a decision tree is generated, it is simplified (\emph{pruned}) to avoid \textbf{overfitting} of the training data.
+\item Bias of decision tree learner: the simpler tree that fits the training data is the better one.
+\end{itemize}
+
+\subsection{Properties of Decision Tree Learning}
+\label{sec:org2610208}
+Decision tree learning (DTL) searches a complete hypothesis space (all finite discrete-value functions can be expressed as decision trees).
+DTL also maintains only a single current hypothesis.
+DTL never revisits choices once they are made (no backtracking).
+It is also non-incremental (off-line) --- this means that it takes all of the training data in batch form rather than one entry at a time.
+
+\section{Pruning}
+\label{sec:org4389326}
+The goal of pruning is to avoid overfitting the training data.
+This can be done by dividing training data into a training and validation set.
+To prune a decision node, remove the subtree located at the node, making it a leaf node and assign it the most common classification of the training examples affiliated with this node.
+Nodes are removed if the pruned tree performs no worse on the validation data.
+Pruning order is guided by maximum reduction in error.
+
+\section{Numerical Features}
+\label{sec:orgce7354a}
+What if features are numerical, e.g. number of As in sequence?
+\begin{itemize}
+\item Discretise the values by introducing intervals.
+\item Sort numerical feature values and pick interval bounds that are between changes in category values.
+\item Each bound \emph{c} defines a boolean feature (true if feature value > \emph{c}, and false otherwise).
+\end{itemize}
+
+\section{Missing Feature Values}
+\label{sec:org5b4c19b}
+\begin{description}
+\item[{Solution 1}] When a feature F is evaluated, assign missing values of F the most common value in the training examples of the respective category.
+\item[{Soultion 2}] Compute probabilities of feature values based on occurences in training data, and distribute examples with unknown feature values to the children nodes according to these probabilities.
+\end{description}
+
+\section{Constructive Induction (Think automated feature transformation or selection)}
+\label{sec:org0a672bc}
+\subsection{Types}
+\label{sec:orgda73559}
+\begin{description}
+\item[{Feature Selection}] Select a (minimal) subset of features according to some criteria so that the learning performance (speed and quality) can be improved.
+\item[{Feature Transformation}] \begin{itemize}
+\item Extracting a set of new features from the original features through some functional mapping.
+\item Discovering missing information about the relationships between features and augmenting the space of features by inferring or creating additional features.
+\end{itemize}
+\end{description}
+
+\subsection{Feature Selection}
+\label{sec:org21bd9e8}
+\subsubsection{Filter Methods}
+\label{sec:org1252635}
+\begin{itemize}
+\item Filter features according to specific criteria
+\item \emph{Examples}: Select top \emph{n} features according to information gain, frequency, entropy etc.
+\item Run a DTL on training data and remove all features that are not mentioned in the resulting decision tree.
+\end{itemize}
+\subsubsection{Wrapper Methods}
+\label{sec:org1a56c39}
+\begin{itemize}
+\item Evaluate the performance of the learner on a given feature subset.
+\item \textbf{Backward Elimination}: start with full set of features and greedily remove features one by one maximising accuracy increase at each step.
+\item \textbf{Forward Selection}: start with empty feature set and greedily add features.
+\end{itemize}
+\end{document}

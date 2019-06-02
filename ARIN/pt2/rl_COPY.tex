@@ -1,0 +1,174 @@
+% Created 2019-03-14 Thu 09:07
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Adam Hawley}
+\date{\today}
+\title{ML Section 2: Reinforcement Learning}
+\hypersetup{
+ pdfauthor={Adam Hawley},
+ pdftitle={ML Section 2: Reinforcement Learning},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Psychology \& Engineering of Reinforcement Learning}
+\label{sec:orgcb40a6d}
+See lecture for history.
+
+\section{Agent Paradigm}
+\label{sec:org5391637}
+A common setup for the agent paradigm of RL involves having an agent which carries out \textbf{actions} on an \textbf{environment} through the use of \textbf{effectors}.
+These actions are based on the \textbf{reward signal} and \textbf{states} from the environment which are read using \textbf{sensors}.
+
+\section{RL vs. Supervised Learning}
+\label{sec:org0b07d2b}
+What makes RL different?
+\begin{itemize}
+\item No supervisor feedback: learning from reward signal only which is often delayed, not instantaneous.
+\item Agent influences the selection of training experience.
+\item Sequential aspect of decision making.
+\end{itemize}
+
+\section{The Markov Decision Process}
+\label{sec:org3a0296f}
+The Markov decision process is used to model the environment.
+
+A (single-agent) MDP is a tuple (S,A,p,R) where:
+\begin{description}
+\item[{S}] A set of states
+\item[{A}] A set of actions
+\item[{p: S x A x S \(\rightarrow\) [0,1]}] Specifies the transition probabilities between states.
+\item[{R: S x A \(\rightarrow\) R}] Specifies the reward for each state-action pair.
+\end{description}
+
+Note: deterministic transition function \(\delta: S \times A \implies S\).
+
+\section{Agent State vs. Environment State}
+\label{sec:org4beb083}
+It is very important to recognise the difference between these two.
+Agents have their own representation of the environment state.
+Agents may have \textbf{partial observability} so they are not able to observe everything in the environment.
+This may be benefitial as they may want to focus in on relevant parts of the environment.
+Ideally only the information necessary to make an optimal decision is contained in the agent state.
+
+\section{Markov States}
+\label{sec:org9a80b1c}
+A state S\textsubscript{t} is Markov if and only if S\textsubscript{t} contains all relevant information to determine the next state.
+
+Note: any state can be made into a Markov state by incorporating the complete history.
+
+\section{RL Output}
+\label{sec:org48fb5be}
+\textbf{Goal}: learn an \emph{optimal policy} \(\pi\): S \(\rightarrow\) A
+
+Evaluation of policy via discounted cumulative reward:
+\begin{equation}
+V^{\pi}(S_t) = \sum\limits_{i \le 0} \gamma^i r_{t+1}
+\end{equation}
+where:
+\begin{itemize}
+\item \(0\le \gamma < 1\) is a discount factor (\(\gamma\) = 0 means that only immediate reward is considered).
+\item r\textsubscript{t+1} is the reward at time t+1 determined by performing actions specified by policy \(\pi\).
+\end{itemize}
+The goal previously mentioned can now be redefined as: Agent learns policy \(\pi\) that maximises \(V^{\pi}(s)\) for all states s.
+So the optimal policy \(\pi\)\textsuperscript{*} = argmax\textsubscript{\(\pi\)} V\textsuperscript{\(\pi\)}(S) for all S.
+\textbf{Notation}: \(V^{\pi^*}(S) = V^*(S)\).
+
+The optimal action in state s is the action a that maximises the sum of the immediate reward r(s,a) plus the value V\textsuperscript{*} of the immedaite successor state, discounted by \(\gamma\):
+\begin{equation}
+\pi*(S) = argmax_a[r(s,a) + \gamma V^*(\delta(s,a))]
+\end{equation}
+If functions r and \(\delta\) are known then the agent can acquire \(\pi\)\textsuperscript{*} by computing V\textsuperscript{*}.
+
+\subsection{Bellman Equation}
+\label{sec:org0b9e517}
+For computing V\textsuperscript{*}
+\begin{equation}
+V^*(s) := r(s) + \gamma max_a\sum\limits_s T(s,a,s') V^*(s')
+\end{equation}
+For n states: n equations with n unknowns.
+\textbf{But}: n equations are non-linear (because of the \emph{max} operator).
+
+\subsection{Value Iteration}
+\label{sec:orgc83d84a}
+\begin{enumerate}
+\item For all states s: V\textsubscript{0}(s) := 0
+\item t := 0
+\item Update values of all states s based on successor states: \(V_{t+1}(s) := r(s) + \gamma max_a V_t(\delta(s,a))\) (the Bellman equation for deterministic MVPs)
+\item t := t + 1;
+\item Repeat steps 3 and 4 until convergence (or had enough)
+\end{enumerate}
+This algorithm is \textbf{guaranteed} to converge to the optimal solution.
+See lecture for formal proof on this.
+
+\subsection{Model-Based vs. Model Free}
+\label{sec:org603975c}
+What if \(\delta\) and \(r\) are unknown?
+\begin{itemize}
+\item Solution 1: Learn them both from experience (model-based).
+\item Solution 2: Learn quality function \(Q\) directly (model-free).
+\end{itemize}
+\begin{equation}
+Q(s,a) = r(s,a) + \gamma V^* (\delta(s,a))
+\end{equation}
+This is another version of the Bellman Equation.
+This means that the optimal policy computation: \(\pi^*(s) = argmax_a Q(s,a)\).
+And it is then possible to learn \(Q\) even if \(\delta\) and \(r\) are unknown.
+\textbf{SEE LECTURE FOR Q LEARNING ALGORITHM + PROOF}
+
+\subsection{Policy Iteration}
+\label{sec:orgced595b}
+(An alternative to Value Iteration)
+\begin{enumerate}
+\item Start with arbitrary policy \(\pi\)\textsubscript{0}
+\item i := 0
+\item Evaluate: Given \(\pi\)\textsubscript{i} calculate corresponding V\textsubscript{i}
+\item Improve: \(\pi\)\textsubscript{i+1}(s) := argmax\textsubscript{a}(V\textsubscript{i}(\(\delta\)(s,a)))
+\item Repeat steps 3 and 4 until convergence(or had enough)
+\end{enumerate}
+
+\subsubsection{Evaluating a Policy}
+\label{sec:org2e4a4f7}
+Given \(\pi\)\textsubscript{i}: V\textsubscript{i}(s) = r(s) + \(\gamma\) V\textsubscript{i}(\(\delta\)(s,a)) for all states s.
+If there are \emph{n} states, this yields \emph{n} linear equations in \emph{n} unknowns since there is no longer an argmax term.
+Therefore it is \emph{easy} to solve.
+
+\subsection{Reminder of RL vs. Supervised Learning}
+\label{sec:org8f51136}
+\begin{itemize}
+\item Supervised learning: instructive feedback.
+\item Reinforcement learning: evaluative feedback.
+\end{itemize}
+Therefore in RL, there is a need for active exploration: trial-and-error search.
+
+\subsubsection{Exploration vs. Exploitation}
+\label{sec:orgd7616e6}
+\begin{itemize}
+\item Exploration: choose actions that gather information on the environment
+\item Exploitation: choose actions which have (so far) shown to lead to large rewards.
+\end{itemize}
+The \textbf{exploration (action selection) strategy} is therefore controlling the trade-off between exploration and exploitation.
+Generally we shift gradually with time from exploration to exploitation.
+A couple of examples of these strategies include \emph{\(\epsilon\)-greedy} and \emph{Boltzmann}.
+
+\textbf{SEE LECTURE FOR DETAILS OF THESE EXAMPLES}
+\end{document}

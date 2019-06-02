@@ -1,0 +1,102 @@
+\usepackage{hyperref}
+For example, web browsers used to run as a single process, therefore if oone site causes trouble, the entire browser can hang or crash.
+More concurrency than \hyperref[sec:manytoone]{many-to-one}.
+Overall Round-Robin ensures fairness, but does not reflect relative importance of processes.
+Therefore the OS should have a way of identifying and recovering from such scenarios (e.g aging --- increase the priority of the process as time progresses).
+	\item Soft affinity $\implies$ preference
+\usepackage{hyperref}
+Therefore, the ability to execute an instruction, or a number of instructions atomically is crucial for the correct operation of synchronisation primitives provided by programming languages.
+\usepackage{hyperref}
+\item \textbf{Deadlock Prevention} (\ref{sec:org7b91dfe})
+\item \textbf{Deadlock Avoidance} (\ref{sec:org90395a0})
+Therefore, both of these are impractical to try and prevent. 
+If we have a single instance of a resource type; we can use a variant of the resource-allocation graph. (\ref{sec:org17d9637})
+Or if we have multiple instances of a resource type: we can use the \emph{banker's algorithm} (\ref{sec:org895e8a5})
+\textbf{Therefore}: \texttt{Need[i,j] = Max[i,j] - Allocation[i,j]}
+\usepackage{hyperref}
+\usepackage{hyperref}
+In the latter case, the logical address can be referred to as the virtual address.
+Execution-time binding occurs when reference is made to location in memory.
+\usepackage{hyperref}
+\usepackage{hyperref}
+A page is said to be needed when there is a reference to it (read/write to its address range).
+\item Invalid reference \(\rightarrow\) Abort
+This means that the process state is saved and the OS is enabled to restart the instruction that caused the page fault, as the CPU will be in exactly the same state as prior to the memory reference.
+\item If \emph{p} = 1 \(\rightarrow\) every reference is a fault
+\usepackage{hyperref}
+Algorithms are evaluated by running it on a particular string of memory references and computing the number of page faults on that string.
+If we can see into the future (like when we have a reference string) then we can see which page will not be used for the longest period of time.
+Using the lecture reference string, it had 12 faults which was better than FIFO but worse than OPT.
+\item When a page is referenced the associated bit is set to 1
+\item Replace any page with reference bit = 0 (if one exists). However, we do not know the order
+\item FIFO scheme, plus hardware-provided reference bit
+\item Set reference bit 0, leave page in memory
+Then analyse the most recent \(\Delta\) page references.
+If a page is in use, it is in the working set but if it is no longer used then it will drop from the working set \(\Delta\) time units after its last reference.
+WSS\textsubscript{i}(working set of Process P\textsubscript{i}) is defined to be the total number of pages referenced in the window \(\Delta\).
+\usepackage{hyperref}
+\item No redundancy, therefore no fault tolerance.
+\usepackage{hyperref}
+Files can be accessed using an \textbf{absolute path} by prefixing the filename with the sequence of all directories drom the \emph{root} e.g. \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me\textbackslash{}lecturing\textbackslash{}osi.html}.
+They can also be accessed using a \textbf{relative path} which is similar to using the absolute path but it makes an assumption that there is a \textbf{current directory} e.g. when in \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me} (current) we can just refer to \texttt{lecturing\textbackslash{}osi.html}.
+Therefore the API typically includes \texttt{read(n)} and \texttt{write(n)} calls.
+\usepackage{hyperref}
+\usepackage{hyperref}
+In network design, abstraction is reflected in the concept of a \textbf{network architecture}.
+The conceptual OSI reference model, however, is a great use for conceptually discussing and teaching about computer networks.
+\usepackage{hyperref}
+\item Each bridge computes the \textbf{shortest path} to the root and notes its ports that lie on this path (\emph{preferred port towards root})/
+\usepackage{hyperref}
+\item Therefore it runs on virtually any network.
+\item IP addresses are hierarchical, reflecting the hierarchy of an internetwork.
+4.tex:\usepackage{hyperref}
+4.tex:For example, web browsers used to run as a single process, therefore if oone site causes trouble, the entire browser can hang or crash.
+4.tex:More concurrency than \hyperref[sec:manytoone]{many-to-one}.
+5.tex:Overall Round-Robin ensures fairness, but does not reflect relative importance of processes.
+5.tex:Therefore the OS should have a way of identifying and recovering from such scenarios (e.g aging --- increase the priority of the process as time progresses).
+6.tex:	\item Soft affinity $\implies$ preference
+7.tex:\usepackage{hyperref}
+7.tex:Therefore, the ability to execute an instruction, or a number of instructions atomically is crucial for the correct operation of synchronisation primitives provided by programming languages.
+8.tex:\usepackage{hyperref}
+8.tex:\item \textbf{Deadlock Prevention} (\ref{sec:org7b91dfe})
+8.tex:\item \textbf{Deadlock Avoidance} (\ref{sec:org90395a0})
+8.tex:Therefore, both of these are impractical to try and prevent. 
+8.tex:If we have a single instance of a resource type; we can use a variant of the resource-allocation graph. (\ref{sec:org17d9637})
+8.tex:Or if we have multiple instances of a resource type: we can use the \emph{banker's algorithm} (\ref{sec:org895e8a5})
+8.tex:\textbf{Therefore}: \texttt{Need[i,j] = Max[i,j] - Allocation[i,j]}
+9.tex:\usepackage{hyperref}
+10.tex:\usepackage{hyperref}
+10.tex:In the latter case, the logical address can be referred to as the virtual address.
+10.tex:Execution-time binding occurs when reference is made to location in memory.
+11.tex:\usepackage{hyperref}
+12.tex:\usepackage{hyperref}
+12.tex:A page is said to be needed when there is a reference to it (read/write to its address range).
+12.tex:\item Invalid reference \(\rightarrow\) Abort
+12.tex:This means that the process state is saved and the OS is enabled to restart the instruction that caused the page fault, as the CPU will be in exactly the same state as prior to the memory reference.
+12.tex:\item If \emph{p} = 1 \(\rightarrow\) every reference is a fault
+13.tex:\usepackage{hyperref}
+13.tex:Algorithms are evaluated by running it on a particular string of memory references and computing the number of page faults on that string.
+13.tex:If we can see into the future (like when we have a reference string) then we can see which page will not be used for the longest period of time.
+13.tex:Using the lecture reference string, it had 12 faults which was better than FIFO but worse than OPT.
+13.tex:\item When a page is referenced the associated bit is set to 1
+13.tex:\item Replace any page with reference bit = 0 (if one exists). However, we do not know the order
+13.tex:\item FIFO scheme, plus hardware-provided reference bit
+13.tex:\item Set reference bit 0, leave page in memory
+13.tex:Then analyse the most recent \(\Delta\) page references.
+13.tex:If a page is in use, it is in the working set but if it is no longer used then it will drop from the working set \(\Delta\) time units after its last reference.
+13.tex:WSS\textsubscript{i}(working set of Process P\textsubscript{i}) is defined to be the total number of pages referenced in the window \(\Delta\).
+14.tex:\usepackage{hyperref}
+14.tex:\item No redundancy, therefore no fault tolerance.
+15.tex:\usepackage{hyperref}
+15.tex:Files can be accessed using an \textbf{absolute path} by prefixing the filename with the sequence of all directories drom the \emph{root} e.g. \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me\textbackslash{}lecturing\textbackslash{}osi.html}.
+15.tex:They can also be accessed using a \textbf{relative path} which is similar to using the absolute path but it makes an assumption that there is a \textbf{current directory} e.g. when in \texttt{\textbackslash{}cs\textbackslash{}usr\textbackslash{}me} (current) we can just refer to \texttt{lecturing\textbackslash{}osi.html}.
+15.tex:Therefore the API typically includes \texttt{read(n)} and \texttt{write(n)} calls.
+16.tex:\usepackage{hyperref}
+17.tex:\usepackage{hyperref}
+17.tex:In network design, abstraction is reflected in the concept of a \textbf{network architecture}.
+17.tex:The conceptual OSI reference model, however, is a great use for conceptually discussing and teaching about computer networks.
+18.tex:\usepackage{hyperref}
+18.tex:\item Each bridge computes the \textbf{shortest path} to the root and notes its ports that lie on this path (\emph{preferred port towards root})/
+19.tex:\usepackage{hyperref}
+19.tex:\item Therefore it runs on virtually any network.
+19.tex:\item IP addresses are hierarchical, reflecting the hierarchy of an internetwork.

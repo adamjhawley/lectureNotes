@@ -129,7 +129,7 @@ def main():
 
     output = open('output.tex', 'w')
     output.writelines(preamble)
-    output.writelines("\\title{TEST}\n")
+    output.writelines("\\title{SYST Part 1}\n")
     output.writelines(file_contents)
     
     #Remove copied files
